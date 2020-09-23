@@ -42,7 +42,7 @@ import tfre1t.example.pempogram.dialog.Dialog_Edit_Collection;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Sound;
 import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
 import tfre1t.example.pempogram.myadapter.SetSoundAdapter;
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
 
@@ -86,7 +86,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection, null);
+        v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection_v2, null);
         getActivity().getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
         findViewByIdSetter();
         setToolbar();

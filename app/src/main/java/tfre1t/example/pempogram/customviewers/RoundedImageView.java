@@ -1,14 +1,10 @@
-package tfre1t.example.pempogram.roundedimageview;
+package tfre1t.example.pempogram.customviewers;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.View;
-
-import androidx.core.graphics.drawable.RoundedBitmapDrawable;
-import androidx.core.graphics.drawable.RoundedBitmapDrawableFactory;
 
 public class RoundedImageView extends androidx.appcompat.widget.AppCompatImageView {
 

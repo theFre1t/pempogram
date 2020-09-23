@@ -1,14 +1,8 @@
 package tfre1t.example.pempogram.savefile;
 
 import android.content.Context;
-import android.content.Intent;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
-import android.os.IInterface;
-import android.widget.ImageView;
-
-import androidx.appcompat.app.AppCompatActivity;
 
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -16,8 +10,7 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 

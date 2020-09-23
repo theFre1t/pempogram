@@ -1,29 +1,17 @@
 package tfre1t.example.pempogram.savefile;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Build;
-import android.os.FileUtils;
-import android.provider.OpenableColumns;
 import android.util.Log;
 import android.webkit.MimeTypeMap;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
-
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.os.FileUtils.copy;

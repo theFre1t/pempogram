@@ -44,7 +44,7 @@
                 android:background="@drawable/foreground_background_img_collection"
                 android:fitsSystemWindows="true" />
 
-            <tfre1t.example.pempogram.roundedimageview.RoundedImageView
+            <tfre1t.example.pempogram.customviewers.RoundedImageView
                 android:id="@+id/imgViewFrontImage"
                 android:layout_width="200dp"
                 android:layout_height="200dp"

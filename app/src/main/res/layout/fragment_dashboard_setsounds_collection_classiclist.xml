@@ -8,7 +8,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <tfre1t.example.pempogram.roundedimageview.RoundedImageView
+    <tfre1t.example.pempogram.customviewers.RoundedImageView
         android:id="@+id/imgAudiofile"
         android:layout_width="50dp"
         android:layout_height="50dp"

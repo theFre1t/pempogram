@@ -3,29 +3,18 @@ package tfre1t.example.pempogram.myadapter;
 import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.BufferedReader;
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 
-import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.CollectionHolder> {
 

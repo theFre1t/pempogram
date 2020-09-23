@@ -22,11 +22,9 @@ import java.io.IOException;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
-import tfre1t.example.pempogram.savefile.SaverAudio;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 import tfre1t.example.pempogram.savefile.SaverImage;
 import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_Collection_Fragment;
-import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_SetSoundsCollection_Fragment;
 
 import static android.app.Activity.RESULT_OK;
 

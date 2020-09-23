@@ -4,15 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.FileInputStream;
@@ -20,7 +17,7 @@ import java.io.IOException;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.roundedimageview.RoundedImageView;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdater.FavoriteAudioHolder> {
 
