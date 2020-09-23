@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <attr format="reference" name="roundedImageViewStyle"/>
+    <declare-styleable name="RoundedImageView">
+        <attr format="dimension" name="roundedRadius"/>
+    </declare-styleable>
+    <style name="Base.RoundedImageView" parent="android:Widget">
+        <item name="roundedRadius">0dp</item>
+    </style>
+    <style name="RoundedImageView" parent="Base.RoundedImageView">
+    </style>
+</resources>

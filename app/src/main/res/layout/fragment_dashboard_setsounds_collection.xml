@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+
+    android:layout_width="match_parent"
+
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/appbar"
+        android:layout_width="match_parent"
+
+        android:layout_height="300dp"
+        android:fitsSystemWindows="true">
+
+        <com.google.android.material.appbar.CollapsingToolbarLayout
+            android:id="@+id/collapsToolbarL"
+            android:layout_width="match_parent"
+
+            android:layout_height="match_parent"
+            android:fitsSystemWindows="true"
+            app:contentScrim="@color/colorPrimary"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:layout_scrollInterpolator="@android:anim/decelerate_interpolator"
+            app:toolbarId="@+id/tbSetSound">
+
+            <ImageView
+                android:id="@+id/imgViewBackImage"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:alpha=".5"
+                android:fitsSystemWindows="true"
+                android:foregroundTintMode="multiply"
+                android:scaleType="centerCrop"
+                app:layout_collapseMode="parallax"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <View
+                android:id="@+id/vForeBackImgColl"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/foreground_background_img_collection"
+                android:fitsSystemWindows="true" />
+
+            <tfre1t.example.pempogram.roundedimageview.RoundedImageView
+                android:id="@+id/imgViewFrontImage"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:layout_gravity="center"
+                android:layout_marginBottom="8dp"
+                android:background="@drawable/rounder_4dp"
+                tools:srcCompat="@tools:sample/avatars" />
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/tbSetSound"
+                style="@style/ToolBarStyle"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="@android:color/transparent"
+                app:layout_collapseMode="pin"
+                app:menu="@menu/setsound_menu"></androidx.appcompat.widget.Toolbar>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|center_horizontal">
+
+                <TextView
+                    android:id="@+id/tvNameColl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Name"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextStylePrimary"
+                    android:textSize="24sp"
+                    app:layout_constraintEnd_toEndOf="@+id/vBackTextV"
+                    app:layout_constraintStart_toStartOf="@+id/vBackTextV"
+                    app:layout_constraintTop_toTopOf="@+id/vBackTextV" />
+
+                <TextView
+                    android:id="@+id/tvAuthorColl"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="Author"
+                    android:textAlignment="center"
+                    android:textAppearance="@style/TextStyleSecondary"
+                    android:textSize="14sp"
+                    app:layout_constraintEnd_toEndOf="@+id/tvNameColl"
+                    app:layout_constraintStart_toStartOf="@+id/tvNameColl"
+                    app:layout_constraintTop_toBottomOf="@+id/tvNameColl" />
+
+                <View
+                    android:id="@+id/vBackTextV"
+                    android:layout_width="200dp"
+                    android:layout_height="60dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </com.google.android.material.appbar.CollapsingToolbarLayout>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nestedScrollView"
+        android:layout_width="match_parent"
+
+
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        app:layout_behavior="com.google.android.material.appbar.AppBarLayout$ScrollingViewBehavior">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <ImageButton
+                android:id="@+id/imgBtnAddSound"
+                android:layout_width="0dp"
+                android:layout_height="42dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:backgroundTint="@color/colorPrimaryLight"
+                android:tint="@color/colorTextSecondary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/baseline_playlist_add_black_36" />
+
+            <ListView
+                android:id="@+id/lvSetSounds"
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginBottom="8dp"
+                android:divider="@color/colorTransparent"
+                android:dividerHeight="0dp"
+                android:scrollbars="none"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/imgBtnAddSound">
+
+            </ListView>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

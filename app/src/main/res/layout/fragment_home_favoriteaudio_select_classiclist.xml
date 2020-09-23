@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    app:layout_constraintEnd_toEndOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <tfre1t.example.pempogram.roundedimageview.RoundedImageView
+        android:id="@+id/imgAudiofile"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="5dp"
+        android:background="@drawable/rounder_4dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvNameAudio"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Collection"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toTopOf="@+id/tvExecutorAudio"
+        app:layout_constraintStart_toEndOf="@+id/imgAudiofile"
+        app:layout_constraintTop_toTopOf="@+id/imgAudiofile" />
+
+    <TextView
+        android:id="@+id/tvExecutorAudio"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name author"
+        android:textAppearance="@style/TextStyleSecondary"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgAudiofile"
+        app:layout_constraintStart_toStartOf="@+id/tvNameAudio"
+        app:layout_constraintTop_toBottomOf="@+id/tvNameAudio" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

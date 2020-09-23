@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <tfre1t.example.pempogram.roundedimageview.RoundedImageView
+        android:id="@+id/imgCollection"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounder_4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:srcCompat="@tools:sample/avatars" />
+
+    <TextView
+        android:id="@+id/tvCollection"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginTop="4dp"
+        android:text="Collection"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/imgCollection"
+        app:layout_constraintTop_toBottomOf="@+id/imgCollection" />
+
+    <TextView
+        android:id="@+id/tvAuthor"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name author"
+        android:textAppearance="@style/TextStyleSecondary"
+        android:textSize="12sp"
+        app:layout_constraintStart_toStartOf="@+id/tvCollection"
+        app:layout_constraintTop_toBottomOf="@+id/tvCollection" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Pempogram</string>
+    <string name="dialog_collection_delete">Удалить</string>
+    <string name="dialog_collection_cancel">Позже</string>
+    <string name="title_activity_main">Мем Фразы</string>
+    <string name="title_home">Главая</string>
+    <string name="title_dashboard">Коллекции</string>
+    <string name="title_search">Поиск</string>
+    <string name="title_account">Аккаунт</string>
+</resources>

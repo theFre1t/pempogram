@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Pempogram</string>
+    <string name="title_activity_main">Meme Phrases</string>
+    <string name="title_home">Home</string>
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_search">Search</string>
+    <string name="title_account">Account</string>
+    //Дилог удаления коллекции
+    <string name="dialog_collection_delete">Delete</string>
+    <string name="dialog_collection_cancel">Later</string>
+</resources>
