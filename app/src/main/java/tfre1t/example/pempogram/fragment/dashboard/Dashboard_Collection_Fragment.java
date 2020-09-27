@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.ui.dashboard.fragment;
+package tfre1t.example.pempogram.fragment.dashboard;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -12,7 +12,6 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
@@ -234,10 +233,9 @@ public class Dashboard_Collection_Fragment extends Fragment {
         floatBtnAddColl.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragTrans = getFragmentManager().beginTransaction();
+                fragTrans  = getActivity().getSupportFragmentManager().beginTransaction();
                 Dialog_AC = new Dialog_Add_Collection(db, Dashboard_Collection_Fragment.this);
-                currentDialog = Dialog_AC;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_AC).disallowAddToBackStack().commit();
+                Dialog_AC.show(fragTrans, "addColl");
             }
         });
     }

@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.ui.dashboard.fragment;
+package tfre1t.example.pempogram.fragment.dashboard;
 
 import android.content.Intent;
 import android.database.Cursor;
@@ -34,15 +34,14 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import tfre1t.example.pempogram.R;
+import tfre1t.example.pempogram.customviewers.RoundedImageView;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.dialog.Dialog_Add_Sound;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Sound;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Collection;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Sound;
 import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
 import tfre1t.example.pempogram.myadapter.SetSoundAdapter;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
 
@@ -53,7 +52,6 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     Dialog_Edit_Sound Dialog_ES;
     Dialog_Delete_Collecton Dialog_DC;
     Dialog_Delete_Sound Dialog_DS;
-    Dialog_Add_Sound Dialog_AS;
     Dialog_Edit_Collection Dialog_EC;
     Fragment currentDialog = null;
 
@@ -88,6 +86,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection_v2, null);
         getActivity().getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
+
         findViewByIdSetter();
         setToolbar();
         connectDB();
@@ -125,16 +124,14 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.btn_menu_editColl:
-                fragTrans = getFragmentManager().beginTransaction();
+                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
                 Dialog_EC = new Dialog_Edit_Collection(db,Dashboard_SetSoundsCollection_Fragment.this, id_collection);
-                currentDialog =Dialog_EC;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_EC).disallowAddToBackStack().commit();
+                Dialog_EC.show(fragTrans, "editColl");
                 return true;
             case R.id.btn_menu_delColl:
-                fragTrans = getFragmentManager().beginTransaction();
+                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
                 Dialog_DC = new Dialog_Delete_Collecton(db,id_collection);
-                currentDialog =Dialog_DC;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_DC).disallowAddToBackStack().commit();
+                Dialog_DC.show(fragTrans, "dellColl");
                 return true;
             case android.R.id.home:
                 getFragmentManager().popBackStack();
@@ -176,10 +173,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         imgBtnAddSound.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                fragTrans = getFragmentManager().beginTransaction();
-                Dialog_AS = new Dialog_Add_Sound(db,Dashboard_SetSoundsCollection_Fragment.this, id_collection);
-                currentDialog = Dialog_AS;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_AS).disallowAddToBackStack().commit();
+                Intent intent = new Intent("android.intent.action.setsound.addsound");
+                intent.putExtra("idColl", id_collection);
+                startActivityForResult(intent, 1);
             }
         });
 
@@ -266,16 +262,14 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch (item.getItemId()){
             case CM_ID_EDIT:
-                fragTrans = getFragmentManager().beginTransaction();
+                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
                 Dialog_ES = new Dialog_Edit_Sound(db,Dashboard_SetSoundsCollection_Fragment.this, acmi.id);
-                currentDialog = Dialog_ES;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_ES).commit();
+                Dialog_ES.show(fragTrans, "editSound");
                 return true;
             case  CM_ID_DELETE:
-                fragTrans = getFragmentManager().beginTransaction();
+                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
                 Dialog_DS = new Dialog_Delete_Sound(db, this, acmi.id);
-                currentDialog = Dialog_DS;
-                fragTrans.add(R.id.frmLayoutDashFrag, Dialog_DS).commit();
+                Dialog_DS.show(fragTrans, "dellSound");
                 return true;
         }
         return super.onContextItemSelected(item);
@@ -285,13 +279,8 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode == 1){
-            loadPresenColl();
+            loadData();
         }
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
     }
 
     @Override

@@ -19,7 +19,7 @@ import androidx.fragment.app.DialogFragment;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_SetSoundsCollection_Fragment;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 
 public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickListener {
 
@@ -46,14 +46,13 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.dialog_addedit_sound, null);
+        v = inflater.inflate(R.layout.dialog_edit_sound, null);
         goneView();
         loadEditData();
 
         dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
         v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
-        v.findViewById(R.id.backgroundCl).setOnClickListener(this);
 
         dialogTvTitle.setText("Редактирование записи");
 
@@ -86,7 +85,6 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
                 dsscf.loadData();
                 dismiss();
                 break;
-            case R.id.backgroundCl:
             case R.id.dialogBtnCancel:
                 dismiss();
                 break;

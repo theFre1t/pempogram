@@ -2,16 +2,32 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    style="@style/BackgroundStyle"
+
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:clickable="true"
-    android:minWidth="360dp"
+    android:minWidth="300dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
+
+    <Button
+        android:id="@+id/dialogBtnSelectAudiofile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:backgroundTint="@color/colorSecondary"
+        android:text="Выбрать"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorPrimaryLight"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:visibility="visible"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogEtExecutorSound" />
 
     <Button
         android:id="@+id/dialogBtnCancel"
@@ -26,7 +42,7 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dialogBtnAddEdit"
-        app:layout_constraintTop_toBottomOf="@+id/dialogRmvImgCollection" />
+        app:layout_constraintTop_toBottomOf="@+id/dialogBtnSelectAudiofile" />
 
     <Button
         android:id="@+id/dialogBtnAddEdit"
@@ -44,10 +60,27 @@
         app:layout_constraintTop_toTopOf="@+id/dialogBtnCancel" />
 
     <EditText
-        android:id="@+id/dialogEtNameCollection"
+        android:id="@+id/dialogEtExecutorSound"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorTextPrimary"
+        android:ems="10"
+        android:hint="Исполнитель"
+        android:inputType="textPersonName"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorTextSecondary"
+        android:textColorHint="@color/colorTextSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialogEtNameSound"
+        app:layout_constraintStart_toStartOf="@+id/dialogEtNameSound"
+        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound" />
+
+    <EditText
+        android:id="@+id/dialogEtNameSound"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
@@ -57,27 +90,10 @@
         android:textColor="@color/colorTextPrimary"
         android:textColorHint="@color/colorTextSecondary"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@id/dialogEtAuthorCollection"
+        app:layout_constraintBottom_toTopOf="@+id/dialogEtExecutorSound"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/dialogRmvImgCollection"
-        app:layout_constraintTop_toTopOf="@+id/dialogRmvImgCollection" />
-
-    <EditText
-        android:id="@+id/dialogEtAuthorCollection"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorTextPrimary"
-        android:ems="10"
-        android:hint="Исполнитель"
-        android:inputType="textPersonName"
-        android:textAppearance="@style/TextStyleSecondary"
-        android:textColor="@color/colorTextSecondary"
-        android:textColorHint="@color/colorTextSecondary"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="@+id/dialogRmvImgCollection"
-        app:layout_constraintEnd_toEndOf="@+id/dialogEtNameCollection"
-        app:layout_constraintStart_toStartOf="@id/dialogEtNameCollection"
-        app:layout_constraintTop_toBottomOf="@id/dialogEtNameCollection" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle" />
 
     <TextView
         android:id="@+id/dialogTvTitle"
@@ -94,18 +110,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <tfre1t.example.pempogram.customviewers.RoundedImageView
-        android:id="@+id/dialogRmvImgCollection"
-        android:layout_width="130dp"
-        android:layout_height="130dp"
-        android:layout_marginTop="12dp"
-        android:background="@drawable/rounder_4dp"
-        android:backgroundTint="@color/colorPrimary"
-        android:foreground="@drawable/baseline_add_a_photo_black_48"
-        android:foregroundGravity="fill"
-        android:foregroundTint="#A6FFFFFF"
-        app:layout_constraintStart_toStartOf="@+id/dialogTvTitle"
-        app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle"
-        tools:srcCompat="@tools:sample/avatars" />
+    <TextView
+        android:id="@+id/dialogTvNameAudiofile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Загрузите файл"
+        android:textAppearance="@style/TextStyleSecondary"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/dialogBtnSelectAudiofile"
+        app:layout_constraintEnd_toEndOf="@+id/dialogEtExecutorSound"
+        app:layout_constraintStart_toEndOf="@+id/dialogBtnSelectAudiofile"
+        app:layout_constraintTop_toTopOf="@+id/dialogBtnSelectAudiofile" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

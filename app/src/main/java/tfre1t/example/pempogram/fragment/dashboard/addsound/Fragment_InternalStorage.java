@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.dialog;
+package tfre1t.example.pempogram.fragment.dashboard.addsound;
 
 import android.content.Intent;
 import android.graphics.PorterDuff;
@@ -13,16 +13,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.Fragment;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.savefile.SaverAudio;
-import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_SetSoundsCollection_Fragment;
 
 import static android.app.Activity.RESULT_OK;
 
-public class Dialog_Add_Sound extends DialogFragment implements View.OnClickListener {
+public class Fragment_InternalStorage extends Fragment implements View.OnClickListener{
 
     static final int RQS_OPEN_AUDIO = 2;
 
@@ -31,21 +30,19 @@ public class Dialog_Add_Sound extends DialogFragment implements View.OnClickList
     EditText dialogEtExecutorSound, dialogEtNameSound;
 
     DB db;
-    Dashboard_SetSoundsCollection_Fragment dsscf;
     long id;
 
     Uri selectedAudio;
 
-    public Dialog_Add_Sound(DB db, Dashboard_SetSoundsCollection_Fragment fragment, long i) {
+    public Fragment_InternalStorage (DB db, long i) {
         this.db = db;
-        dsscf = fragment;
         id = i;
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.dialog_addedit_sound, null);
+        v = inflater.inflate(R.layout.fragment_addsound_internalstorage, null);
         dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
         dialogTvNameAudiofile = v.findViewById(R.id.dialogTvNameAudiofile);
 
@@ -54,10 +51,8 @@ public class Dialog_Add_Sound extends DialogFragment implements View.OnClickList
 
         v.findViewById(R.id.dialogBtnSelectAudiofile).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
-        v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
-        v.findViewById(R.id.backgroundCl).setOnClickListener(this);
 
-        dialogTvTitle.setText("Добавление записи");
+        dialogTvTitle.setText("Новая запись");
         return v;
     }
 
@@ -74,26 +69,19 @@ public class Dialog_Add_Sound extends DialogFragment implements View.OnClickList
                 SaverAudio saverAudio = new SaverAudio();
                 String nameSound = dialogEtNameSound.getText().toString();
                 String executorSound = dialogEtExecutorSound.getText().toString();
-                /*Cursor cImg = db.getDataCollectionById(id); cImg.moveToFirst();
-                String imagefile = cImg.getString(cImg.getColumnIndex(DB.COLUMN_IMG_COLLECTION));*/
                 if(!fillingCheck(nameSound, executorSound, selectedAudio)){
                     break;
                 }
-                String audiofile = saverAudio.saveAudio(dsscf.getContext(), selectedAudio);
+                String audiofile = saverAudio.saveAudio(v.getContext(), selectedAudio);
                 db.addRecAudiofile(nameSound, executorSound, audiofile, id);
                 Toast.makeText(v.getContext(), "Запись добавлена", Toast.LENGTH_SHORT).show();
-                dsscf.loadData();
-                dismiss();
-                break;
-            case R.id.backgroundCl:
-            case R.id.dialogBtnCancel:
-                dismiss();
+                getActivity().setResult(1);
+                getActivity().finish();
                 break;
         }
     }
 
 
-    int AudioFail = 0;
     private boolean fillingCheck(String nameSound, String executorSound, Uri audiofile) {
         if(!nameSound.equals("")){
             dialogEtNameSound.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorTextPrimary), PorterDuff.Mode.SRC_ATOP);
@@ -106,12 +94,6 @@ public class Dialog_Add_Sound extends DialogFragment implements View.OnClickList
                 else {
                     dialogTvNameAudiofile.setTextColor(getResources().getColor(android.R.color.holo_red_light));
                     dialogTvNameAudiofile.setText(dialogTvNameAudiofile.getText()+"!");
-                    if((AudioFail +=1) == 5){
-                        dismiss();
-                    }
-                    else if(AudioFail > 3){
-                        dialogTvNameAudiofile.setAllCaps(true);
-                    }
                     return false;
                 }
             }

@@ -36,7 +36,6 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
 
         v.findViewById(R.id.dialogBtnYes).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
-        v.findViewById(R.id.backgroundCl).setOnClickListener(this);
 
         dialogTvTitle.setText("Удалить коллекцию");
         dialogTvText.setText("Вы действительно хотите удалить коллекцию?" +
@@ -53,7 +52,6 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
                 Toast.makeText(v.getContext(), "Коллекция удалена", Toast.LENGTH_SHORT).show();
                 dismiss();
                 break;
-            case R.id.backgroundCl:
             case R.id.dialogBtnCancel:
                 dismiss();
                 break;

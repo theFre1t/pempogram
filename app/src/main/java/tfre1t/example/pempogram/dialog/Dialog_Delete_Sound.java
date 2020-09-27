@@ -13,7 +13,7 @@ import androidx.fragment.app.DialogFragment;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_SetSoundsCollection_Fragment;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 
 public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickListener {
 
@@ -39,7 +39,6 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
 
         v.findViewById(R.id.dialogBtnYes).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
-        v.findViewById(R.id.backgroundCl).setOnClickListener(this);
 
         dialogTvTitle.setText("Удалить запись");
         dialogTvText.setText("Вы действительно хотите удалить запись?" +
@@ -56,7 +55,6 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
                 dsscf.loadData();
                 dismiss();
                 break;
-            case R.id.backgroundCl:
             case R.id.dialogBtnCancel:
                 dismiss();
                 break;

@@ -28,7 +28,7 @@ import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
 import tfre1t.example.pempogram.savefile.SaverImage;
-import tfre1t.example.pempogram.ui.dashboard.fragment.Dashboard_SetSoundsCollection_Fragment;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -71,7 +71,6 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
         v.findViewById(R.id.dialogRmvImgCollection).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
-        v.findViewById(R.id.backgroundCl).setOnClickListener(this);
 
         dialogTvTitle.setText("Редактирование коллекции");
 
@@ -108,7 +107,6 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
                 dsscf.loadPresenColl();
                 dismiss();
                 break;
-            case R.id.backgroundCl:
             case R.id.dialogBtnCancel:
                 dismiss();
                 break;
