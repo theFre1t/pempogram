@@ -2,19 +2,22 @@ package tfre1t.example.pempogram.savefile;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
+import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
 
 import static android.content.Context.MODE_PRIVATE;
 
-public class SaverImage{
+public class Imager{
 
     static final int ADD = 1;
     static final int EDIT = 2;
@@ -91,5 +94,20 @@ public class SaverImage{
             }
         });
         t.start();
+    }
+
+    Bitmap img;
+    public Bitmap setImageView(Context ctx, String path) {
+        img = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.defaultimg);
+        if(path != null) {
+            try {
+                FileInputStream fis = ctx.openFileInput(path);
+                img = BitmapFactory.decodeStream(fis);
+                fis.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return img;
     }
 }

@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +19,7 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
 
     View v;
     TextView dialogTvTitle, dialogTvText;
+    CheckBox chbCheckFullDel;
 
     DB db;
     long id;
@@ -33,6 +35,7 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
         v = inflater.inflate(R.layout.dialog_delete, null);
         dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
         dialogTvText = v.findViewById(R.id.dialogTvText);
+        chbCheckFullDel = v.findViewById(R.id.chbCheckFullDel);
 
         v.findViewById(R.id.dialogBtnYes).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
@@ -47,7 +50,7 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.dialogBtnYes:
-                db.delRecCollection(id);
+                db.delRecCollection(id, chbCheckFullDel.isChecked());
                 getFragmentManager().popBackStack();
                 Toast.makeText(v.getContext(), "Коллекция удалена", Toast.LENGTH_SHORT).show();
                 dismiss();

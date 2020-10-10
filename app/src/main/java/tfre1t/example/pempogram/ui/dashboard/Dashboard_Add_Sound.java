@@ -2,7 +2,6 @@ package tfre1t.example.pempogram.ui.dashboard;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -37,7 +36,6 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_sound);
         id = getIntent().getLongExtra("idColl", 0);
-        Log.d("myLog", "onCreate: id = "+ id);
         onFindViewById();
         setToolbar();
         connectDB();
@@ -86,20 +84,19 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
         vPagerAddSound.setAdapter(adapter);
     }
 
-    private void onTabMediator() {
+    private void onTabMediator()  {
         new TabLayoutMediator(tLayoAddSound, vPagerAddSound, new TabLayoutMediator.TabConfigurationStrategy() {
             @Override
             public void onConfigureTab(@NonNull TabLayout.Tab tab, int position) {
-                Log.d("myLog", "onConfigureTab: position" + position);
                 switch (position) {
                     case 0:
                         tab.setIcon(R.drawable.baseline_playlist_add_24);
                         break;
                     case 1:
-                        tab.setIcon(R.drawable.baseline_search_24);
+                        tab.setIcon(R.drawable.baseline_mic_24);
                         break;
                     case 2:
-                        tab.setIcon(R.drawable.baseline_add_24);
+                        tab.setIcon(R.drawable.baseline_fiber_new_24);
                         break;
                 }
             }

@@ -27,8 +27,8 @@ import java.io.IOException;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.savefile.SaverImage;
 import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
+import tfre1t.example.pempogram.savefile.Imager;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -69,7 +69,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
         dialogEtNameCollection = v.findViewById(R.id.dialogEtNameCollection);
 
         v.findViewById(R.id.dialogRmvImgCollection).setOnClickListener(this);
-        v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
+        v.findViewById(R.id.dialogBtnAdd).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
 
         dialogTvTitle.setText("Редактирование коллекции");
@@ -89,13 +89,12 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
                 imagePickerIntent.setType("image/*");
                 startActivityForResult(imagePickerIntent, GALLERY_REQUEST);
                 break;
-            case R.id.dialogBtnAddEdit:
-                SaverImage saverImage = new SaverImage();
+            case R.id.dialogBtnAdd:
                 long id = id_collection;
                 String NameColl = dialogEtNameCollection.getText().toString();
                 String AuthorColl = dialogEtAuthorCollection.getText().toString();
                 String currentNameImg = cursor_collection.getString(cursor_collection.getColumnIndex(DB.COLUMN_IMG_COLLECTION));
-                String newNameImg = saverImage.saveImage(ctx, dialogRmvImgCollection, bitmap, currentNameImg);
+                String newNameImg = new Imager().saveImage(ctx, dialogRmvImgCollection, bitmap, currentNameImg);
                 if(!fillingCheck(NameColl, AuthorColl)){
                     break;
                 }

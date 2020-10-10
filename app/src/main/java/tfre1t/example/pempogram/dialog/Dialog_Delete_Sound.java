@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.dialog_delete, null);
+        goneView();
+
         dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
         dialogTvText = v.findViewById(R.id.dialogTvText);
 
@@ -44,6 +47,11 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
         dialogTvText.setText("Вы действительно хотите удалить запись?" +
                              "\nОтменить действие будет невозможно");
         return v;
+    }
+
+    private void goneView() {
+        CheckBox chbCheckFullDel = v.findViewById(R.id.chbCheckFullDel);
+        chbCheckFullDel.setVisibility(View.GONE);
     }
 
     @Override

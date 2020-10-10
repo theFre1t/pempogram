@@ -23,7 +23,7 @@ import java.io.IOException;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.savefile.SaverImage;
+import tfre1t.example.pempogram.savefile.Imager;
 import tfre1t.example.pempogram.fragment.dashboard.Dashboard_Collection_Fragment;
 
 import static android.app.Activity.RESULT_OK;
@@ -58,7 +58,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
         dialogEtNameCollection = v.findViewById(R.id.dialogEtNameCollection);
 
         v.findViewById(R.id.dialogRmvImgCollection).setOnClickListener(this);
-        v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
+        v.findViewById(R.id.dialogBtnAdd).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
 
         dialogTvTitle.setText("Добавление коллекции");
@@ -74,11 +74,10 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
                 intent.setType("image/*");
                 startActivityForResult(intent, GALLERY_REQUEST);
                 break;
-            case R.id.dialogBtnAddEdit:
-                SaverImage saverImage = new SaverImage();
+            case R.id.dialogBtnAdd:
                 String NameColl = dialogEtNameCollection.getText().toString();
                 String AuthorColl = dialogEtAuthorCollection.getText().toString();
-                String ImgName = saverImage.saveImage(ctx, dialogRmvImgCollection);
+                String ImgName = new Imager().saveImage(ctx, dialogRmvImgCollection);
                 if(!fillingCheck(NameColl, AuthorColl)){
                     break;
                 }

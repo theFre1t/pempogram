@@ -26,8 +26,8 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
     static final int RQS_OPEN_AUDIO = 2;
 
     View v;
-    TextView dialogTvTitle, dialogTvNameAudiofile;
-    EditText dialogEtExecutorSound, dialogEtNameSound;
+    TextView tvTitle, tvNameAudiofile;
+    EditText etExecutorSound, etNameSound;
 
     DB db;
     long id;
@@ -43,32 +43,34 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.fragment_addsound_internalstorage, null);
-        dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
-        dialogTvNameAudiofile = v.findViewById(R.id.dialogTvNameAudiofile);
+        onFindViewById();
+        tvTitle.setText("Новая запись");
 
-        dialogEtExecutorSound =  v.findViewById(R.id.dialogEtExecutorSound);
-        dialogEtNameSound = v.findViewById(R.id.dialogEtNameSound);
-
-        v.findViewById(R.id.dialogBtnSelectAudiofile).setOnClickListener(this);
-        v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
-
-        dialogTvTitle.setText("Новая запись");
         return v;
+    }
+
+    private void onFindViewById() {
+        tvTitle = v.findViewById(R.id.tvTitle);
+        tvNameAudiofile = v.findViewById(R.id.tvNameAudiofile);
+        etExecutorSound =  v.findViewById(R.id.etExecutorSound);
+        etNameSound = v.findViewById(R.id.etNameSound);
+        v.findViewById(R.id.btnSelectAudiofile).setOnClickListener(this);
+        v.findViewById(R.id.btnAdd).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
         Intent intent;
         switch (v.getId()) {
-            case R.id.dialogBtnSelectAudiofile:
+            case R.id.btnSelectAudiofile:
                 intent = new Intent(Intent.ACTION_PICK);
                 intent.setType("audio/*");
                 startActivityForResult(intent, RQS_OPEN_AUDIO);
                 break;
-            case R.id.dialogBtnAddEdit:
+            case R.id.btnAdd:
                 SaverAudio saverAudio = new SaverAudio();
-                String nameSound = dialogEtNameSound.getText().toString();
-                String executorSound = dialogEtExecutorSound.getText().toString();
+                String nameSound = etNameSound.getText().toString();
+                String executorSound = etExecutorSound.getText().toString();
                 if(!fillingCheck(nameSound, executorSound, selectedAudio)){
                     break;
                 }
@@ -84,26 +86,26 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
 
     private boolean fillingCheck(String nameSound, String executorSound, Uri audiofile) {
         if(!nameSound.equals("")){
-            dialogEtNameSound.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorTextPrimary), PorterDuff.Mode.SRC_ATOP);
+            etNameSound.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorTextPrimary), PorterDuff.Mode.SRC_ATOP);
             if(!executorSound.equals("")){
-                dialogEtExecutorSound.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorTextPrimary), PorterDuff.Mode.SRC_ATOP);
+                etExecutorSound.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorTextPrimary), PorterDuff.Mode.SRC_ATOP);
                 if(audiofile != null){
-                    dialogTvNameAudiofile.setTextColor(getResources().getColor(R.color.colorTextPrimary));
+                    tvNameAudiofile.setTextColor(getResources().getColor(R.color.colorTextPrimary));
                     return true;
                 }
                 else {
-                    dialogTvNameAudiofile.setTextColor(getResources().getColor(android.R.color.holo_red_light));
-                    dialogTvNameAudiofile.setText(dialogTvNameAudiofile.getText()+"!");
+                    tvNameAudiofile.setTextColor(getResources().getColor(android.R.color.holo_red_light));
+                    tvNameAudiofile.setText(tvNameAudiofile.getText()+"!");
                     return false;
                 }
             }
             else {
-                dialogEtExecutorSound.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
+                etExecutorSound.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
                 return false;
             }
         }
         else {
-            dialogEtNameSound.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
+            etNameSound.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
             return false;
         }
     }
@@ -116,7 +118,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
             case RQS_OPEN_AUDIO:
                 if (resultCode == RESULT_OK){
                     selectedAudio = data.getData();
-                    dialogTvNameAudiofile.setText(selectedAudio.getLastPathSegment());
+                    tvNameAudiofile.setText(selectedAudio.getLastPathSegment());
                 }
                 break;
         }

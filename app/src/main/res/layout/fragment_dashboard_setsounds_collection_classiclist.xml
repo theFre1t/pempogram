@@ -43,15 +43,14 @@
         app:layout_constraintTop_toBottomOf="@+id/tvAudiofile" />
 
     <ImageButton
-        android:id="@+id/imageButton"
-        style="?android:attr/yesNoPreferenceStyle"
+        android:id="@+id/imgBtnPupupMenu"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:background="@drawable/rounder_4dp"
-        android:visibility="gone"
+        android:background="@color/colorTransparent"
+        android:src="@drawable/baseline_more_vert_24"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@android:drawable/ic_menu_more" />
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

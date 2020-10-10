@@ -2,7 +2,6 @@ package tfre1t.example.pempogram.myadapter;
 
 import android.content.Context;
 import android.database.Cursor;
-import android.graphics.BitmapFactory;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,10 +10,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.FileInputStream;
-import java.io.IOException;
-
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.savefile.Imager;
 
 public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.CollectionHolder> {
 
@@ -29,7 +26,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
 
     int[] mTo;
     Cursor cursor;
-    String[] mOriginalFrom;
+    String[] mFrom;
 
 
     class CollectionHolder extends RecyclerView.ViewHolder {
@@ -52,7 +49,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
         cursor = c;
         this.layout = layout;
         mTo = to;
-        mOriginalFrom = from;
+        mFrom = from;
     }
 
     @NonNull
@@ -65,20 +62,10 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
     @Override
     public void onBindViewHolder(@NonNull CollectionHolder holder, int position) {
         cursor.moveToPosition(getItemCount() - (position + 1));
-        holder.itemView.setId(cursor.getInt(cursor.getColumnIndex(mOriginalFrom[0])));
-        holder.tvColl.setText(cursor.getString(cursor.getColumnIndex(mOriginalFrom[1])));
-        holder.tvAuthor.setText(cursor.getString(cursor.getColumnIndex(mOriginalFrom[2])));
-        setImageView(holder);
-    }
-
-    private void setImageView(CollectionHolder holder) {
-        try {
-            FileInputStream fis = ctx.openFileInput(cursor.getString(cursor.getColumnIndex(mOriginalFrom[3])));
-            holder.imgv.setImageBitmap(BitmapFactory.decodeStream(fis));
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        holder.itemView.setId(cursor.getInt(cursor.getColumnIndex(mFrom[0])));
+        holder.tvColl.setText(cursor.getString(cursor.getColumnIndex(mFrom[1])));
+        holder.tvAuthor.setText(cursor.getString(cursor.getColumnIndex(mFrom[2])));
+        holder.imgv.setImageBitmap(new Imager().setImageView(ctx, cursor.getString(cursor.getColumnIndex(mFrom[3]))));
     }
 
     @Override

@@ -6,14 +6,14 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
@@ -26,7 +26,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     String[] from;
     int[] to;
     public SetSoundAdapter scAdapter;
-    ListView  lvSelectFavAu;
+    RecyclerView  rvSelectFavAu;
+    RecyclerView.LayoutManager lm;
     Cursor cursor_audiofile;
 
     String title = "";
@@ -41,7 +42,6 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         setToolbar();
         connectDB();
         loadData();
-        onClickSetter();
     }
 
     private void setToolbar() {
@@ -56,7 +56,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.select_favoriteaudio_menu,  menu);
+        getMenuInflater().inflate(R.menu.toolbar_select_favoriteaudio_menu,  menu);
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -88,7 +88,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
             super.onPreExecute();
             from = new String[]{DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE};
             to = new int[]{R.id.imgAudiofile, R.id.tvNameAudio, R.id.tvExecutorAudio};
-            lvSelectFavAu = findViewById(R.id.lvSelectFavAu);
+            rvSelectFavAu = findViewById(R.id.rvSelectFavAu);
+            lm = new LinearLayoutManager(SelectFavoriteAudio.this);
         }
 
         @Override
@@ -100,22 +101,22 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            scAdapter = new SetSoundAdapter(SelectFavoriteAudio.this, R.layout.fragment_home_favoriteaudio_select_classiclist, cursor_audiofile, from, to, 0);
-            lvSelectFavAu.setAdapter(scAdapter);
+            scAdapter = new SetSoundAdapter(SelectFavoriteAudio.this, R.layout.fragment_home_favoriteaudio_select_classiclist, cursor_audiofile, from, to);
+            scAdapter.setItemClickListener(onItemClickListener);
+            rvSelectFavAu.setLayoutManager(lm);
+            rvSelectFavAu.setAdapter(scAdapter);
         }
     }
 
-    private void onClickSetter() {
-        lvSelectFavAu.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                long idAudiofile = id;
-                db.addRecFavoriteaudio(idAudiofile);
-                setResult(1);
-                finish();
-            }
-        });
-    }
+    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            long idAudiofile = v.getId();
+            db.addRecFavoriteaudio(idAudiofile);
+            setResult(1);
+            finish();
+        }
+    };
 
     @Override
     protected void onDestroy() {

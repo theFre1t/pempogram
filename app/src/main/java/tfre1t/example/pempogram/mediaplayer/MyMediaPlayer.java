@@ -3,20 +3,24 @@ package tfre1t.example.pempogram.mediaplayer;
 import android.content.Context;
 import android.database.Cursor;
 import android.media.AudioAttributes;
-import android.media.AudioManager;
 import android.media.MediaPlayer;
+import android.media.MediaRecorder;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Date;
+import java.text.SimpleDateFormat;
 
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.ui.home.HomeFragment;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
-    boolean mediaPlayerResume = false;
-    static MediaPlayer mediaPlayer;
-    static FileInputStream fis;
+
+    //////////////////////Воспроизведение///////////////////////////////////////////////////////////
+    public boolean mediaPlayerResume = false;
+    private static MediaPlayer mediaPlayer;
+    private static FileInputStream fis;
 
     Cursor cursor;
 
@@ -60,5 +64,82 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
                 e.printStackTrace();
             }
         }
+    }
+
+    //////////////////////Запись////////////////////////////////////////////////////////////////////
+
+    private MediaRecorder mediaRecorder;
+    private String fileName;
+    private File outFile;
+
+    public void startRecord(Context ctx){
+        fileName = ctx.getFilesDir().getAbsolutePath() + getFilename();
+
+        outFile = new File(fileName);
+        if (outFile.exists()) outFile.delete();
+
+        mediaRecorder = new MediaRecorder();
+        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
+        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        mediaRecorder.setOutputFile(fileName);
+
+        try {
+            mediaRecorder.prepare();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        mediaRecorder.start();
+    }
+
+    public void stopRecord() {
+        if (mediaRecorder != null){
+            mediaRecorder.stop();
+            mediaRecorder.release();
+            mediaRecorder = null;
+        }
+    }
+
+    public File getFileRecord(){
+        return outFile;
+    }
+
+    public String getFilenameRecord(){
+        return fileName;
+    }
+
+    private String getFilename(){
+        String filename = null;
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss");
+        String datetime = sdf.format(new Date(System.currentTimeMillis()));
+        filename = "/Audiofile_" + datetime + ".3gp";
+        return filename;
+    }
+
+    //////////////////////Воспроизведение записи////////////////////////////////////////////////////
+
+    public void playRecord(){
+        if (mediaPlayerResume) {
+            mediaPlayer.release();
+        }
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setDataSource(getFilenameRecord());
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            mediaPlayerResume = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setOnCompletionListener(this);
+    }
+
+    public int getDuration(){
+        return mediaPlayer.getDuration();
+    }
+
+    public int getCurrentPosition(){
+        return mediaPlayer.getCurrentPosition();
     }
 }

@@ -1,58 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <Button
-        android:id="@+id/dialogBtnSelectAudiofile"
+    <TextView
+        android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorSecondary"
-        android:text="Начать запись"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorPrimaryLight"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialogEtExecutorSound" />
-
-    <Button
-        android:id="@+id/dialogBtnAddEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/colorSecondary"
-        android:text="Сохранить"
+        android:text="Title"
         android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorPrimaryLight"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-
-    <EditText
-        android:id="@+id/dialogEtExecutorSound"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorTextPrimary"
-        android:ems="10"
-        android:hint="Исполнитель"
-        android:inputType="textPersonName"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorTextSecondary"
-        android:textColorHint="@color/colorTextSecondary"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/dialogEtNameSound"
-        app:layout_constraintStart_toStartOf="@+id/dialogEtNameSound"
-        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
-        android:id="@+id/dialogEtNameSound"
+        android:id="@+id/etNameSound"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
@@ -66,24 +35,124 @@
         android:textColor="@color/colorTextPrimary"
         android:textColorHint="@color/colorTextSecondary"
         android:textSize="18sp"
-        app:layout_constraintBottom_toTopOf="@+id/dialogEtExecutorSound"
+        app:layout_constraintBottom_toTopOf="@id/etExecutorSound"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
 
-    <TextView
-        android:id="@+id/dialogTvTitle"
+    <EditText
+        android:id="@+id/etExecutorSound"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:backgroundTint="@color/colorTextPrimary"
+        android:ems="10"
+        android:hint="Исполнитель"
+        android:inputType="textPersonName"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorTextSecondary"
+        android:textColorHint="@color/colorTextSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@id/etNameSound"
+        app:layout_constraintStart_toStartOf="@id/etNameSound"
+        app:layout_constraintTop_toBottomOf="@id/etNameSound" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/recordGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="visible"
+        app:constraint_referenced_ids="imgBtnRecordAudiofile,chTime" />
+
+    <ImageButton
+        android:id="@+id/imgBtnRecordAudiofile"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="24dp"
+        android:background="@drawable/round_btn_default"
+        android:backgroundTint="@color/colorSecondary"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_btn_speak_now"
+        android:tint="@color/colorPrimary"
+        app:layout_constraintStart_toStartOf="@id/etExecutorSound"
+        app:layout_constraintTop_toBottomOf="@id/etExecutorSound" />
+
+    <Chronometer
+        android:id="@+id/chTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="@style/TextStyleSecondary"
+        android:textSize="30sp"
+        app:layout_constraintBottom_toBottomOf="@+id/imgBtnRecordAudiofile"
+        app:layout_constraintEnd_toEndOf="@+id/etExecutorSound"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnRecordAudiofile"
+        app:layout_constraintTop_toTopOf="@+id/imgBtnRecordAudiofile" />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/playGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:constraint_referenced_ids="imgBtnPlayAudiofile,imgBtnDelRecord,sbAudiofile,chRecordTime" />
+
+    <ImageButton
+        android:id="@+id/imgBtnPlayAudiofile"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:background="@drawable/round_btn_default"
+        android:scaleType="centerCrop"
+        android:src="@android:drawable/ic_media_play"
+        app:layout_constraintBottom_toBottomOf="@+id/sbAudiofile"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/sbAudiofile" />
+
+    <ImageButton
+        android:id="@+id/imgBtnDelRecord"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:text="Title"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        android:background="@color/colorTransparent"
+        android:tint="@color/colorTextSecondary"
+        app:layout_constraintBottom_toBottomOf="@+id/sbAudiofile"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="@+id/sbAudiofile"
+        app:srcCompat="@drawable/baseline_clear_24" />
+
+    <SeekBar
+        android:id="@+id/sbAudiofile"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="8dp"
+        app:layout_constraintEnd_toStartOf="@+id/imgBtnPlayAudiofile"
+        app:layout_constraintStart_toEndOf="@+id/chRecordTime"
+        app:layout_constraintTop_toBottomOf="@+id/etExecutorSound" />
+
+    <Chronometer
+        android:id="@+id/chRecordTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:textAppearance="@style/TextStyleSecondary"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/sbAudiofile"
+        app:layout_constraintStart_toEndOf="@+id/imgBtnDelRecord"
+        app:layout_constraintTop_toTopOf="@+id/sbAudiofile" />
+
+    <Button
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="@color/colorSecondary"
+        android:text="Сохранить"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorPrimaryLight"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

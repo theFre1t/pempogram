@@ -13,67 +13,20 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-    <Button
-        android:id="@+id/dialogBtnSelectAudiofile"
+    <TextView
+        android:id="@+id/dialogTvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        android:backgroundTint="@color/colorSecondary"
-        android:text="Выбрать"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorPrimaryLight"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:visibility="visible"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialogEtExecutorSound" />
-
-    <Button
-        android:id="@+id/dialogBtnCancel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="16dp"
-        android:background="@android:color/transparent"
-        android:text="@string/dialog_collection_cancel"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorSecondary"
-        android:textSize="18sp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/dialogBtnAddEdit"
-        app:layout_constraintTop_toBottomOf="@+id/dialogBtnSelectAudiofile" />
-
-    <Button
-        android:id="@+id/dialogBtnAddEdit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/colorSecondary"
-        android:text="Сохранить"
+        android:text="Title"
         android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorPrimaryLight"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toBottomOf="@+id/dialogBtnCancel"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/dialogBtnCancel" />
-
-    <EditText
-        android:id="@+id/dialogEtExecutorSound"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:backgroundTint="@color/colorTextPrimary"
-        android:ems="10"
-        android:hint="Исполнитель"
-        android:inputType="textPersonName"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textColor="@color/colorTextSecondary"
-        android:textColorHint="@color/colorTextSecondary"
         android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="@+id/dialogEtNameSound"
-        app:layout_constraintStart_toStartOf="@+id/dialogEtNameSound"
-        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <EditText
         android:id="@+id/dialogEtNameSound"
@@ -95,32 +48,50 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle" />
 
-    <TextView
-        android:id="@+id/dialogTvTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="12dp"
-        android:layout_marginEnd="16dp"
-        android:text="Title"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-
-    <TextView
-        android:id="@+id/dialogTvNameAudiofile"
+    <EditText
+        android:id="@+id/dialogEtExecutorSound"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="Загрузите файл"
-        android:textAppearance="@style/TextStyleSecondary"
+        android:backgroundTint="@color/colorTextPrimary"
+        android:ems="10"
+        android:hint="Исполнитель"
+        android:inputType="textPersonName"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorTextSecondary"
+        android:textColorHint="@color/colorTextSecondary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/dialogEtNameSound"
+        app:layout_constraintStart_toStartOf="@+id/dialogEtNameSound"
+        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound" />
+
+    <Button
+        android:id="@+id/dialogBtnCancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/transparent"
+        android:text="@string/dialog_collection_cancel"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorSecondary"
+        android:textSize="18sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/dialogBtnEdit"
+        app:layout_constraintTop_toBottomOf="@+id/dialogEtExecutorSound" />
+
+    <Button
+        android:id="@+id/dialogBtnEdit"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:backgroundTint="@color/colorSecondary"
+        android:text="Сохранить"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textColor="@color/colorPrimaryLight"
         android:textSize="16sp"
-        app:layout_constraintBottom_toBottomOf="@+id/dialogBtnSelectAudiofile"
-        app:layout_constraintEnd_toEndOf="@+id/dialogEtExecutorSound"
-        app:layout_constraintStart_toEndOf="@+id/dialogBtnSelectAudiofile"
-        app:layout_constraintTop_toTopOf="@+id/dialogBtnSelectAudiofile" />
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="@+id/dialogBtnCancel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/dialogBtnCancel" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

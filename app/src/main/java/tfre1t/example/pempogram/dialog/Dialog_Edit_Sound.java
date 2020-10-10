@@ -47,23 +47,15 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         v = inflater.inflate(R.layout.dialog_edit_sound, null);
-        goneView();
         loadEditData();
 
         dialogTvTitle = v.findViewById(R.id.dialogTvTitle);
-        v.findViewById(R.id.dialogBtnAddEdit).setOnClickListener(this);
+        v.findViewById(R.id.dialogBtnEdit).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
 
         dialogTvTitle.setText("Редактирование записи");
 
         return v;
-    }
-
-    private void goneView() {
-        dialogTvNameAudiofile = v.findViewById(R.id.dialogTvNameAudiofile);
-        dialogBtnSelectAudiofile = v.findViewById(R.id.dialogBtnSelectAudiofile);
-        dialogTvNameAudiofile.setVisibility(View.GONE);
-        dialogBtnSelectAudiofile.setVisibility(View.GONE);
     }
 
     private void loadEditData() {
@@ -74,7 +66,7 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.dialogBtnAddEdit:
+            case R.id.dialogBtnEdit:
                 String nameSound = dialogEtNameSound.getText().toString();
                 String executorSound = dialogEtExecutorSound.getText().toString();
                 if(!fillingCheck(nameSound, executorSound)){

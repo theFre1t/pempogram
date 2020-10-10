@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.view.ContextMenu;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -17,7 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.AdapterContextMenuInfo;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.ListView;
+import android.widget.PopupMenu;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -27,6 +26,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 
@@ -61,8 +62,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     private final long id_collection;
 
     public SetSoundAdapter scAdapter;
+    RecyclerView.LayoutManager lm;
 
-    ListView lvSetSounds;
+    RecyclerView rvSetSounds;
     RoundedImageView imgVCollectionFront;
     ImageView imgVCollectionBack;
     TextView tvNameColl, tvAuthorColl;
@@ -91,13 +93,13 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         setToolbar();
         connectDB();
         loadPresenColl();
-        setAdapterList();
+        loadData();
         setOnClick();
         return v;
     }
 
     private void findViewByIdSetter() {
-        lvSetSounds = v.findViewById(R.id.lvSetSounds);
+        rvSetSounds = v.findViewById(R.id.rvSetSounds);
         imgBtnAddSound = v.findViewById(R.id.imgBtnAddSound);
         tbSetSound = v.findViewById(R.id.tbSetSound);
         collapsToolbarL = v.findViewById(R.id.collapsToolbarL);
@@ -116,7 +118,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.setsound_menu, menu);
+        inflater.inflate(R.menu.toolbar_setsound_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -152,22 +154,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         new MyTaskPresenColl().execute();
     }
 
-
-
-    private void setAdapterList() {
-        from = new String[]{DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE, DB.COLUMN_IMG_COLLECTION};
-        to = new int[]{R.id.tvAudiofile, R.id.tvAuthor, R.id.imgAudiofile};
-        scAdapter = new SetSoundAdapter(v.getContext(), R.layout.fragment_dashboard_setsounds_collection_classiclist,null, from, to, 0);
-        lvSetSounds.setAdapter(scAdapter);
-        registerForContextMenu(lvSetSounds);
-        loadData();
-    }
-
     public void loadData() {
         new MyTaskSetAdapter().execute();
     }
-
-
 
     private void setOnClick() {
         imgBtnAddSound.setOnClickListener(new View.OnClickListener() {
@@ -178,17 +167,17 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
                 startActivityForResult(intent, 1);
             }
         });
-
-        lvSetSounds.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                if (myMediaPlayer == null) {
-                    myMediaPlayer = new MyMediaPlayer();
-                }
-                myMediaPlayer.play(v.getContext(), db, id);
-            }
-        });
     }
+
+    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if (myMediaPlayer == null) {
+                myMediaPlayer = new MyMediaPlayer();
+            }
+            myMediaPlayer.play(v.getContext(), db, v.getId());
+        }
+    };
 
     class MyTaskPresenColl extends AsyncTask<Void, Void, Void> {
 
@@ -235,6 +224,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
+            from = new String[]{DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE};
+            to = new int[]{R.id.imgAudiofile, R.id.tvAudiofile, R.id.tvAuthor, R.id.imgBtnPupupMenu};
+            lm = new LinearLayoutManager(v.getContext());
         }
 
         @Override
@@ -246,34 +238,42 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            scAdapter.swapCursor(cursor_audiofile);
+            scAdapter = new SetSoundAdapter(v.getContext(), R.layout.fragment_dashboard_setsounds_collection_classiclist, cursor_audiofile, from, to);
+            scAdapter.setItemClickListener(onItemClickListener);
+            scAdapter.setMenuClickListener(onMenuClickListener);
+            rvSetSounds.setLayoutManager(lm);
+            rvSetSounds.setAdapter(scAdapter);
+            registerForContextMenu(rvSetSounds);
         }
     }
 
-    @Override
-    public void onCreateContextMenu(@NonNull ContextMenu menu, @NonNull View v, @Nullable ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-        menu.add(0, CM_ID_EDIT,0,"Edit Sound");
-        menu.add(0, CM_ID_DELETE,0,"Delete Sound");
-    }
-
-    @Override
-    public boolean onContextItemSelected(@NonNull MenuItem item) {
-        acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch (item.getItemId()){
-            case CM_ID_EDIT:
-                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                Dialog_ES = new Dialog_Edit_Sound(db,Dashboard_SetSoundsCollection_Fragment.this, acmi.id);
-                Dialog_ES.show(fragTrans, "editSound");
-                return true;
-            case  CM_ID_DELETE:
-                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                Dialog_DS = new Dialog_Delete_Sound(db, this, acmi.id);
-                Dialog_DS.show(fragTrans, "dellSound");
-                return true;
+    private View.OnClickListener onMenuClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            PopupMenu popup = new PopupMenu(v.getContext(), v);
+            popup.inflate(R.menu.popup_setsound_menu);
+            popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                @Override
+                public boolean onMenuItemClick(MenuItem item) {
+                    acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
+                    switch (item.getItemId()){
+                        case R.id.btn_popup_editsound:
+                            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
+                            Dialog_ES = new Dialog_Edit_Sound(db,Dashboard_SetSoundsCollection_Fragment.this, v.getId());
+                            Dialog_ES.show(fragTrans, "editSound");
+                            return true;
+                        case  R.id.btn_popup_deletesound:
+                            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
+                            Dialog_DS = new Dialog_Delete_Sound(db, Dashboard_SetSoundsCollection_Fragment.this, v.getId());
+                            Dialog_DS.show(fragTrans, "dellSound");
+                            return true;
+                    }
+                    return false;
+                }
+            });
+            popup.show();
         }
-        return super.onContextItemSelected(item);
-    }
+    };
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {

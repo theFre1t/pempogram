@@ -108,7 +108,7 @@ public class Dashboard_Collection_Fragment extends Fragment {
 
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-        inflater.inflate(R.menu.collection_menu, menu);
+        inflater.inflate(R.menu.toolbar_collection_menu, menu);
         super.onCreateOptionsMenu(menu, inflater);
     }
 

@@ -60,7 +60,7 @@
                 android:layout_height="?attr/actionBarSize"
                 android:background="@android:color/transparent"
                 app:layout_collapseMode="pin"
-                app:menu="@menu/setsound_menu"></androidx.appcompat.widget.Toolbar>
+                app:menu="@menu/toolbar_setsound_menu"></androidx.appcompat.widget.Toolbar>
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="wrap_content"
@@ -135,7 +135,7 @@
                 app:srcCompat="@drawable/baseline_playlist_add_black_36" />
 
             <ListView
-                android:id="@+id/lvSetSounds"
+                android:id="@+id/rvSetSounds"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_marginStart="12dp"
