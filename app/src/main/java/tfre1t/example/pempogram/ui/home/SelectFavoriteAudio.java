@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.myadapter.SetSoundAdapter;
+import tfre1t.example.pempogram.myadapter.SelectFavAuAdapter;
 
 public class SelectFavoriteAudio extends AppCompatActivity {
 
@@ -25,7 +25,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     String[] from;
     int[] to;
-    public SetSoundAdapter scAdapter;
+    public SelectFavAuAdapter scAdapter;
     RecyclerView  rvSelectFavAu;
     RecyclerView.LayoutManager lm;
     Cursor cursor_audiofile;
@@ -101,7 +101,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         @Override
         protected void onPostExecute(Void result) {
             super.onPostExecute(result);
-            scAdapter = new SetSoundAdapter(SelectFavoriteAudio.this, R.layout.fragment_home_favoriteaudio_select_classiclist, cursor_audiofile, from, to);
+            scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, R.layout.fragment_home_favoriteaudio_select_classiclist, cursor_audiofile, from, to);
             scAdapter.setItemClickListener(onItemClickListener);
             rvSelectFavAu.setLayoutManager(lm);
             rvSelectFavAu.setAdapter(scAdapter);

@@ -5,7 +5,6 @@ import android.database.Cursor;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,18 +14,12 @@ import tfre1t.example.pempogram.customviewers.RoundedImageView;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.savefile.Imager;
 
-public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSoundHolder> {
+public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.SelectFavAuHolder> {
 
     private View.OnClickListener onItemClickListener;
 
     public void setItemClickListener(View.OnClickListener clickListener) {
         onItemClickListener = clickListener;
-    }
-
-    private View.OnClickListener onMenuClickListener;
-
-    public void setMenuClickListener(View.OnClickListener clickListener) {
-        onMenuClickListener = clickListener;
     }
 
     final Context ctx;
@@ -37,25 +30,22 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
     final Cursor cursor;
     final String[] mFrom;
 
-    class SetSoundHolder extends RecyclerView.ViewHolder {
+    class SelectFavAuHolder extends RecyclerView.ViewHolder {
         RoundedImageView imgAudiofile;
         TextView tvAudiofile, tvAuthor;
-        ImageButton imgBtnPupupMenu;
 
-        public SetSoundHolder(@NonNull View itemView) {
+        public SelectFavAuHolder(@NonNull View itemView) {
             super(itemView);
-            imgAudiofile= itemView.findViewById(mTo[0]);
-            tvAudiofile= itemView.findViewById(mTo[1]);
-            tvAuthor= itemView.findViewById(mTo[2]);
-            imgBtnPupupMenu = itemView.findViewById(mTo[3]);
+            imgAudiofile = itemView.findViewById(mTo[0]);
+            tvAudiofile = itemView.findViewById(mTo[1]);
+            tvAuthor = itemView.findViewById(mTo[2]);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);
-            imgBtnPupupMenu.setOnClickListener(onMenuClickListener);
         }
     }
 
-    public SetSoundAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
+    public SelectFavAuAdapter(Context context, int layout, Cursor c, String[] from, int[] to) {
         ctx = context;
         cursor = c;
         this.layout = layout;
@@ -65,19 +55,18 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
 
     @NonNull
     @Override
-    public SetSoundAdapter.SetSoundHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SelectFavAuAdapter.SelectFavAuHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         view = LayoutInflater.from(ctx).inflate(layout, parent, false);
-        return new SetSoundAdapter.SetSoundHolder(view);
+        return new SelectFavAuAdapter.SelectFavAuHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull SetSoundAdapter.SetSoundHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SelectFavAuAdapter.SelectFavAuHolder holder, int position) {
         cursor.moveToPosition(cursor.getCount() - (position + 1));
         holder.itemView.setId(cursor.getInt(cursor.getColumnIndex(DB.COLUMN_ID_AUDIOFILE)));
         holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, cursor.getString(cursor.getColumnIndex(mFrom[0]))));
         holder.tvAudiofile.setText(cursor.getString(cursor.getColumnIndex(mFrom[1])));
         holder.tvAuthor.setText(cursor.getString(cursor.getColumnIndex(mFrom[2])));
-        holder.imgBtnPupupMenu.setId(cursor.getInt(cursor.getColumnIndex(DB.COLUMN_ID_AUDIOFILE)));
     }
 
     @Override
