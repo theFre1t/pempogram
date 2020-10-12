@@ -329,14 +329,14 @@ public class DB {
     }
 
     // удалить записи из DB_TABLE_AUDIOFILE по id коллекции
-    public void delRecAudiofilesByIdColletion(long id, boolean fulldel) {
-        Cursor cursor = getDataAudiofileByIdCollection(id);
+    public void delRecAudiofilesByIdColletion(long id_coll, boolean fulldel) {
+        Cursor cursor = getDataAudiofileByIdCollection(id_coll);
         if (cursor.getCount() != 0) {
             cursor.moveToFirst();
             long id_audio;
             do {
                 id_audio = cursor.getInt(cursor.getColumnIndex(COLUMN_ID_AUDIOFILE)); // получаем id_audio
-                removeAudiofileInCollection_Left_In(id_audio, id); // убираем связь коллекции и аудио
+                removeAudiofileInCollection_Left_In(id_coll, id_audio); // убираем связь коллекции и аудио
                 //если true то удаляем аудио, false обнуляем родительскую коллекцию у аудио
                 if(fulldel){
                     delRecAudiofile(id_audio);

@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,7 @@ import java.lang.ref.WeakReference;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.dialog.Dialog_Add_Collection;
+import tfre1t.example.pempogram.helper.DragAndSwipeHelper.SimpleItemTouchHelperCallback;
 import tfre1t.example.pempogram.myadapter.CollectionAdater;
 
 public class Dashboard_Collection_Fragment extends Fragment {
@@ -122,6 +124,7 @@ public class Dashboard_Collection_Fragment extends Fragment {
         }
     }
 
+    private ItemTouchHelper mItemTouchHelper;
     public void setAdapter(View v) {
         switch (CURRENT_DATA){
             case DATA_DOWNLOAD:
@@ -155,7 +158,11 @@ public class Dashboard_Collection_Fragment extends Fragment {
                 cAdater.setItemClickListener(onItemClickListener);
                 rcVColl.setLayoutManager(lm);
                 rcVColl.setAdapter(cAdater);
-                    break;
+
+                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(cAdater);
+                mItemTouchHelper = new ItemTouchHelper(callback);
+                mItemTouchHelper.attachToRecyclerView(rcVColl);
+                break;
         }
     }
 
