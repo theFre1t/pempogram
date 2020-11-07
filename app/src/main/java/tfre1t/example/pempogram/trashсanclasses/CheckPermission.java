@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram;
+package tfre1t.example.pempogram.trashсanclasses;
 
 import android.Manifest;
 import android.app.Activity;
@@ -15,7 +15,7 @@ public class CheckPermission extends AppCompatActivity {
         ActivityCompat.requestPermissions(activity, new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1);
     }
 
-    static final int REQUEST_CODE_RECORD_AUDIO = 1;
+    private static final int REQUEST_CODE_RECORD_AUDIO = 1;
 
     public boolean CheckPermissionRecord(Activity activity) {
         int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.RECORD_AUDIO);
@@ -26,7 +26,7 @@ public class CheckPermission extends AppCompatActivity {
         return true;
     }
 
-    static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 2;
+    private static final int REQUEST_CODE_WRITE_EXTERNAL_STORAGE = 2;
 
     public void CheckPermissionExternalStorage(Activity activity) {
         int permissionStatus = ContextCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
@@ -35,7 +35,7 @@ public class CheckPermission extends AppCompatActivity {
         }
     }
 
-    static boolean checkRecord;
+    private static boolean checkRecord;
     public boolean getCheckRecord() {
         return checkRecord;
     }

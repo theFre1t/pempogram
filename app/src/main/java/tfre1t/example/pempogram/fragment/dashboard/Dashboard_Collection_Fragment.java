@@ -1,11 +1,11 @@
 package tfre1t.example.pempogram.fragment.dashboard;
 
-import android.content.Intent;
-import android.database.Cursor;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -14,76 +14,71 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-
 import java.lang.ref.WeakReference;
+import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Add_Collection;
-import tfre1t.example.pempogram.helper.DragAndSwipeHelper.SimpleItemTouchHelperCallback;
 import tfre1t.example.pempogram.myadapter.CollectionAdater;
+import tfre1t.example.pempogram.preferences.Preferenceser;
+import tfre1t.example.pempogram.trashсanclasses.StatusBarHeight;
+import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
-public class Dashboard_Collection_Fragment extends Fragment {
+public class Dashboard_Collection_Fragment extends Fragment implements View.OnClickListener /*onStartDragListener*/ {
 
-    static final int DATA_NONE = 0; // Данных нет
-    static final int DATA_TRUE = 1; // Данные есть
-    static final int DATA_DOWNLOAD = 2; // Данные в загрузке
-    static int CURRENT_DATA;
+    private static final String TAG = "myLog";
 
-    DB db;
-    Cursor cursor;
-    String[] from;
-    int[] to;
-    int lay;
+    private static final int DATA_NONE = 0; // Данных нет
+    private static final int DATA_TRUE = 1; // Данные есть
+    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static int CURRENT_DATA; //Текущее состояние данных
 
-    Toolbar tbColl;
-    AppCompatActivity activity;
-    ActionBar actionBar;
+    private DashboardViewModel dashboardViewModel;
+    private CollectionAdater cAdapter;
 
-    Handler h;
-    ProgressBar pbColl;
+    private static Handler h;
+    private FragmentTransaction fragTrans;
+    private Preferenceser pref;
+    private Context ctx;
+    private View v;
 
-    CollectionAdater cAdater;
-    RecyclerView rcVColl;
-    RecyclerView.LayoutManager lm;
-    ImageButton btnListCard, btnListClassic, btnlistGrid;
-    FloatingActionButton floatBtnAddColl;
+    private static int type_ListCollection;
+    private List<Room_DB.Collection> listColl;
+    private List<Room_DB.Collection> oldListColl;
+    private int lay;
 
-    public static int type_ListCollection;
-    Dashboard_SetSoundsCollection_Fragment DashSetSounCollFrag;
-    FragmentTransaction fragTrans;
-    Dialog_Add_Collection Dialog_AC;
-    Fragment currentDialog = null;
-
-    private static View v;
+    private Toolbar tbColl;
+    private ProgressBar pbLoader;
+    private RecyclerView rcVColl;
+    private RecyclerView.LayoutManager lm;
+    private RecyclerView.LayoutManager lmOld;
+    private ImageButton btnListCard, btnListClassic, btnListGrid;
+    private TextView tvEmpty;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.fragment_dashboard_collectionlist, null);
-
+        ctx = v.getContext();
+        type_ListCollection = (pref = new Preferenceser(ctx)).loadTypeViewCollection();
         findViewById();
-
-        db = new DB(v.getContext());
-        db.open();
-
-        h = new MyHandler(this);
-
         setToolbar();
-        btnSetOnClick(v);
         loadData();
         return v;
     }
@@ -91,19 +86,25 @@ public class Dashboard_Collection_Fragment extends Fragment {
     private void findViewById() {
         btnListCard = v.findViewById(R.id.btnlistCard);
         btnListClassic = v.findViewById(R.id.btnlistClassic);
-        btnlistGrid = v.findViewById(R.id.btnlistGrid);
-        floatBtnAddColl= v.findViewById(R.id.floatBtnAddColl);
+        btnListGrid = v.findViewById(R.id.btnlistGrid);
         rcVColl = v.findViewById(R.id.rcViewColl);
-        pbColl = v.findViewById(R.id.pbColl);
+        pbLoader = v.findViewById(R.id.pbLoader);
+        tvEmpty = v.findViewById(R.id.tvEmpty);
         tbColl = v.findViewById(R.id.tbColl);
+
+        btnListCard.setOnClickListener(this);
+        btnListClassic.setOnClickListener(this);
+        btnListGrid.setOnClickListener(this);
+        v.findViewById(R.id.floatBtnAddColl).setOnClickListener(this);
     }
 
     private void setToolbar() {
-        activity = (AppCompatActivity)getActivity();
+        new StatusBarHeight().setPadding(getActivity(), tbColl);
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(tbColl);
-        actionBar = activity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
-        if(actionBar!= null) {
+        if(actionBar != null) {
             actionBar.setTitle("Collection");
         }
     }
@@ -117,56 +118,164 @@ public class Dashboard_Collection_Fragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
-            /*case :
-                return true*/
+            /*case R.id.btn_menu_positionSettingColl:
+                ImageView imgV = v.findViewById(R.id.imgVHandle);
+                imgV.setVisibility(View.VISIBLE);
+                return true;*/
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    private ItemTouchHelper mItemTouchHelper;
-    public void setAdapter(View v) {
-        switch (CURRENT_DATA){
+    //Получение и установка данных
+    private void loadData() {
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+        //Получаем данные
+        dashboardViewModel.getDataColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
+            @Override
+            public void onChanged(List<Room_DB.Collection> list) {
+                if (listColl != null) {
+                    oldListColl = listColl; //Запоминаем старые данные
+                }
+                listColl = list;
+                //Отправляем сообщение о наличие данных
+                if (listColl == null) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
+            }
+        });
+    }
+
+    static class MyHandler extends Handler {
+        WeakReference<Dashboard_Collection_Fragment> wrDCF;
+        Dashboard_Collection_Fragment newDCF;
+
+        public MyHandler(Dashboard_Collection_Fragment dcf) {
+            wrDCF = new WeakReference<>(dcf);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            newDCF = wrDCF.get();
+            if(newDCF != null){
+                switch (msg.what){
+                    case DATA_DOWNLOAD:
+                        CURRENT_DATA = DATA_DOWNLOAD;
+                        newDCF.setData();
+                        break;
+                    case DATA_NONE:
+                        CURRENT_DATA = DATA_NONE;
+                        newDCF.setData();
+                        break;
+                    case DATA_TRUE:
+                        CURRENT_DATA = DATA_TRUE;
+                        newDCF.setData();
+                        break;
+                }
+            }
+        }
+    }
+
+    private void setData(){
+        pbLoader.setVisibility(View.GONE);
+        tvEmpty.setVisibility(View.GONE);
+        switch (CURRENT_DATA) {
             case DATA_DOWNLOAD:
-                pbColl.setVisibility(View.VISIBLE);
+                pbLoader.setVisibility(View.VISIBLE);
                 break;
             case DATA_NONE:
-                pbColl.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
-                pbColl.setVisibility(View.GONE);
-                if(type_ListCollection == 0){
-                    //Отображение по классическому типу
-                    setColorBtn(btnListClassic);
-                    lay = R.layout.fragment_dashboard_collection_classiclist;
-                    lm = new LinearLayoutManager(v.getContext());
+                if(lm != null){
+                    lmOld = lm;
                 }
-                else if(type_ListCollection == 1){
-                    //Отображение карточого типа
-                    setColorBtn(btnListCard);
-                    lay = R.layout.fragment_dashboard_collection_cardlist;
-                    lm = new LinearLayoutManager(v.getContext());
+                switch (type_ListCollection) {
+                    case 0:
+                        //Отображение по классическому типу
+                        setColorBtn(btnListClassic);
+                        lay = R.layout.card_dashboard_collection_classiclist;
+                        lm = new LinearLayoutManager(ctx);
+                        break;
+                    case 1:
+                        //Отображение карточого типа
+                        setColorBtn(btnListCard);
+                        lay = R.layout.card_dashboard_collection_cardlist;
+                        lm = new LinearLayoutManager(ctx);
+                        break;
+                    case 2:
+                        //Отображение карточого типа в 2 колонки
+                        setColorBtn(btnListGrid);
+                        lay = R.layout.card_dashboard_collection_cardgrid;
+                        lm = new GridLayoutManager(ctx, 2);
+                        break;
                 }
-                else if(type_ListCollection == 2){
-                    //Отображение карточого типа в 2 колонки
-                    setColorBtn(btnlistGrid);
-                    lay = R.layout.fragment_dashboard_collection_cardgrid;
-                    lm = new GridLayoutManager(v.getContext(), 2);
+                if(lmOld == lm) {
+                    CollDiffUtilCallback CollDiffUtil = new CollDiffUtilCallback(oldListColl, listColl);
+                    DiffUtil.DiffResult CollDiffResult = DiffUtil.calculateDiff(CollDiffUtil);
+                    cAdapter.swipeCursor(listColl);
+                    CollDiffResult.dispatchUpdatesTo(cAdapter);
                 }
-
-                cAdater = new CollectionAdater(v.getContext(), lay, cursor, from, to);
-                cAdater.setItemClickListener(onItemClickListener);
-                rcVColl.setLayoutManager(lm);
-                rcVColl.setAdapter(cAdater);
-
-                ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(cAdater);
+                else {
+                    cAdapter = new CollectionAdater(ctx, lay, listColl/*,this*/);
+                    cAdapter.setItemClickListener(onItemClickListener);
+                    rcVColl.setLayoutManager(lm);
+                    rcVColl.setAdapter(cAdapter);
+                }
+                /*ItemTouchHelper.Callback callback = new SimpleItemTouchHelperCallback(cAdater);
                 mItemTouchHelper = new ItemTouchHelper(callback);
-                mItemTouchHelper.attachToRecyclerView(rcVColl);
+                mItemTouchHelper.attachToRecyclerView(rcVColl);*/
                 break;
         }
     }
 
-    static ImageButton oldBtn;
+    //Обновляем RecyclerView
+    public static class CollDiffUtilCallback extends DiffUtil.Callback{
+
+        List<Room_DB.Collection> oldList;
+        List<Room_DB.Collection> newList;
+
+        CollDiffUtilCallback(List<Room_DB.Collection> oldList, List<Room_DB.Collection> newList){
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            int newId = newList.get(newItemPosition).id_collection;
+            int oldId = oldList.get(oldItemPosition).id_collection;
+            return newId == oldId;
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            String newName = newList.get(newItemPosition).name_collection;
+            String oldName = oldList.get(oldItemPosition).name_collection;
+            return oldName.equals(newName);
+        }
+    }
+
+    /*@Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }*/
+
+    //Выделяем выбранную кнопку
+    private ImageButton oldBtn;
     private void setColorBtn(ImageButton btn) {
         if(oldBtn != null){
             oldBtn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryLight), PorterDuff.Mode.SRC_ATOP);
@@ -177,123 +286,56 @@ public class Dashboard_Collection_Fragment extends Fragment {
         btn.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
     }
 
-    public void loadData(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                h.sendEmptyMessage(DATA_DOWNLOAD);
-                cursor = db.getAllDataCollection();
-                if(cursor == null){
-                    h.sendEmptyMessage(DATA_NONE);
-                }
-                else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
-            }
-        }).start();
-        from = new String[]{DB.COLUMN_ID_COLLECTION, DB.COLUMN_NAME_COLLECTION, DB.COLUMN_AUTHOR_COLLECTION, DB.COLUMN_IMG_COLLECTION};
-        to = new int[]{R.id.tvCollection, R.id.tvAuthor, R.id.imgCollection};
-    }
-
-    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
-            long id = view.getId();
-            DashSetSounCollFrag = new Dashboard_SetSoundsCollection_Fragment(id);
-            fragTrans = getFragmentManager().beginTransaction();
-            fragTrans.replace(R.id.frmLayoutDashFrag, DashSetSounCollFrag);
+            //Переход в Набор
+            dashboardViewModel.selectCollById(view.getId());
+            Dashboard_SetSoundsCollection_Fragment dashSetSoundCollFrag = new Dashboard_SetSoundsCollection_Fragment();
+            fragTrans = getParentFragmentManager().beginTransaction();
+            fragTrans.replace(R.id.frmLayoutDashFrag, dashSetSoundCollFrag);
             fragTrans.addToBackStack(null);
             fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
             fragTrans.commit();
         }
     };
 
-    private void btnSetOnClick(View v) {
-        btnListClassic.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (type_ListCollection != 0) {
-                    type_ListCollection = 0;
-                    setAdapter(v);
-                }
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.btnlistClassic) {
+            if (type_ListCollection != 0) {
+                type_ListCollection = 0;
+                setData();
+                Log.d(TAG, "onClick: 0");
             }
-        });
-        btnListCard.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (type_ListCollection != 1) {
-                    type_ListCollection = 1;
-                    setAdapter(v);
-                }
+        } else if (id == R.id.btnlistCard) {
+            if (type_ListCollection != 1) {
+                type_ListCollection = 1;
+                setData();
             }
-        });
-        btnlistGrid.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (type_ListCollection != 2) {
-                    type_ListCollection = 2;
-                    setAdapter(v);
-                }
+        } else if (id == R.id.btnlistGrid) {
+            if (type_ListCollection != 2) {
+                type_ListCollection = 2;
+                setData();
             }
-        });
-
-        floatBtnAddColl.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                fragTrans  = getActivity().getSupportFragmentManager().beginTransaction();
-                Dialog_AC = new Dialog_Add_Collection(db, Dashboard_Collection_Fragment.this);
-                Dialog_AC.show(fragTrans, "addColl");
-            }
-        });
-    }
-
-    static class MyHandler extends Handler {
-        WeakReference<Dashboard_Collection_Fragment> wrDashcollfrag;
-        Dashboard_Collection_Fragment newDashcollfrag;
-
-        public MyHandler(Dashboard_Collection_Fragment dashcollfrag) {
-            wrDashcollfrag = new WeakReference<Dashboard_Collection_Fragment>(dashcollfrag);
-        }
-
-        @Override
-        public void handleMessage(@NonNull Message msg) {
-            super.handleMessage(msg);
-            newDashcollfrag = wrDashcollfrag.get();
-            if(newDashcollfrag != null){
-                switch (msg.what){
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newDashcollfrag.setAdapter(newDashcollfrag.getView());
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newDashcollfrag.setAdapter(newDashcollfrag.getView());
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newDashcollfrag.setAdapter(newDashcollfrag.getView());
-                        break;
-                }
-            }
+        } else if (id == R.id.floatBtnAddColl) {
+            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
+            Dialog_Add_Collection dialog_AC = new Dialog_Add_Collection(ctx);
+            dialog_AC.show(fragTrans, "addColl");
         }
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == 1){
-            loadData();
-        }
+    public void onStop() {
+        pref.saveTypeViewCollection(type_ListCollection);
+        super.onStop();
     }
 
     @Override
     public void onDestroy() {
-        db.close();
         if (h != null)
             h.removeCallbacksAndMessages(null);
-        if(currentDialog != null) {
-            getFragmentManager().beginTransaction().remove(currentDialog).commitAllowingStateLoss();
-        }
         super.onDestroy();
     }
 }

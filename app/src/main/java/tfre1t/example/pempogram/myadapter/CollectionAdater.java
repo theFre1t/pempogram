@@ -1,21 +1,22 @@
 package tfre1t.example.pempogram.myadapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
+import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.helper.DragAndSwipeHelper.ItemTouchHelperAdapter;
 import tfre1t.example.pempogram.helper.DragAndSwipeHelper.ItemTouchHelperViewHolder;
 import tfre1t.example.pempogram.savefile.Imager;
@@ -23,42 +24,29 @@ import tfre1t.example.pempogram.savefile.Imager;
 public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.CollectionHolder> implements ItemTouchHelperAdapter {
 
     private View.OnClickListener onItemClickListener;
+    //private final onStartDragListener mDragStartListener;
 
     public void setItemClickListener(View.OnClickListener clickListener) {
         onItemClickListener = clickListener;
     }
 
-    Context ctx;
-    int layout;
+    private final Context ctx;
 
-    int[] mTo;
-    Cursor cursor;
-    String[] mFrom;
-
-    ArrayList<Collection> collection;
-    public class Collection{
-        int id;
-        Bitmap img;
-        String name;
-        String author;
-
-        Collection(int id, Bitmap img, String name, String author){
-            this.id = id;
-            this.img = img;
-            this.name = name;
-            this.author = author;
-        }
-    }
+    private List<Room_DB.Collection> list;
+    private int layout;
 
     class CollectionHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        RoundedImageView imgv;
-        TextView tvColl, tvAuthor;
+        private final ImageView imgHandle;
+        private final RoundedImageView imgv;
+        private final TextView tvColl;
+        private final TextView tvAuthor;
 
         public CollectionHolder(@NonNull View itemView) {
             super(itemView);
-            tvColl= itemView.findViewById(mTo[0]);
-            tvAuthor= itemView.findViewById(mTo[1]);
-            imgv= itemView.findViewById(mTo[2]);
+            tvColl= itemView.findViewById(R.id.tvCollection);
+            tvAuthor= itemView.findViewById(R.id.tvAuthor);
+            imgv= itemView.findViewById(R.id.imgCollection);
+            imgHandle = itemView.findViewById(R.id.imgVHandle);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);
@@ -75,13 +63,11 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
         }
     }
 
-    public CollectionAdater(Context context, int layout, Cursor c, String[] from, int[] to) {
+    public CollectionAdater(Context context, int layout, List<Room_DB.Collection> list/*, onStartDragListener dragStartListener*/) {
         ctx = context;
-        cursor = c;
+        this.list = list;
         this.layout = layout;
-        mTo = to;
-        mFrom = from;
-        collection = new ArrayList<Collection>();
+        //mDragStartListener = dragStartListener;
     }
 
     @NonNull
@@ -93,23 +79,33 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
 
     @Override
     public void onBindViewHolder(@NonNull CollectionHolder holder, int position) {
-        cursor.moveToPosition(getItemCount() - (position + 1));
-        Collection coll = new Collection(
-                cursor.getInt(cursor.getColumnIndex(mFrom[0])),
-                new Imager().setImageView(ctx, cursor.getString(cursor.getColumnIndex(mFrom[3]))),
-                cursor.getString(cursor.getColumnIndex(mFrom[1])),
-                cursor.getString(cursor.getColumnIndex(mFrom[2]))
-        );
-        collection.add(coll);
-        holder.itemView.setId(coll.id);
-        holder.tvColl.setText(coll.name);
-        holder.tvAuthor.setText(coll.author);
-        holder.imgv.setImageBitmap(coll.img);
+        Room_DB.Collection collection = list.get(getItemCount() - (position + 1));
+        holder.itemView.setId(collection.id_collection);
+        holder.tvColl.setText(collection.name_collection);
+        holder.tvAuthor.setText(collection.author_collection);
+        holder.imgv.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection));
+        /*holder.imgHandle.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(MotionEventCompat.getActionMasked(event) == MotionEvent.ACTION_DOWN){
+                    mDragStartListener.onStartDrag(holder);
+                }
+                return false;
+            }
+        });*/
     }
 
     @Override
     public int getItemCount() {
-        return cursor.getCount();
+        return list.size();
+    }
+
+    public void swipeCursor(List<Room_DB.Collection> newList) {
+        list = newList;
+    }
+
+    public void swipeLayout(int lay) {
+        layout = lay;
     }
 
     //drag & drop //////////////////////////////////////////////////////////////////////////////////
@@ -118,11 +114,11 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
     public boolean onItemMove(int fromPosition, int toPosition) {
         if (fromPosition < toPosition) {
             for (int i = fromPosition; i < toPosition; i++) {
-                Collections.swap(collection, i, i + 1);
+                Collections.swap(list, i, i + 1);
             }
         } else {
             for (int i = fromPosition; i > toPosition; i--) {
-                Collections.swap(collection, i, i - 1);
+                Collections.swap(list, i, i - 1);
             }
         }
         notifyItemMoved(fromPosition, toPosition);
@@ -131,7 +127,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
 
     @Override
     public void onItemDismiss(int position) {
-        collection.remove(position);
+        list.remove(position);
         notifyItemRemoved(position);
     }
 }

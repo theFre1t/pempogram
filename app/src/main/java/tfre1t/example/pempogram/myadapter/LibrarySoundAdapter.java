@@ -1,8 +1,6 @@
 package tfre1t.example.pempogram.myadapter;
 
 import android.content.Context;
-import android.database.Cursor;
-import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,125 +12,115 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 
+import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.DB_Table;
 import tfre1t.example.pempogram.savefile.Imager;
 
 public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapter.LibrarySoundHolder> {
+    private final static String TAG = "myLog";
 
-    Context ctx;
-    int layout;
+    private final Context ctx;
+    private final int layout;
 
-    int[] mTo;
-    Cursor cursor, cursorSC;
-    String[] mFrom;
-    View view;
-    ArrayList<Sound> sounds;
+    private final List<DB_Table.AudiofileWithImg> list;
+    private final List<DB_Table.AudiofileFull> listSAudio;
+    private HashMap<Integer,Check> oldCheckList, checkList, editCheckList;
 
-    public class Sound{
+    public class Check{
         public int id;
-        Bitmap img;
-        String name;
-        String execute;
         public boolean check;
 
-        Sound(int id, Bitmap img, String name, String execute, boolean check){
+        Check(int id, boolean check){
             this.id = id;
-            this.img = img;
-            this.name = name;
-            this.execute = execute;
             this.check = check;
         }
     }
 
     class LibrarySoundHolder extends RecyclerView.ViewHolder {
-        RoundedImageView imgv;
-        TextView tvNameAudio, tvExecuteAudio;
-        CheckBox chbSound;
+        private final RoundedImageView imgv;
+        private final TextView tvNameAudio;
+        private final TextView tvExecuteAudio;
+        private final CheckBox chbSound;
 
         public LibrarySoundHolder(@NonNull View itemView) {
             super(itemView);
-            imgv= itemView.findViewById(mTo[0]);
-            tvNameAudio= itemView.findViewById(mTo[1]);
-            tvExecuteAudio= itemView.findViewById(mTo[2]);
-            chbSound= itemView.findViewById(mTo[3]);
+            imgv= itemView.findViewById(R.id.imgAudiofile);
+            tvNameAudio= itemView.findViewById(R.id.tvNameAudio);
+            tvExecuteAudio= itemView.findViewById(R.id.tvExecutorAudio);
+            chbSound= itemView.findViewById(R.id.chbSound);
+
             chbSound.setOnCheckedChangeListener(myCheckedListener);
             itemView.setTag(this);
         }
     }
 
-    public LibrarySoundAdapter(Context context, int layout, Cursor c, String[] from, int[] to, Cursor csc) {
+    public LibrarySoundAdapter(Context context, List<DB_Table.AudiofileWithImg> list, List<DB_Table.AudiofileFull> listSAudio) {
         ctx = context;
-        this.layout = layout;
-        cursor = c;
-        mTo = to;
-        mFrom = from;
-        cursorSC = csc;
-
-        c.moveToLast();
-        int count = c.getInt(c.getColumnIndex(DB.COLUMN_ID_AUDIOFILE));
-        sounds = new ArrayList<Sound>(count);
-        for(int i = 0; i <= count; i++){
-            sounds.add(new Sound(0,null, null,null,false));
-        }
+        layout = R.layout.card_addsound_librarysound_classiclist;
+        this.list = list;
+        this.listSAudio = listSAudio;
+        oldCheckList = new HashMap<>(list.size());
+        checkList = new HashMap<>(list.size());
     }
 
     OnCheckedChangeListener myCheckedListener = new OnCheckedChangeListener() {
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            try { sounds.get(buttonView.getId()).check = isChecked; } catch (IndexOutOfBoundsException ignored){ }
+            try {
+                int id = buttonView.getId();
+                Check check = oldCheckList.get(id);
+                if(check.check == isChecked){
+                    checkList.remove(id);
+                }else {
+                    checkList.put(id, new Check(check.id, isChecked));
+                }
+            }catch (NullPointerException ignored){ }
         }
     };
 
-    public ArrayList<Sound> getSounds() {
-        sounds.remove(0);
-        return sounds;
+    public HashMap<Integer,Check> getSounds() {
+        return checkList;
     }
 
     @NonNull
     @Override
     public LibrarySoundHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(ctx).inflate(layout, parent, false);
+        View view = LayoutInflater.from(ctx).inflate(layout, parent, false);
         return new LibrarySoundAdapter.LibrarySoundHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull LibrarySoundHolder holder, int position) {
-        cursor.moveToPosition(cursor.getCount() - (position + 1));
-        Sound s = new Sound(
-                cursor.getInt(cursor.getColumnIndex(mFrom[0])),
-                new Imager().setImageView(ctx ,cursor.getString(cursor.getColumnIndex(mFrom[1]))),
-                cursor.getString(cursor.getColumnIndex(mFrom[2])),
-                cursor.getString(cursor.getColumnIndex(mFrom[3])),
-                checkBoxChecker(cursor.getInt(cursor.getColumnIndex(mFrom[0])))
-        );
-        sounds.set(s.id,s);
-        holder.itemView.setId(s.id);
-        holder.imgv.setImageBitmap(s.img);
-        holder.tvNameAudio.setText(s.name);
-        holder.tvExecuteAudio.setText(s.execute);
-        holder.chbSound.setChecked(s.check);
-        holder.chbSound.setId(s.id);
+        DB_Table.AudiofileWithImg audiofile =  list.get(getItemCount()- (position + 1));
+
+        holder.itemView.setId(audiofile.id_audiofile);
+        holder.imgv.setImageBitmap(new Imager().setImageView(ctx ,audiofile.img_collection));
+        holder.tvNameAudio.setText(audiofile.name_audiofile);
+        holder.tvExecuteAudio.setText(audiofile.executor_audiofile);
+        holder.chbSound.setChecked(checkBoxChecker(audiofile.id_audiofile));
+        holder.chbSound.setId(audiofile.id_audiofile);
+
+        oldCheckList.put(audiofile.id_audiofile, new Check(audiofile.id_audiofile, check));
     }
 
     boolean check;
     private boolean checkBoxChecker(int id) {
         check = false;
-        if(cursorSC.getCount() != 0) {
-            cursorSC.moveToFirst();
-            do {
-                if (check = cursorSC.getInt(cursorSC.getColumnIndex(DB.COLUMN_ID_AUDIOFILE)) == id) { break; }
+        if(listSAudio.size() != 0) {
+            for (DB_Table.AudiofileFull audio : listSAudio) {
+                if (check = audio.id_audiofile == id) { break; }
             }
-            while (cursorSC.moveToNext());
         }
         return check;
     }
 
     @Override
     public int getItemCount() {
-        return cursor.getCount();
+        return list.size();
     }
 }
 

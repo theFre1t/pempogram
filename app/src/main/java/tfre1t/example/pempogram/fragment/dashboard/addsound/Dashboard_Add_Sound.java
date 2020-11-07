@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.ui.dashboard;
+package tfre1t.example.pempogram.fragment.dashboard.addsound;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -9,42 +9,41 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
-import tfre1t.example.pempogram.fragment.dashboard.addsound.Fragment_InternalStorage;
-import tfre1t.example.pempogram.fragment.dashboard.addsound.Fragment_LibrarySound;
-import tfre1t.example.pempogram.fragment.dashboard.addsound.Fragment_RecordSound;
 import tfre1t.example.pempogram.myadapter.AddSoundFragmentPagerAdapter;
+import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Add_Sound extends AppCompatActivity {
 
-    ViewPager2 vPagerAddSound;
-    TabLayout tLayoAddSound;
-    Toolbar tbAddSound;
+    private DashboardViewModel dashboardViewModel;
 
-    AddSoundFragmentPagerAdapter adapter;
+    private ViewPager2 vPagerAddSound;
+    private TabLayout tLayoAddSound;
+    private Toolbar tbAddSound;
 
-    DB db;
-    long id;
+    private int id;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_sound);
-        id = getIntent().getLongExtra("idColl", 0);
-        onFindViewById();
+        dashboardViewModel = new ViewModelProvider(Dashboard_Add_Sound.this).get(DashboardViewModel.class);
+
+        id = getIntent().getIntExtra("idColl", 0);
+
+        findViewById();
         setToolbar();
-        connectDB();
         onSetAdapter();
         onTabMediator();
         onSelected();
     }
 
-    private void onFindViewById() {
+    private void findViewById() {
         tLayoAddSound = findViewById(R.id.tLayoAddSound);
         vPagerAddSound = findViewById(R.id.vPagerAddSound);
         tbAddSound = findViewById(R.id.tbAddSound);
@@ -61,26 +60,20 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                setResult(0);
-                finish();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
+        int id = item.getItemId();
+        if (id == android.R.id.home) {
+            finish();
+            return true;
         }
-    }
-
-    private void connectDB() {
-        db = new DB(this);
-        db.open();
+        return super.onOptionsItemSelected(item);
     }
 
     private void onSetAdapter() {
-        adapter = new AddSoundFragmentPagerAdapter(this, db, id);
-        adapter.addFragment(new Fragment_LibrarySound(db, id));
-        adapter.addFragment(new Fragment_RecordSound(db, id));
-        adapter.addFragment(new Fragment_InternalStorage(db, id));
+        dashboardViewModel.setIdCollection(id);
+        AddSoundFragmentPagerAdapter adapter = new AddSoundFragmentPagerAdapter(this);
+        adapter.addFragment(new Fragment_LibrarySound());
+        adapter.addFragment(new Fragment_RecordSound());
+        adapter.addFragment(new Fragment_InternalStorage());
         vPagerAddSound.setAdapter(adapter);
     }
 

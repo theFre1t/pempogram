@@ -12,5 +12,6 @@
         android:id="@+id/btn_menu_positionSettingColl"
         android:icon="@drawable/baseline_reorder_24"
         android:title="Collection position "
+        android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>

@@ -1,116 +1,102 @@
 package tfre1t.example.pempogram.fragment.dashboard;
 
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.AdapterContextMenuInfo;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Sound;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Collection;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Sound;
 import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
 import tfre1t.example.pempogram.myadapter.SetSoundAdapter;
+import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
-public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
+public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements View.OnClickListener{
+    private static final String TAG = "myLog";
 
-    private static final int CM_ID_EDIT = 1;
-    private static final int CM_ID_DELETE = 2;
-    AdapterContextMenuInfo acmi;
+    private static int CURRENT_DATA; //Текущее состояние данных
+    private static final int DATA_NONE = 0; // Данных нет
+    private static final int DATA_TRUE = 1; // Данные есть
+    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
 
-    Dialog_Edit_Sound Dialog_ES;
-    Dialog_Delete_Collecton Dialog_DC;
-    Dialog_Delete_Sound Dialog_DS;
-    Dialog_Edit_Collection Dialog_EC;
-    Fragment currentDialog = null;
+    private static MyMediaPlayer myMediaPlayer;
+    private DashboardViewModel dashboardViewModel;
+    private SetSoundAdapter scAdapter;
 
-    DB db;
-    String[] from;
-    int[] to;
-    private final long id_collection;
 
-    public SetSoundAdapter scAdapter;
-    RecyclerView.LayoutManager lm;
+    private View v;
+    private Context ctx;
+    private Handler h;
 
-    RecyclerView rvSetSounds;
-    RoundedImageView imgVCollectionFront;
-    ImageView imgVCollectionBack;
-    TextView tvNameColl, tvAuthorColl;
-    ImageButton imgBtnAddSound;
+    private List<DB_Table.AudiofileFull> listAudiofiles, oldListAudiofiles;
 
-    Toolbar tbSetSound;
-    CollapsingToolbarLayout collapsToolbarL;
-    AppCompatActivity activity;
-    ActionBar actionBar;
-    FragmentTransaction fragTrans;
-
-    private static View v;
-
-    static MyMediaPlayer myMediaPlayer;
-
-    public Dashboard_SetSoundsCollection_Fragment(long id) {
-        id_collection = id;
-    }
+    private Toolbar tbSetSound;
+    private ProgressBar pbLoader;
+    private RecyclerView rvSetSounds;
+    private ImageView imgVCollectionBack;
+    private TextView tvNameColl, tvAuthorColl, tvEmpty;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection_v2, null);
-        getActivity().getWindow().setStatusBarColor(getResources().getColor(android.R.color.transparent));
+        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
+        v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection, null);
+        ctx = v.getContext();
 
-        findViewByIdSetter();
+        findViewById();
         setToolbar();
-        connectDB();
         loadPresenColl();
         loadData();
-        setOnClick();
         return v;
     }
 
-    private void findViewByIdSetter() {
-        rvSetSounds = v.findViewById(R.id.rvSetSounds);
-        imgBtnAddSound = v.findViewById(R.id.imgBtnAddSound);
+    private void findViewById() {
         tbSetSound = v.findViewById(R.id.tbSetSound);
-        collapsToolbarL = v.findViewById(R.id.collapsToolbarL);
+        imgVCollectionBack = v.findViewById(R.id.imgViewBackImage);
+        tvNameColl = v.findViewById(R.id.tvNameColl);
+        tvAuthorColl = v.findViewById(R.id.tvAuthorColl);
+        v.findViewById(R.id.imgBtnAddSound).setOnClickListener(this);
+        pbLoader = v.findViewById(R.id.pbLoader);
+        rvSetSounds = v.findViewById(R.id.rvSetSounds);
+        tvEmpty = v.findViewById(R.id.tvEmpty);
     }
 
     private void setToolbar() {
-        activity = (AppCompatActivity)getActivity();
+        AppCompatActivity activity = (AppCompatActivity) getActivity();
         activity.setSupportActionBar(tbSetSound);
-        actionBar = activity.getSupportActionBar();
+        ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
-        if(actionBar!= null) {
+        if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setTitle(null);
         }
@@ -126,147 +112,179 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.btn_menu_editColl:
-                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                Dialog_EC = new Dialog_Edit_Collection(db,Dashboard_SetSoundsCollection_Fragment.this, id_collection);
-                Dialog_EC.show(fragTrans, "editColl");
+                //Вызывает диалог редактирования коллекции
+                new Dialog_Edit_Collection().show(getActivity().getSupportFragmentManager().beginTransaction(), "editColl");
                 return true;
             case R.id.btn_menu_delColl:
-                fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                Dialog_DC = new Dialog_Delete_Collecton(db,id_collection);
-                Dialog_DC.show(fragTrans, "dellColl");
+                //Вызывает диалог удаления коллекции
+                new Dialog_Delete_Collecton().show(getActivity().getSupportFragmentManager().beginTransaction(), "dellColl");
                 return true;
             case android.R.id.home:
-                getFragmentManager().popBackStack();
+                //Возвращаемся назад
+                getParentFragmentManager().popBackStack();
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-
-
-    private void connectDB() {
-        db = new DB(v.getContext());
-        db.open();
-    }
-
     public void loadPresenColl() {
-        new MyTaskPresenColl().execute();
-    }
-
-    public void loadData() {
-        new MyTaskSetAdapter().execute();
-    }
-
-    private void setOnClick() {
-        imgBtnAddSound.setOnClickListener(new View.OnClickListener() {
+        dashboardViewModel.getDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Collection>() {
             @Override
-            public void onClick(View v) {
-                Intent intent = new Intent("android.intent.action.setsound.addsound");
-                intent.putExtra("idColl", id_collection);
-                startActivityForResult(intent, 1);
+            public void onChanged(Room_DB.Collection collection) {
+                imgVCollectionBack.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection));
+                tvNameColl.setText(collection.name_collection);
+                tvAuthorColl.setText(collection.author_collection);
             }
         });
+    }
+
+    //Получение и установка данных
+    private void loadData() {
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+        //Получаем данные
+        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileFull>>() {
+            @Override
+            public void onChanged(List<DB_Table.AudiofileFull> list) {
+                if (listAudiofiles != null) {
+                    oldListAudiofiles = listAudiofiles; //Запоминаем старые данные
+                }
+                listAudiofiles = list;
+                //Отправляем сообщение о наличие данных
+                if (listAudiofiles == null) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
+            }
+        });
+    }
+
+    static class MyHandler extends Handler {
+        WeakReference<Dashboard_SetSoundsCollection_Fragment> wrDSSCF;
+        Dashboard_SetSoundsCollection_Fragment newDSSCF;
+
+        public MyHandler(Dashboard_SetSoundsCollection_Fragment dsscf) {
+            wrDSSCF = new WeakReference<>(dsscf);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            newDSSCF = wrDSSCF.get();
+            if(newDSSCF != null){
+                CURRENT_DATA = msg.what;
+                newDSSCF.setData();
+            }
+        }
+    }
+
+    private void setData(){
+        pbLoader.setVisibility(View.GONE);
+        tvEmpty.setVisibility(View.GONE);
+        switch (CURRENT_DATA) {
+            case DATA_DOWNLOAD:
+                pbLoader.setVisibility(View.VISIBLE);
+                break;
+            case DATA_NONE:
+                tvEmpty.setVisibility(View.VISIBLE);
+                break;
+            case DATA_TRUE:
+                if(scAdapter == null) {
+                    scAdapter = new SetSoundAdapter(ctx, listAudiofiles);
+                    scAdapter.setItemClickListener(onItemClickListener);
+                    scAdapter.setMenuClickListener(onMenuClickListener);
+                    rvSetSounds.setLayoutManager(new LinearLayoutManager(ctx));
+                    rvSetSounds.setAdapter(scAdapter);
+                }else {
+                    AudiofilesDiffUtilCallback AudDiffUtil = new AudiofilesDiffUtilCallback(oldListAudiofiles, listAudiofiles);
+                    DiffUtil.DiffResult AudDiffResult = DiffUtil.calculateDiff(AudDiffUtil);
+                    scAdapter.swipeList(listAudiofiles);
+                    AudDiffResult.dispatchUpdatesTo(scAdapter);
+                }
+                break;
+        }
+    }
+
+    //Обновляем RecyclerView
+    public static class AudiofilesDiffUtilCallback extends DiffUtil.Callback{
+
+        List<DB_Table.AudiofileFull> oldList;
+        List<DB_Table.AudiofileFull> newList;
+
+        AudiofilesDiffUtilCallback(List<DB_Table.AudiofileFull> oldList, List<DB_Table.AudiofileFull> newList){
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            int newId = newList.get(newItemPosition).id_audiofile;
+            int oldId = oldList.get(oldItemPosition).id_audiofile;
+            return newId == oldId;
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            String newName = newList.get(newItemPosition).name_audiofile;
+            String oldName = oldList.get(oldItemPosition).name_audiofile;
+            String newExecutor = newList.get(newItemPosition).executor_audiofile;
+            String oldExecutor = oldList.get(oldItemPosition).executor_audiofile;
+            return oldName.equals(newName) && oldExecutor.equals(newExecutor);
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if (id == R.id.imgBtnAddSound) {
+            //Добавление новой аудиозаписи в Набор
+            Intent intent = new Intent("android.intent.action.setsound.addsound");
+            intent.putExtra("idColl", dashboardViewModel.getIdCollection());
+            startActivity(intent);
+        }
     }
 
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            //Воиспроизведение
             if (myMediaPlayer == null) {
                 myMediaPlayer = new MyMediaPlayer();
             }
-            myMediaPlayer.play(v.getContext(), db, v.getId());
+            dashboardViewModel.playAudio(myMediaPlayer ,v.getId());
         }
     };
-
-    class MyTaskPresenColl extends AsyncTask<Void, Void, Void> {
-
-        Cursor cursor_collection;
-        Bitmap bitmap;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            imgVCollectionFront = v.findViewById(R.id.imgViewFrontImage);
-            imgVCollectionBack = v.findViewById(R.id.imgViewBackImage);
-            tvNameColl = v.findViewById(R.id.tvNameColl);
-            tvAuthorColl = v.findViewById(R.id.tvAuthorColl);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            cursor_collection = db.getDataCollectionById(id_collection);
-            cursor_collection.moveToFirst();
-            try {
-                FileInputStream fis = v.getContext().openFileInput(cursor_collection.getString(cursor_collection.getColumnIndex(DB.COLUMN_IMG_COLLECTION)));
-                bitmap = BitmapFactory.decodeStream(fis);
-                fis.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            imgVCollectionBack.setImageBitmap(bitmap);
-            imgVCollectionFront.setImageBitmap(bitmap);
-            tvNameColl.setText(cursor_collection.getString(cursor_collection.getColumnIndex(DB.COLUMN_NAME_COLLECTION)));
-            tvAuthorColl.setText(cursor_collection.getString(cursor_collection.getColumnIndex(DB.COLUMN_AUTHOR_COLLECTION)));
-        }
-    }
-
-    class MyTaskSetAdapter extends AsyncTask<Void, Void, Void> {
-
-        Cursor cursor_audiofile;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            from = new String[]{DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE};
-            to = new int[]{R.id.imgAudiofile, R.id.tvAudiofile, R.id.tvAuthor, R.id.imgBtnPupupMenu};
-            lm = new LinearLayoutManager(v.getContext());
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            cursor_audiofile = db.getDataAudiofileByIdCollection(id_collection);
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            scAdapter = new SetSoundAdapter(v.getContext(), R.layout.fragment_dashboard_setsounds_collection_classiclist, cursor_audiofile, from, to);
-            scAdapter.setItemClickListener(onItemClickListener);
-            scAdapter.setMenuClickListener(onMenuClickListener);
-            rvSetSounds.setLayoutManager(lm);
-            rvSetSounds.setAdapter(scAdapter);
-            registerForContextMenu(rvSetSounds);
-        }
-    }
 
     private View.OnClickListener onMenuClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            PopupMenu popup = new PopupMenu(v.getContext(), v);
+            PopupMenu popup = new PopupMenu(ctx, v);
             popup.inflate(R.menu.popup_setsound_menu);
             popup.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                 @Override
                 public boolean onMenuItemClick(MenuItem item) {
-                    acmi = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-                    switch (item.getItemId()){
-                        case R.id.btn_popup_editsound:
-                            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                            Dialog_ES = new Dialog_Edit_Sound(db,Dashboard_SetSoundsCollection_Fragment.this, v.getId());
-                            Dialog_ES.show(fragTrans, "editSound");
-                            return true;
-                        case  R.id.btn_popup_deletesound:
-                            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
-                            Dialog_DS = new Dialog_Delete_Sound(db, Dashboard_SetSoundsCollection_Fragment.this, v.getId());
-                            Dialog_DS.show(fragTrans, "dellSound");
-                            return true;
+                    dashboardViewModel.selectAudiofileById(v.getId());
+                    int itemId = item.getItemId();
+                    if (itemId == R.id.btn_popup_editsound) {
+                        //Редактировние аудиозаписи
+                        new Dialog_Edit_Sound().show(getActivity().getSupportFragmentManager().beginTransaction(), "editSound");
+                        return true;
+                    } else if (itemId == R.id.btn_popup_deletesound) {
+                        //Удаление аудиозаписи
+                        new Dialog_Delete_Sound().show(getActivity().getSupportFragmentManager().beginTransaction(), "dellSound");
+                        return true;
                     }
                     return false;
                 }
@@ -276,28 +294,11 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment{
     };
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == 1){
-            loadData();
-        }
-    }
-
-    @Override
     public void onDestroyView() {
-        getActivity().getWindow().setStatusBarColor(getResources().getColor(R.color.colorPrimaryDark));
         super.onDestroyView();
-    }
-
-    @Override
-    public void onDestroy() {
-        db.close();
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
         }
-        if(currentDialog != null) {
-            getFragmentManager().beginTransaction().remove(currentDialog).commitAllowingStateLoss();
-        }
-        super.onDestroy();
+        getParentFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();
     }
 }

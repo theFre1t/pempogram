@@ -1,176 +1,273 @@
 package tfre1t.example.pempogram.ui.home;
 
+import android.content.Context;
 import android.content.Intent;
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.DB_Table;
 import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
 import tfre1t.example.pempogram.myadapter.FavoriteAudioAdater;
+import tfre1t.example.pempogram.trashсanclasses.StatusBarHeight;
 
-public class HomeFragment extends Fragment {
+public class HomeFragment extends Fragment implements View.OnClickListener {
+    private static final String TAG = "myLog";
 
-    private int FAVAU_CURRENT = 0;
-    private static final int FAVAU_DEFAULT = 0;
-    private static final int FAVAU_REMOVE = 1;
-    private static final int CODE_SELECT_AUDIO = 1;
+    private static int CURRENT_DATA; //Текущее состояние данных
+    private static final int DATA_NONE = 0; // Данных нет
+    private static final int DATA_TRUE = 1; // Данные есть
+    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+
+    private int FAVAU_CURRENT = 0; //Текущее состояние
+    private static final int FAVAU_DEFAULT = 0; // Состояние воиспроизведения
+    private static final int FAVAU_REMOVE = 1; // Состояние удаления
+    private static final int CODE_SELECT_AUDIO = 1; // Код перехода на добавления фразы
 
     private HomeViewModel homeViewModel;
+    private static MyMediaPlayer myMediaPlayer;
+    private FavoriteAudioAdater favAuAdapter;
 
-    private static View v;
+    private View v;
+    private Context ctx;
+    private static Handler h;
 
-    DB db;
-    Cursor cFavorAudio;
-    String[] from;
-    int[] to;
-    int lay;
+    private List<DB_Table.AudiofileWithImg> listFavAu;
+    private List<DB_Table.AudiofileWithImg> oldListFavAu;
+    private static int statusBarHeight;
 
-    RecyclerView.LayoutManager lm;
-    FavoriteAudioAdater favAuAdapter;
-    ImageButton btnDellFavAu;
-
-    RecyclerView rcVFavAu;
-
-    static MyMediaPlayer myMediaPlayer;
+    private ImageButton btnDellFavAu;
+    private ProgressBar pbLoader;
+    private TextView tvEmpty;
+    private RecyclerView rcVFavAu;
+    private View vStatusBar;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel = ViewModelProviders.of(this).get(HomeViewModel.class);
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         v = inflater.inflate(R.layout.fragment_home, container, false);
-        dbConnect();
+        ctx = v.getContext();
         findViewById();
         loadData();
-        onClickSetter();
         return v;
-    }
-
-    private void dbConnect() {
-        db = new DB(v.getContext());
-        db.open();
     }
 
     private void findViewById() {
         rcVFavAu = v.findViewById(R.id.rcViewFavorAudio);
         btnDellFavAu = v.findViewById(R.id.btnDellFavAu);
+        btnDellFavAu.setOnClickListener(this);
+        pbLoader = v.findViewById(R.id.pbLoader);
+        tvEmpty = v.findViewById(R.id.tvEmpty);
+        vStatusBar = v.findViewById(R.id.vStatusBar);
+
+        statusBarHeight = new StatusBarHeight().getStatusBarHeight(getActivity());
+        vStatusBar.getLayoutParams().height = statusBarHeight;
     }
 
+    //Получение и установка данных
     private void loadData() {
-        new loadDataTask().execute();
-    }
-
-    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
-
-        @Override
-        public void onClick(View view) {
-            long id = view.getId();
-            switch (FAVAU_CURRENT) {
-                case FAVAU_DEFAULT:
-                    Intent intent;
-                    if (id == -1) {
-                        intent = new Intent("android.intent.action.favoriteaudio.selectaudio");
-                        startActivityForResult(intent, CODE_SELECT_AUDIO);
-                    } else {
-                        if (myMediaPlayer == null) {
-                            myMediaPlayer = new MyMediaPlayer();
-                        }
-                        myMediaPlayer.play(v.getContext(), db, id);
-                    }
-                    break;
-                case FAVAU_REMOVE:
-                    view.setVisibility(View.GONE);
-                    db.delRecFavoriteaudio(id);
-                    break;
-            }
-        }
-    };
-
-    class loadDataTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            from = new String[]{DB.COLUMN_ID_AUDIOFILE, DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE};
-            to = new int[]{R.id.imgFavAu, R.id.tvNameAudio};
-            lay = R.layout.fragment_home_favoriteaudio_cardgrid;
-            lm = new GridLayoutManager(v.getContext(), 3);
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            cFavorAudio = db.getAllDataAudiofileFromFavoriteaudio();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            favAuAdapter = new FavoriteAudioAdater(v.getContext(), lay, cFavorAudio, from, to, db);
-            favAuAdapter.setItemClickListener(onItemClickListener);
-            rcVFavAu.setLayoutManager(lm);
-            rcVFavAu.setAdapter(favAuAdapter);
-        }
-    }
-
-    private void onClickSetter() {
-        btnDellFavAu.setOnClickListener(new View.OnClickListener() {
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+        //Получаем данные
+        homeViewModel.getDataFavAu().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileWithImg>>() {
             @Override
-            public void onClick(View v) {
-                View vAdd;
-                TextView tvRemove;
-                switch (FAVAU_CURRENT){
-                    case FAVAU_DEFAULT:
-                        FAVAU_CURRENT = FAVAU_REMOVE;
-                        btnDellFavAu.setImageResource(R.drawable.baseline_clear_24);
-                        for(int i = favAuAdapter.getItemCount()-1; i>=0; i--){
-                            vAdd = rcVFavAu.getChildAt(i);
-                            if (vAdd.getId() == -1){
-                                vAdd.setVisibility(View.GONE);
-                            }
-                            else {
-                                tvRemove = vAdd.findViewById(R.id.tvRemove);
-                                tvRemove.setVisibility(View.VISIBLE);
-                            }
-                        }
-                        break;
-                    case FAVAU_REMOVE:
-                        FAVAU_CURRENT = FAVAU_DEFAULT;
-                        btnDellFavAu.setImageResource(R.drawable.baseline_delete_24);
-                        loadData();
-                        break;
+            public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                if (listFavAu != null) {
+                    oldListFavAu = listFavAu; //Запоминаем старые данные
+                }
+                listFavAu = list;
+                //Отправляем сообщение о наличие данных
+                if (listFavAu == null) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
                 }
             }
         });
     }
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch (requestCode) {
-            case CODE_SELECT_AUDIO:
-                if (resultCode == 1) {
-                    loadData();
+    static class MyHandler extends Handler {
+        WeakReference<HomeFragment> wrHF;
+        HomeFragment newHF;
+
+        public MyHandler(HomeFragment hf) {
+            wrHF = new WeakReference<HomeFragment>(hf);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            newHF = wrHF.get();
+            if(newHF != null){
+                switch (msg.what){
+                    case DATA_DOWNLOAD:
+                        CURRENT_DATA = DATA_DOWNLOAD;
+                        newHF.setData();
+                        break;
+                    case DATA_NONE:
+                        CURRENT_DATA = DATA_NONE;
+                        newHF.setData();
+                        break;
+                    case DATA_TRUE:
+                        CURRENT_DATA = DATA_TRUE;
+                        newHF.setData();
+                        break;
+                }
+            }
+        }
+    }
+
+    private void setData(){
+        pbLoader.setVisibility(View.GONE);
+        tvEmpty.setVisibility(View.GONE);
+        switch (CURRENT_DATA) {
+            case DATA_DOWNLOAD:
+                pbLoader.setVisibility(View.VISIBLE);
+                break;
+            case DATA_NONE:
+                tvEmpty.setVisibility(View.VISIBLE);
+                break;
+            case DATA_TRUE:
+                if(favAuAdapter == null){
+                    favAuAdapter = new FavoriteAudioAdater(ctx, listFavAu);
+                    favAuAdapter.setItemClickListener(onItemClickListener);
+                    rcVFavAu.setLayoutManager(new GridLayoutManager(ctx, 3));
+                    rcVFavAu.setAdapter(favAuAdapter);
+                }else {
+                    FavAuDiffUtilCallback FavAuDiffUtil = new FavAuDiffUtilCallback(oldListFavAu, listFavAu);
+                    DiffUtil.DiffResult FavAuDiffResult = DiffUtil.calculateDiff(FavAuDiffUtil);
+                    favAuAdapter.swipeCursor(listFavAu);
+                    FavAuDiffResult.dispatchUpdatesTo(favAuAdapter);
                 }
                 break;
         }
     }
 
+    //Обработчик нажатий Adapter-a
+    private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View view) {
+            int id = view.getId();
+            switch (FAVAU_CURRENT) {
+                case FAVAU_DEFAULT:
+                    //Если нажали на "+", то перебрасывааем
+                    //Если любой другой то проигрываем запись
+                    if (id == -1) {
+                        Intent intent = new Intent("android.intent.action.favoriteaudio.selectaudio");
+                        startActivity(intent);
+                    } else {
+                        if (myMediaPlayer == null) {
+                            myMediaPlayer = new MyMediaPlayer();
+                        }
+                        homeViewModel.playFavAu(myMediaPlayer, id);
+                    }
+                    break;
+                case FAVAU_REMOVE:
+                    TextView tvRemove = view.findViewById(R.id.tvRemove);
+                    tvRemove.setVisibility(View.GONE);
+                    //Убираем запись из Фаворитных
+                    homeViewModel.removeFavAu(id);
+                    break;
+            }
+        }
+    };
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == R.id.btnDellFavAu){
+            switch (FAVAU_CURRENT){
+                case FAVAU_DEFAULT:
+                    FAVAU_CURRENT = FAVAU_REMOVE; //Сообщаем что мы в режиме удаления
+                    btnDellFavAu.setImageResource(R.drawable.baseline_clear_24);
+                    itemVisibility(View.GONE, View.VISIBLE);
+                    break;
+                case FAVAU_REMOVE:
+                    FAVAU_CURRENT = FAVAU_DEFAULT; //Сообщаем что мы в обычном режиме
+                    btnDellFavAu.setImageResource(R.drawable.baseline_delete_24);
+                    itemVisibility(View.VISIBLE, View.GONE);
+                    break;
+            }
+        }
+    }
+
+    //Отображаем/скрываем надпись Убрать
+    private void itemVisibility(int VISIBILITY_ADD, int VISIBILITY_ALL) {
+        //Проходимся по всем элементам.
+        int i = 0;
+        do{
+            View vAdd = rcVFavAu.getChildAt(i);
+            //Добавление скрываем
+            //На всех остальных отображаем надпись "Убрать"
+            if (vAdd.getId() == -1){
+                vAdd.setVisibility(VISIBILITY_ADD);
+            }
+            else {
+                TextView tvRemove = vAdd.findViewById(R.id.tvRemove);
+                tvRemove.setVisibility(VISIBILITY_ALL);
+            }
+            i++;
+        }while (favAuAdapter.getItemCount() > i);
+    }
+
+    //Обновляем RecyclerView
+    public static class FavAuDiffUtilCallback extends DiffUtil.Callback{
+
+        List<DB_Table.AudiofileWithImg> oldList;
+        List<DB_Table.AudiofileWithImg> newList;
+
+        FavAuDiffUtilCallback(List<DB_Table.AudiofileWithImg> oldList, List<DB_Table.AudiofileWithImg> newList){
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            int newId = newList.get(newItemPosition).id_audiofile;
+            int oldId = oldList.get(oldItemPosition).id_audiofile;
+            return newId == oldId;
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            String newName = newList.get(newItemPosition).name_audiofile;
+            String oldName = oldList.get(oldItemPosition).name_audiofile;
+            return oldName.equals(newName);
+        }
+    }
+
     @Override
     public void onDestroy() {
-        db.close();
+        if (h != null)
+            h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
         }

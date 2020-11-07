@@ -65,13 +65,13 @@
 
     <ImageButton
         android:id="@+id/imgBtnRecordAudiofile"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/round_btn_default"
         android:backgroundTint="@color/colorSecondary"
-        android:scaleType="fitCenter"
-        android:src="@android:drawable/ic_btn_speak_now"
+        android:scaleType="center"
+        android:src="@drawable/baseline_mic_black_48"
         android:tint="@color/colorPrimary"
         app:layout_constraintStart_toStartOf="@id/etExecutorSound"
         app:layout_constraintTop_toBottomOf="@id/etExecutorSound" />
@@ -81,7 +81,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="@style/TextStyleSecondary"
-        android:textSize="30sp"
+        android:textSize="24sp"
         app:layout_constraintBottom_toBottomOf="@+id/imgBtnRecordAudiofile"
         app:layout_constraintEnd_toEndOf="@+id/etExecutorSound"
         app:layout_constraintStart_toEndOf="@+id/imgBtnRecordAudiofile"
@@ -101,7 +101,8 @@
         android:layout_marginEnd="16dp"
         android:background="@drawable/round_btn_default"
         android:scaleType="centerCrop"
-        android:src="@android:drawable/ic_media_play"
+        android:src="@drawable/baseline_play_arrow_black_36"
+        android:tint="@color/colorSecondary"
         app:layout_constraintBottom_toBottomOf="@+id/sbAudiofile"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/sbAudiofile" />

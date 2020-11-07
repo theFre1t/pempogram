@@ -1,7 +1,6 @@
 package tfre1t.example.pempogram.myadapter;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
@@ -14,74 +13,70 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.database.DB_Table;
 
 public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdater.FavoriteAudioHolder> {
 
-    private View.OnClickListener onItemClickListener;
+    private static final String TAG = "myLog";
+
+    private static View.OnClickListener onItemClickListener;
 
     public void setItemClickListener(View.OnClickListener clickListener) {
         onItemClickListener = clickListener;
     }
 
-    Context ctx;
-    int layout;
+    private final Context ctx;
+    private List<DB_Table.AudiofileWithImg> list;
+    private final int layout;
 
-    int[] mTo;
-    Cursor cursor;
-    String[] mOriginalFrom;
-    View view;
-
-
-    class FavoriteAudioHolder extends RecyclerView.ViewHolder {
-        RoundedImageView imgv;
-        TextView tvNameAudio;
+    static class FavoriteAudioHolder extends RecyclerView.ViewHolder {
+        private final RoundedImageView imgv;
+        private final TextView tvNameAudio;
 
         public FavoriteAudioHolder(@NonNull View itemView) {
             super(itemView);
-            imgv= itemView.findViewById(mTo[0]);
-            tvNameAudio= itemView.findViewById(mTo[1]);
+            imgv= itemView.findViewById(R.id.imgFavAu);
+            tvNameAudio= itemView.findViewById(R.id.tvNameAudio);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);
         }
     }
 
-    public FavoriteAudioAdater(Context context, int layout, Cursor c, String[] from, int[] to, DB db) {
+    public FavoriteAudioAdater(Context context, List<DB_Table.AudiofileWithImg> list) {
         ctx = context;
-        cursor = c;
-        this.layout = layout;
-        mTo = to;
-        mOriginalFrom = from;
+        this.list = list;
+        layout = R.layout.card_home_favoriteaudio_cardgrid;
     }
 
     @NonNull
     @Override
     public FavoriteAudioHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        view = LayoutInflater.from(ctx).inflate(layout, parent, false);
+        View view = LayoutInflater.from(ctx).inflate(layout, parent, false);
         return new FavoriteAudioHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull FavoriteAudioHolder holder, int position) {
-        if (position == cursor.getCount() && cursor.getCount() != 12) {
+        if (position == list.size() && list.size() != 12) {
             holder.itemView.setId(-1);
-            setHolderImgBtnAddFavAu(holder);
             holder.tvNameAudio.setVisibility(View.GONE); //holder.tvNameAudio.setText("Добавить новый");
+            setHolderImgBtnAddFavAu(holder);
         } else {
-            cursor.moveToPosition(cursor.getCount() - (position + 1));
-            holder.itemView.setId(cursor.getInt(cursor.getColumnIndex(mOriginalFrom[0])));
-            setImageView(holder);
-            holder.tvNameAudio.setText(cursor.getString(cursor.getColumnIndex(mOriginalFrom[2])));
+            DB_Table.AudiofileWithImg audiofile =  list.get(position);
+            holder.itemView.setId(audiofile.id_audiofile);
+            holder.tvNameAudio.setText(audiofile.name_audiofile);
+            setImageView(holder, audiofile);
         }
     }
 
-    private void setImageView(FavoriteAudioHolder holder) {
+    private void setImageView(FavoriteAudioHolder holder, DB_Table.AudiofileWithImg audiofile) {
         try {
-            FileInputStream fis = ctx.openFileInput(cursor.getString(cursor.getColumnIndex(mOriginalFrom[1])));
+            FileInputStream fis = ctx.openFileInput(audiofile.img_collection);
             holder.imgv.setImageBitmap(BitmapFactory.decodeStream(fis));
             fis.close();
         } catch (IOException e) {
@@ -97,10 +92,14 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
     @Override
     public int getItemCount() {
         int count = 0;
-        if(cursor.getCount() == 12)
-            count = cursor.getCount();
+        if(list.size() == 12)
+            count = list.size();
         else
-            count = cursor.getCount()+1;
+            count = list.size()+1;
         return count;
+    }
+
+    public void swipeCursor(List<DB_Table.AudiofileWithImg> newList){
+        list = newList;
     }
 }

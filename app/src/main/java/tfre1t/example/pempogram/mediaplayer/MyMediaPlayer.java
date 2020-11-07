@@ -1,7 +1,6 @@
 package tfre1t.example.pempogram.mediaplayer;
 
 import android.content.Context;
-import android.database.Cursor;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
@@ -12,28 +11,19 @@ import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 
-import tfre1t.example.pempogram.database.DB;
-
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
-
 
     //////////////////////Воспроизведение///////////////////////////////////////////////////////////
     public boolean mediaPlayerResume = false;
     private static MediaPlayer mediaPlayer;
-    private static FileInputStream fis;
 
-    Cursor cursor;
-
-    public void play(Context ctx, DB db, long id){
-        cursor = db.getDataAudiofileByIdAudifile(id);
-        cursor.moveToFirst();
-
+    public void play(Context ctx, String audiofile){
         if (mediaPlayerResume) {
             mediaPlayer.release();
         }
         try {
             mediaPlayer = new MediaPlayer();
-            fis = ctx.openFileInput(cursor.getString(cursor.getColumnIndex(DB.COLUMN_AUDIOFILE)));
+            FileInputStream fis = ctx.openFileInput(audiofile);
             mediaPlayer.setAudioAttributes(
                     new AudioAttributes.Builder()
                             .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
@@ -68,7 +58,7 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
     //////////////////////Запись////////////////////////////////////////////////////////////////////
 
-    private MediaRecorder mediaRecorder;
+    private static MediaRecorder mediaRecorder;
     private String fileName;
     private File outFile;
 

@@ -1,7 +1,5 @@
 package tfre1t.example.pempogram.ui.home;
 
-import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -12,45 +10,47 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.util.List;
+
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.DB_Table;
 import tfre1t.example.pempogram.myadapter.SelectFavAuAdapter;
 
 public class SelectFavoriteAudio extends AppCompatActivity {
 
-    DB db;
+    private HomeViewModel homeViewModel;
 
-    String[] from;
-    int[] to;
-    public SelectFavAuAdapter scAdapter;
-    RecyclerView  rvSelectFavAu;
-    RecyclerView.LayoutManager lm;
-    Cursor cursor_audiofile;
+    private List<DB_Table.AudiofileWithImg> listSelAu;
 
-    String title = "";
-    Toolbar tbSelectFavAu;
-    ActionBar actionBar;
+    private RecyclerView  rvSelectFavAu;
+    private Toolbar tbSelectFavAu;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_favoriteaudio);
-        title = "Select Audio";
+        homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        findViewById();
         setToolbar();
-        connectDB();
         loadData();
     }
 
-    private void setToolbar() {
+    private void findViewById() {
         tbSelectFavAu = findViewById(R.id.tbSelectFavAu);
+        rvSelectFavAu = findViewById(R.id.rvSelectFavAu);
+    }
+
+    private void setToolbar() {
         setSupportActionBar(tbSelectFavAu);
-        actionBar = getSupportActionBar();
-        if(actionBar!= null) {
+        ActionBar actionBar = getSupportActionBar();
+        if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle(title);
+            actionBar.setTitle("Select Audio");
         }
     }
 
@@ -72,55 +72,30 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         }
     }
 
-    private void connectDB() {
-        db = new DB(this);
-        db.open();
-    }
-
     private void loadData() {
-        new  loadDataTask().execute();
+        homeViewModel.getDataSelAu().observe(this, new Observer<List<DB_Table.AudiofileWithImg>>() {
+            @Override
+            public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                listSelAu = list;
+                setAdapter();
+            }
+        });
     }
 
-    class loadDataTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            from = new String[]{DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE};
-            to = new int[]{R.id.imgAudiofile, R.id.tvNameAudio, R.id.tvExecutorAudio};
-            rvSelectFavAu = findViewById(R.id.rvSelectFavAu);
-            lm = new LinearLayoutManager(SelectFavoriteAudio.this);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            cursor_audiofile = db.getAllDataAudiofileNonFavAu();
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, R.layout.fragment_home_favoriteaudio_select_classiclist, cursor_audiofile, from, to);
-            scAdapter.setItemClickListener(onItemClickListener);
-            rvSelectFavAu.setLayoutManager(lm);
-            rvSelectFavAu.setAdapter(scAdapter);
-        }
+    private void setAdapter() {
+        RecyclerView.LayoutManager lm = new LinearLayoutManager(SelectFavoriteAudio.this);
+        SelectFavAuAdapter scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, listSelAu);
+        scAdapter.setItemClickListener(onItemClickListener);
+        rvSelectFavAu.setLayoutManager(lm);
+        rvSelectFavAu.setAdapter(scAdapter);
     }
 
-    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            long idAudiofile = v.getId();
-            db.addRecFavoriteaudio(idAudiofile);
-            setResult(1);
+            homeViewModel.addNewFavAu(v.getId());
+            setResult(v.getId());
             finish();
         }
     };
-
-    @Override
-    protected void onDestroy() {
-        db.close();
-        super.onDestroy();
-    }
 }

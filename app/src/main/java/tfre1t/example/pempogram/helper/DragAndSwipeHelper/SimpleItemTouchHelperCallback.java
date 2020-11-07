@@ -19,13 +19,13 @@ public class SimpleItemTouchHelperCallback extends ItemTouchHelper.Callback {
 
     @Override
     public boolean isLongPressDragEnabled() {
-        return true;
+        return false;
     }
 
     @Override
     public int getMovementFlags(@NonNull RecyclerView recyclerView, @NonNull RecyclerView.ViewHolder viewHolder) {
-        int dragFlags = UP | DOWN;
-        int swipeFlags = START | END;
+        int dragFlags = UP | DOWN | START | END;
+        int swipeFlags = 0;
         return makeMovementFlags(dragFlags, swipeFlags);
     }
 

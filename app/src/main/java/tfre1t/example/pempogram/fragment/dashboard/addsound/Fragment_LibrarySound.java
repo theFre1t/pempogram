@@ -1,133 +1,146 @@
 package tfre1t.example.pempogram.fragment.dashboard.addsound;
 
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
+import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
+import java.util.List;
+
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB;
+import tfre1t.example.pempogram.database.DB_Table;
 import tfre1t.example.pempogram.myadapter.LibrarySoundAdapter;
+import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_LibrarySound extends Fragment implements View.OnClickListener {
+    private static final String TAG = "myLog";
 
-    TextView tvTitle;
-    RecyclerView rvLibSound;
-    RecyclerView.LayoutManager lm;
+    private static int CURRENT_DATA; //Текущее состояние данных
+    private static final int DATA_NONE = 0; // Данных нет
+    private static final int DATA_TRUE = 1; // Данные есть
+    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
 
-    View v;
-    DB db;
-    long id;
+    private DashboardViewModel dashboardViewModel;
+    private LibrarySoundAdapter lsAdapter;
 
-    String[] from;
-    int[] to;
-    public LibrarySoundAdapter lsAdapter;
-    Cursor cursor, cursorSC;
+    private Handler h;
+    private Context ctx;
+    private View v;
 
-    Uri selectedAudio;
+    private List<DB_Table.AudiofileWithImg> listAudiofiles;
+    private List<DB_Table.AudiofileFull> listSelectedAudiofiles;
 
-    public Fragment_LibrarySound(DB db, long i) {
-        this.db = db;
-        id = i;
-    }
+    private TextView tvTitle, tvEmpty;
+    private RecyclerView rvLibSound;
+    private ProgressBar pbLoader;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.fragment_addsound_librarysound, null);
-        onFindViewById();
+        ctx = v.getContext();
+        findViewById();
         loadData();
+
+        tvTitle.setText("Выберите аудиозаписи");
         return v;
     }
 
-    private void onFindViewById() {
+    private void findViewById() {
         tvTitle = v.findViewById(R.id.tvTitle);
-        tvTitle.setText("Выберите аудиозаписи");
         rvLibSound = v.findViewById(R.id.rvLibSound);
         v.findViewById(R.id.btnAdd).setOnClickListener(this);
+        pbLoader = v.findViewById(R.id.pbLoader);
+        tvEmpty = v.findViewById(R.id.tvEmpty);
     }
 
+    //Получение и установка данных
     private void loadData() {
-        new loadDataTask().execute();
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+        //Получаем данные
+        dashboardViewModel.getAllAudiofiles().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileWithImg>>() {
+            @Override
+            public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                listAudiofiles = list;
+                //Отправляем сообщение о наличие данных
+                if (listAudiofiles == null) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
+            }
+        });
+        dashboardViewModel.getAudiofilesByIdColl().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileFull>>() {
+            @Override
+            public void onChanged(List<DB_Table.AudiofileFull> list) {
+                listSelectedAudiofiles = list;
+            }
+        });
     }
 
-    class loadDataTask extends AsyncTask<Void, Void, Void> {
+    static class MyHandler extends Handler {
+        WeakReference<Fragment_LibrarySound> wrFLS;
+        Fragment_LibrarySound newFLS;
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            from = new String[]{DB.COLUMN_ID_AUDIOFILE, DB.COLUMN_IMG_COLLECTION, DB.COLUMN_NAME_AUDIOFILE, DB.COLUMN_EXECUTOR_AUDIOFILE};
-            to = new int[]{R.id.imgAudiofile, R.id.tvNameAudio, R.id.tvExecutorAudio, R.id.chbSound};
-            lm = new LinearLayoutManager(v.getContext());
+        public MyHandler(Fragment_LibrarySound fls) {
+            wrFLS = new WeakReference<>(fls);
         }
 
         @Override
-        protected Void doInBackground(Void... params) {
-            cursor = db.getAllDataAudiofile();
-            cursorSC = db.getDataAudiofileByIdCollection(id);
-            return null;
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            newFLS = wrFLS.get();
+            if(newFLS != null){
+                CURRENT_DATA = msg.what;
+                newFLS.setData();
+            }
         }
+    }
 
-        @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            lsAdapter = new LibrarySoundAdapter(v.getContext(), R.layout.fragment_addsound_librarysound_classiclist, cursor, from, to, cursorSC);
-            rvLibSound.setLayoutManager(lm);
-            rvLibSound.setAdapter(lsAdapter);
+    private void setData(){
+        pbLoader.setVisibility(View.GONE);
+        tvEmpty.setVisibility(View.GONE);
+        switch (CURRENT_DATA) {
+            case DATA_DOWNLOAD:
+                pbLoader.setVisibility(View.VISIBLE);
+                break;
+            case DATA_NONE:
+                tvEmpty.setVisibility(View.VISIBLE);
+                break;
+            case DATA_TRUE:
+                if(lsAdapter == null) {
+                    lsAdapter = new LibrarySoundAdapter(ctx, listAudiofiles, listSelectedAudiofiles);
+                    rvLibSound.setLayoutManager(new LinearLayoutManager(ctx));
+                    rvLibSound.setAdapter(lsAdapter);
+                }
+                break;
         }
     }
 
     @Override
     public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btnAdd:
-                editCollection();
-                Toast.makeText(v.getContext(), "Сохранено", Toast.LENGTH_SHORT).show();
-                requireActivity().setResult(1);
-                requireActivity().finish();
-                break;
+        int id = v.getId();
+        if (id == R.id.btnAdd) {
+            dashboardViewModel.editCollection(lsAdapter.getSounds());
+            Toast.makeText(ctx, "Сохранено", Toast.LENGTH_SHORT).show();
+            getActivity().finish();
         }
     }
-
-    boolean tied;
-
-    private void editCollection() {
-        for (LibrarySoundAdapter.Sound s : lsAdapter.getSounds()) {
-            Cursor cur = db.getAudiofilesByIdAudifile(s.id);
-            if (cur != null) {
-                cur.moveToFirst();
-                do {
-                    try{
-                        if (cur.getInt(cur.getColumnIndex(DB.COLUMN_IDCOLLECTION_COLLECTION_LEFT_IN)) == id) {
-                            tied = true;
-                            break;
-                        }
-                    } catch (IndexOutOfBoundsException ignored){ }
-                    tied = false;
-                } while (cur.moveToNext());
-                if (s.check) {
-                    if (!tied) {
-                        db.addAudiofileInCollection_Left_In(id, s.id);
-                    }
-                } else {
-                    if (tied) {
-                        db.removeAudiofileInCollection_Left_In(id, s.id);
-                    }
-                }
-            }
-        }
-    }
-
-
 }

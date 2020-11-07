@@ -12,6 +12,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import static android.content.Context.MODE_PRIVATE;
 import static android.os.FileUtils.copy;
@@ -20,23 +21,21 @@ public class SaverAudio {
 
     private static final int COPY_BYTES = 524288;
 
-    static Context ctx;
-    static Uri saveaudio;
+    private Context ctx;
+    private static Uri saveaudio;
 
     public String saveAudio(Context context, Uri audio) {
         ctx = context;
         saveaudio = audio;
 
-        String namefile = writeFileAudio();
-        return namefile;
+        return writeFileAudio();
     }
 
     private String writeFileAudio() {
-        String filename = null;
         String extension = MimeTypeMap.getSingleton().getExtensionFromMimeType(ctx.getApplicationContext().getContentResolver().getType(saveaudio));
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss", Locale.ENGLISH);
         String datetime = sdf.format(new Date(System.currentTimeMillis()));
-        filename = "Audiofile_" + datetime + "." + extension;
+        String filename = "Audiofile_" + datetime + "." + extension;
 
         onSaverAudio(filename);
 
@@ -50,8 +49,7 @@ public class SaverAudio {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
                     File tempFile = new File(ctx.getApplicationContext().getFilesDir().getAbsolutePath(), filename);
                     try {
-                        boolean fileCreated = tempFile.createNewFile();
-                        if (!fileCreated) {
+                        if (!tempFile.createNewFile()) {
                             Log.e("myLog", "error creating file");
                         }
                         InputStream inputStream = ctx.getApplicationContext().getContentResolver().openInputStream(saveaudio);
