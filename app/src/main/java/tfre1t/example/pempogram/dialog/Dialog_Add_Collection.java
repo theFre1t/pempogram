@@ -30,7 +30,7 @@ import static android.app.Activity.RESULT_OK;
 
 public class Dialog_Add_Collection extends DialogFragment implements View.OnClickListener {
 
-    static final int GALLERY_REQUEST = 1;
+    private static final int GALLERY_REQUEST = 1;
 
     private DashboardViewModel dashboardViewModel;
 
@@ -55,7 +55,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
 
         findViewById();
 
-        dialogTvTitle.setText("Добавление коллекции");
+        dialogTvTitle.setText(R.string.dialog_title_adding_set);
         return v;
     }
 
@@ -83,7 +83,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
             if (fillingCheck(NameColl, AuthorColl)) {
                 String ImgName = new Imager().saveImage(ctx, bitmap);
                 dashboardViewModel.addNewColl(NameColl, AuthorColl, ImgName);
-                Toast.makeText(v.getContext(), "Коллекция добавлена", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), R.string.message_set_added, Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         } else if (id == R.id.dialogBtnCancel) {

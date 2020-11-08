@@ -4,12 +4,14 @@ import android.content.Context;
 import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
+import android.os.Build;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
@@ -70,8 +72,13 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS);
+        }else {
+            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
+            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
+        }
         mediaRecorder.setOutputFile(fileName);
 
         try {
@@ -100,11 +107,9 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
     }
 
     private String getFilename(){
-        String filename = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss");
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss", Locale.ENGLISH);
         String datetime = sdf.format(new Date(System.currentTimeMillis()));
-        filename = "/Audiofile_" + datetime + ".3gp";
-        return filename;
+        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q ? "/Audiofile_" + datetime + ".ogg" : "/Audiofile_" + datetime + ".3gp";
     }
 
     //////////////////////Воспроизведение записи////////////////////////////////////////////////////

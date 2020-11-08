@@ -30,6 +30,7 @@ import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_RecordSound extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Chronometer.OnChronometerTickListener {
+    private static final String ZERO_TIME = "00:00";
 
     private static final int START_RECORD = 1;
     private static final int STOP_RECORD = 2;
@@ -63,7 +64,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         findViewById();
 
         isSave = false;
-        tvTitle.setText("Записать микрофон");
+        tvTitle.setText(R.string.title_dictaphone);
         return v;
     }
 
@@ -128,7 +129,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
             if (fillingCheck(nameSound, executorSound, recordAudio)) {
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, recordAudio.getName());
                 isSave = true;
-                Toast.makeText(ctx, "Запись добавлена", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         }
@@ -148,7 +149,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
             case STOP_RECORD:
                 tvTime.stop();
                 tvRecordTime.setText(tvTime.getText());
-                tvTime.setText("00:00");
+                tvTime.setText(ZERO_TIME);
                 playGroup.setVisibility(View.VISIBLE);
                 break;
             case PLAY_RECORD:
@@ -185,7 +186,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         onProgressChanged(sbAudiofile, myMediaPlayer.getCurrentPosition(), false);
         if(!myMediaPlayer.mediaPlayerResume){
             tvRecordTime.stop();
-            tvRecordTime.setText("00:00");
+            tvRecordTime.setText(ZERO_TIME);
             imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_play_arrow_black_48);
         }
     }

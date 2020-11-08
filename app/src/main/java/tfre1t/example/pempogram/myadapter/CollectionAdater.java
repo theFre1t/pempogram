@@ -104,10 +104,6 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
         list = newList;
     }
 
-    public void swipeLayout(int lay) {
-        layout = lay;
-    }
-
     //drag & drop //////////////////////////////////////////////////////////////////////////////////
 
     @Override

@@ -57,7 +57,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
         findViewById();
         loadEditData();
 
-        dialogTvTitle.setText("Редактирование коллекции");
+        dialogTvTitle.setText(R.string.dialog_title_editing_set);
         return v;
     }
 
@@ -97,7 +97,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
             if (fillingCheck(NameColl, AuthorColl)) {
                 String nameImg = new Imager().saveImage(ctx, bitmap, oldBitmap, oldNameImg);
                 dashboardViewModel.updateCollection(NameColl, AuthorColl, nameImg);
-                Toast.makeText(v.getContext(), "Изменения сохранены", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), R.string.message_changes_saved, Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         } else if (id == R.id.dialogBtnCancel) {

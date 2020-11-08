@@ -1,7 +1,6 @@
 package tfre1t.example.pempogram.myadapter;
 
 import android.content.Context;
-import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,13 +10,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
 import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.savefile.Imager;
 
 public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdater.FavoriteAudioHolder> {
 
@@ -70,17 +68,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
             DB_Table.AudiofileWithImg audiofile =  list.get(position);
             holder.itemView.setId(audiofile.id_audiofile);
             holder.tvNameAudio.setText(audiofile.name_audiofile);
-            setImageView(holder, audiofile);
-        }
-    }
-
-    private void setImageView(FavoriteAudioHolder holder, DB_Table.AudiofileWithImg audiofile) {
-        try {
-            FileInputStream fis = ctx.openFileInput(audiofile.img_collection);
-            holder.imgv.setImageBitmap(BitmapFactory.decodeStream(fis));
-            fis.close();
-        } catch (IOException e) {
-            e.printStackTrace();
+            holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
         }
     }
 

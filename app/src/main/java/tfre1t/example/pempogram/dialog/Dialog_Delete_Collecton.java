@@ -33,8 +33,8 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
 
         findViewById();
 
-        dialogTvTitle.setText("Удалить коллекцию");
-        dialogTvText.setText("Вы действительно хотите удалить коллекцию?\nОтменить действие будет невозможно");
+        dialogTvTitle.setText(R.string.dialog_title_delete_set);
+        dialogTvText.setText(R.string.dialog_text_delete_set);
         return v;
     }
 
@@ -53,7 +53,7 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
         if (id == R.id.dialogBtnYes) {
             dashboardViewModel.deleteCollection(chbCheckFullDel.isChecked());
             getParentFragmentManager().popBackStack();
-            Toast.makeText(v.getContext(), "Коллекция удалена", Toast.LENGTH_SHORT).show();
+            Toast.makeText(v.getContext(), R.string.message_set_deleted, Toast.LENGTH_SHORT).show();
             dismiss();
         } else if (id == R.id.dialogBtnCancel) {
             dismiss();

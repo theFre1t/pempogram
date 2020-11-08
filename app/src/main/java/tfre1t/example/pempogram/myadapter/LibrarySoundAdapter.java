@@ -28,9 +28,9 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
 
     private final List<DB_Table.AudiofileWithImg> list;
     private final List<DB_Table.AudiofileFull> listSAudio;
-    private HashMap<Integer,Check> oldCheckList, checkList, editCheckList;
+    private final HashMap<Integer,Check> oldCheckList, checkList;
 
-    public class Check{
+    public static class Check{
         public int id;
         public boolean check;
 
@@ -107,7 +107,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
         oldCheckList.put(audiofile.id_audiofile, new Check(audiofile.id_audiofile, check));
     }
 
-    boolean check;
+    private boolean check;
     private boolean checkBoxChecker(int id) {
         check = false;
         if(listSAudio.size() != 0) {

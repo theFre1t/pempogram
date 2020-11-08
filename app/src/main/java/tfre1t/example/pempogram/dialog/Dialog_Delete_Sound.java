@@ -31,8 +31,8 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
 
         findViewById();
 
-        dialogTvTitle.setText("Удалить запись");
-        dialogTvText.setText("Вы действительно хотите удалить запись?\nОтменить действие будет невозможно");
+        dialogTvTitle.setText(R.string.dialog_title_delete_phrase);
+        dialogTvText.setText(R.string.dialog_text_delete_phrase);
         return v;
     }
 
@@ -50,7 +50,7 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
         int id = v.getId();
         if (id == R.id.dialogBtnYes) {
             dashboardViewModel.deleteAudiofile();
-            Toast.makeText(v.getContext(), "Запись удалена", Toast.LENGTH_SHORT).show();
+            Toast.makeText(v.getContext(), R.string.message_phrase_deleted, Toast.LENGTH_SHORT).show();
             dismiss();
         } else if (id == R.id.dialogBtnCancel) {
             dismiss();

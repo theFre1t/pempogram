@@ -58,7 +58,7 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         findViewById();
         loadData();
 
-        tvTitle.setText("Выберите аудиозаписи");
+        tvTitle.setText(R.string.title_select_phrases);
         return v;
     }
 
@@ -139,7 +139,7 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         int id = v.getId();
         if (id == R.id.btnAdd) {
             dashboardViewModel.editCollection(lsAdapter.getSounds());
-            Toast.makeText(ctx, "Сохранено", Toast.LENGTH_SHORT).show();
+            Toast.makeText(ctx, R.string.message_saved, Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }
     }

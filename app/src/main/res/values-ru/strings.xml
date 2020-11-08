@@ -1,11 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Pempogram</string>
-    <string name="dialog_collection_delete">Удалить</string>
-    <string name="dialog_collection_cancel">Позже</string>
+    <string name="app_name">Мем Фразы</string>
+    <string name="dialog_btn_collection_delete">Удалить</string>
+    <string name="dialog_btn_collection_cancel">Позже</string>
     <string name="title_activity_main">Мем Фразы</string>
     <string name="title_home">Главая</string>
-    <string name="title_dashboard">Коллекции</string>
+    <string name="title_dashboard">Коллекция</string>
     <string name="title_search">Поиск</string>
     <string name="title_account">Аккаунт</string>
+    <string name="title_select_favaudio">Выберите фразу</string>
+    <string name="title_сategories">Категории</string>
+    <string name="title_sets">Наборы</string>
+    <string name="title_adding">Отменить действие будет невозможно</string>
+    <string name="title_upload_phrase">Загрузить фразу</string>
+    <string name="message_phrase_loaded">Фраза загружена</string>
+    <string name="message_saved">Сохранено</string>
+    <string name="title_select_phrases">Выберите фразы</string>
+    <string name="title_dictaphone">Диктофон</string>
+    <string name="dialog_title_adding_set">Добавить набора</string>
+    <string name="dialog_title_editing_set">Редактировать набора</string>
+    <string name="message_changes_saved">Изменения сохранены</string>
+    <string name="message_set_added">Набор добавлен</string>
+    <string name="dialog_title_delete_set">Удалить набор</string>
+    <string name="dialog_text_delete_set">Вы действительно хотите удалить набор?\nОтменить действие будет невозможно</string>
+    <string name="message_set_deleted">Набор удален</string>
+    <string name="dialog_title_edit_phrase">Редактировать фразу</string>
+    <string name="dialog_title_delete_phrase">Удалить фразу</string>
+    <string name="dialog_text_delete_phrase">"Вы действительно хотите удалить фразу?\nОтменить действие будет невозможно"</string>
+    <string name="message_phrase_deleted">Фраза удалена</string>
 </resources>

@@ -50,7 +50,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if(actionBar != null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle("Select Audio");
+            actionBar.setTitle(R.string.title_select_favaudio);
         }
     }
 

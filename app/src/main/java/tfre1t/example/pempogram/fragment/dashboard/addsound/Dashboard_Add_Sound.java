@@ -54,7 +54,7 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
         ActionBar actionBar = getSupportActionBar();
         if(actionBar!= null) {
             actionBar.setDisplayHomeAsUpEnabled(true);
-            actionBar.setTitle("Добавление записи");
+            actionBar.setTitle(R.string.title_adding);
         }
     }
 

@@ -40,7 +40,7 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
         findViewById();
         loadEditData();
 
-        dialogTvTitle.setText("Редактирование записи");
+        dialogTvTitle.setText(R.string.dialog_title_edit_phrase);
         return v;
     }
 
@@ -70,7 +70,7 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
             String executorSound = dialogEtExecutorSound.getText().toString();
             if (fillingCheck(nameSound, executorSound)) {
                 dashboardViewModel.updateAudiofile(nameSound, executorSound);
-                Toast.makeText(v.getContext(), "Изменения сохранены", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), R.string.message_changes_saved, Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         } else if (id == R.id.dialogBtnCancel) {

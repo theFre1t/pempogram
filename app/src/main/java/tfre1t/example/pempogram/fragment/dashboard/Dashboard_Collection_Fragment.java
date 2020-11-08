@@ -5,7 +5,6 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -105,7 +104,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
         if(actionBar != null) {
-            actionBar.setTitle("Collection");
+            actionBar.setTitle(R.string.title_sets);
         }
     }
 
@@ -136,7 +135,8 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             @Override
             public void onChanged(List<Room_DB.Collection> list) {
                 if (listColl != null) {
-                    oldListColl = listColl; //Запоминаем старые данные
+                    //Запоминаем старые данные
+                    oldListColl = listColl;
                 }
                 listColl = list;
                 //Отправляем сообщение о наличие данных
@@ -307,7 +307,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             if (type_ListCollection != 0) {
                 type_ListCollection = 0;
                 setData();
-                Log.d(TAG, "onClick: 0");
             }
         } else if (id == R.id.btnlistCard) {
             if (type_ListCollection != 1) {

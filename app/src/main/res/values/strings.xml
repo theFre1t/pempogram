@@ -1,11 +1,62 @@
 <resources>
-    <string name="app_name">Pempogram</string>
+    //Название приложения
+    <string name="app_name">Meme Phrases</string>
     <string name="title_activity_main">Meme Phrases</string>
+
+    //(Fragment) Домашняя страница
     <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
+
+    --(Activity) Выборка Фаворитного аудио
+    <string name="title_select_favaudio">Select a phrase</string>
+
+    //(Fragment) Страница поиска
     <string name="title_search">Search</string>
+
+    //(Fragment) Страница  Категорий/Наборов/Аудиозапией
+    <string name="title_dashboard">Dashboard</string>
+    <string name="title_сategories">Categories</string>
+    <string name="title_sets">Sets</string>
+
+    --(Dialog) Добавление нового набора
+    <string name="dialog_title_adding_set">Add a set</string>
+    <string name="message_set_added">Set added</string>
+
+    --(Dialog) Редактирование набора
+    <string name="dialog_title_editing_set">Edit a set</string>
+
+    --(Dialog) Удаления набора
+    <string name="dialog_title_delete_set">Delete set</string>
+    <string name="dialog_text_delete_set">Are you sure you want to delete the set?\nIt will be impossible to undo the action</string>
+    <string name="message_set_deleted">Set deleted</string>
+
+    <string name="dialog_btn_collection_delete">Delete</string>
+    <string name="dialog_btn_collection_cancel">Later</string>
+
+    --(Activity) Добавление новой аудиозаписи(фразы)
+    <string name="title_adding">Adding</string>
+
+    ---(Fragment) Добавление уже имеющихся фраз
+    <string name="title_select_phrases">Select phrases</string>
+
+    ---(Fragment) Запись новой фразы
+    <string name="title_dictaphone">Dictaphone</string>
+
+    ---(Fragment) Загрузка фраз
+    <string name="title_upload_phrase">Upload phrase</string>
+
+    --(Dialog) Редактирование фразы
+    <string name="dialog_title_edit_phrase">Edit phrase</string>
+
+    --(Dialog) Удаления фразы
+    <string name="dialog_title_delete_phrase">Delete phrase</string>
+    <string name="dialog_text_delete_phrase">Do you really want to delete the phrase?\nIt will be impossible to undo the action</string>
+    <string name="message_phrase_deleted">Phrase deleted</string>
+
+    //(Fragment) Аккаунт
     <string name="title_account">Account</string>
-    //Дилог удаления коллекции
-    <string name="dialog_collection_delete">Delete</string>
-    <string name="dialog_collection_cancel">Later</string>
+
+    //Общии
+    <string name="message_saved">Saved</string>
+    <string name="message_phrase_loaded">Phrase loaded</string>
+    <string name="message_changes_saved">Changes saved</string>
 </resources>

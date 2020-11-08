@@ -45,7 +45,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
 
         findViewById();
 
-        tvTitle.setText("Новая запись");
+        tvTitle.setText(R.string.title_upload_phrase);
         return v;
     }
 
@@ -72,7 +72,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
             if (fillingCheck(nameSound, executorSound, selectedAudio)) {
                 String audiofile = new SaverAudio().saveAudio(v.getContext(), selectedAudio);
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, audiofile);
-                Toast.makeText(v.getContext(), "Запись добавлена", Toast.LENGTH_SHORT).show();
+                Toast.makeText(v.getContext(), R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
         }
