@@ -11,7 +11,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
-        android:text="Title"
+        android:text="@string/view_title"
         android:textAppearance="@style/TextStylePrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -28,7 +28,7 @@
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
-        android:hint="Название"
+        android:hint="@string/view_text_name"
         android:inputType="textPersonName"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorTextPrimary"
@@ -37,7 +37,8 @@
         app:layout_constraintBottom_toTopOf="@id/etExecutorSound"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tvTitle" />
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        android:autofillHints="" />
 
     <EditText
         android:id="@id/etExecutorSound"
@@ -45,7 +46,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
-        android:hint="Исполнитель"
+        android:hint="@string/view_text_executor"
         android:inputType="textPersonName"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorTextSecondary"
@@ -53,7 +54,8 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@id/etNameSound"
         app:layout_constraintStart_toStartOf="@id/etNameSound"
-        app:layout_constraintTop_toBottomOf="@id/etNameSound" />
+        app:layout_constraintTop_toBottomOf="@id/etNameSound"
+        android:autofillHints="" />
 
     <Button
         android:id="@+id/btnSelectAudiofile"
@@ -62,7 +64,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="8dp"
         android:backgroundTint="@color/colorSecondary"
-        android:text="Выбрать"
+        android:text="@string/view_btn_choose"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorPrimaryLight"
         android:textSize="16sp"
@@ -76,7 +78,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
-        android:text="Загрузите файл"
+        android:text="@string/view_text_upload_file"
         android:textAppearance="@style/TextStyleSecondary"
         android:textSize="16sp"
         app:layout_constraintBottom_toBottomOf="@id/btnSelectAudiofile"
@@ -91,7 +93,7 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:backgroundTint="@color/colorSecondary"
-        android:text="Сохранить"
+        android:text="@string/view_btn_save"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorPrimaryLight"
         android:textSize="16sp"

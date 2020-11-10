@@ -5,7 +5,6 @@ import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -36,7 +35,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
     private int layout;
 
     class CollectionHolder extends RecyclerView.ViewHolder implements ItemTouchHelperViewHolder {
-        private final ImageView imgHandle;
+        //private final ImageView imgHandle;
         private final RoundedImageView imgv;
         private final TextView tvColl;
         private final TextView tvAuthor;
@@ -46,7 +45,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
             tvColl= itemView.findViewById(R.id.tvCollection);
             tvAuthor= itemView.findViewById(R.id.tvAuthor);
             imgv= itemView.findViewById(R.id.imgCollection);
-            imgHandle = itemView.findViewById(R.id.imgVHandle);
+            //imgHandle = itemView.findViewById(R.id.imgVHandle);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);

@@ -5,6 +5,8 @@
 
     //(Fragment) Домашняя страница
     <string name="title_home">Home</string>
+    <string name="view_title_favorite_phrases">Favorite phrases</string>
+    <string name="view_title_category">Category</string>
 
     --(Activity) Выборка Фаворитного аудио
     <string name="title_select_favaudio">Select a phrase</string>
@@ -28,9 +30,7 @@
     <string name="dialog_title_delete_set">Delete set</string>
     <string name="dialog_text_delete_set">Are you sure you want to delete the set?\nIt will be impossible to undo the action</string>
     <string name="message_set_deleted">Set deleted</string>
-
-    <string name="dialog_btn_collection_delete">Delete</string>
-    <string name="dialog_btn_collection_cancel">Later</string>
+    <string name="view_text_delete_all">Delete all entries</string>
 
     --(Activity) Добавление новой аудиозаписи(фразы)
     <string name="title_adding">Adding</string>
@@ -56,7 +56,28 @@
     <string name="title_account">Account</string>
 
     //Общии
+    -Сообщения
     <string name="message_saved">Saved</string>
     <string name="message_phrase_loaded">Phrase loaded</string>
     <string name="message_changes_saved">Changes saved</string>
+
+    -Элементы
+    <string name="view_title">Title</string>
+
+    <string name="view_text">Text</string>
+    <string name="view_text_empty">Empty</string>
+    <string name="view_text_expect_next_update">Expect next update!</string>
+    <string name="view_text_name">Name</string>
+    <string name="view_text_remove">Remove</string>
+    <string name="view_text_executor">Executor</string>
+    <string name="view_text_author">Author</string>
+    <string name="view_text_upload_file">Upload file</string>
+
+    <string name="view_btn_choose">Choose</string>
+    <string name="view_btn_save">Save</string>
+    <string name="view_btn_edit">Edit</string>
+    <string name="view_btn_cancel">Later</string>
+    <string name="view_btn_delete">Delete</string>
+    <string name="view_btn_search">Search</string>
+    <string name="view_btn_positioning">Positioning</string>
 </resources>

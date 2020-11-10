@@ -6,7 +6,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
-    android:clickable="true"
+    android:clickable="false"
     android:minWidth="300dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -20,7 +20,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         android:layout_marginEnd="16dp"
-        android:text="Title"
+        android:text="@string/view_title"
         android:textAppearance="@style/TextStylePrimary"
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -37,7 +37,7 @@
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
-        android:hint="Название"
+        android:hint="@string/view_text_name"
         android:inputType="textPersonName"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorTextPrimary"
@@ -46,7 +46,8 @@
         app:layout_constraintBottom_toTopOf="@+id/dialogEtExecutorSound"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle" />
+        app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle"
+        android:autofillHints="" />
 
     <EditText
         android:id="@+id/dialogEtExecutorSound"
@@ -54,7 +55,7 @@
         android:layout_height="wrap_content"
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
-        android:hint="Исполнитель"
+        android:hint="@string/view_text_executor"
         android:inputType="textPersonName"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorTextSecondary"
@@ -62,7 +63,8 @@
         android:textSize="18sp"
         app:layout_constraintEnd_toEndOf="@+id/dialogEtNameSound"
         app:layout_constraintStart_toStartOf="@+id/dialogEtNameSound"
-        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound" />
+        app:layout_constraintTop_toBottomOf="@+id/dialogEtNameSound"
+        android:autofillHints="" />
 
     <Button
         android:id="@+id/dialogBtnCancel"
@@ -71,7 +73,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
         android:background="@android:color/transparent"
-        android:text="@string/dialog_collection_cancel"
+        android:text="@string/view_btn_cancel"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorSecondary"
         android:textSize="18sp"
@@ -85,7 +87,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="16dp"
         android:backgroundTint="@color/colorSecondary"
-        android:text="Сохранить"
+        android:text="@string/view_btn_save"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorPrimaryLight"
         android:textSize="16sp"

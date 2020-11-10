@@ -5,7 +5,7 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
-    android:clickable="true"
+    android:clickable="false"
     android:minWidth="350dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
@@ -19,7 +19,7 @@
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
         android:background="@android:color/transparent"
-        android:text="@string/dialog_collection_cancel"
+        android:text="@string/view_btn_cancel"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorSecondary"
         android:textSize="18sp"
@@ -33,7 +33,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:backgroundTint="@color/colorSecondary"
-        android:text="@string/dialog_collection_delete"
+        android:text="@string/view_btn_delete"
         android:textAppearance="@style/TextStylePrimary"
         android:textColor="@color/colorPrimaryDark"
         android:textSize="16sp"
@@ -42,21 +42,18 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/dialogBtnCancel" />
 
-    <TextView
-        android:id="@+id/dialogTvTitle"
+    <CheckBox
+        android:id="@+id/chbCheckFullDel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
-        android:text="Title"
-        android:textAlignment="textStart"
-        android:textAppearance="@style/TextStylePrimary"
-        android:textSize="18sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:layout_marginTop="8dp"
+        android:buttonTint="@color/colorSecondary"
+        android:fontFamily="@font/fira_sans"
+        android:text="@string/view_text_delete_all"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/dialogTvText"
+        app:layout_constraintTop_toBottomOf="@+id/dialogTvText" />
 
     <TextView
         android:id="@+id/dialogTvText"
@@ -64,7 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="16dp"
-        android:text="Text"
+        android:text="@string/view_text"
         android:textAlignment="textStart"
         android:textAppearance="@style/TextStyleSecondary"
         android:textSize="14sp"
@@ -73,16 +70,19 @@
         app:layout_constraintStart_toStartOf="@+id/dialogTvTitle"
         app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle" />
 
-    <CheckBox
-        android:id="@+id/chbCheckFullDel"
+    <TextView
+        android:id="@+id/dialogTvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:buttonTint="@color/colorSecondary"
-        android:fontFamily="@font/fira_sans"
-        android:text="Удалить все записи"
-        android:textColor="@color/colorTextPrimary"
-        android:textSize="14sp"
-        app:layout_constraintStart_toStartOf="@+id/dialogTvText"
-        app:layout_constraintTop_toBottomOf="@+id/dialogTvText" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/view_title"
+        android:textAlignment="textStart"
+        android:textAppearance="@style/TextStylePrimary"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 </androidx.constraintlayout.widget.ConstraintLayout>

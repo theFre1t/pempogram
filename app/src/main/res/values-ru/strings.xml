@@ -1,17 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Мем Фразы</string>
-    <string name="dialog_btn_collection_delete">Удалить</string>
-    <string name="dialog_btn_collection_cancel">Позже</string>
     <string name="title_activity_main">Мем Фразы</string>
-    <string name="title_home">Главая</string>
+    <string name="title_home">Главная</string>
     <string name="title_dashboard">Коллекция</string>
     <string name="title_search">Поиск</string>
     <string name="title_account">Аккаунт</string>
     <string name="title_select_favaudio">Выберите фразу</string>
     <string name="title_сategories">Категории</string>
     <string name="title_sets">Наборы</string>
-    <string name="title_adding">Отменить действие будет невозможно</string>
+    <string name="title_adding">Добавить</string>
     <string name="title_upload_phrase">Загрузить фразу</string>
     <string name="message_phrase_loaded">Фраза загружена</string>
     <string name="message_saved">Сохранено</string>
@@ -28,4 +26,23 @@
     <string name="dialog_title_delete_phrase">Удалить фразу</string>
     <string name="dialog_text_delete_phrase">"Вы действительно хотите удалить фразу?\nОтменить действие будет невозможно"</string>
     <string name="message_phrase_deleted">Фраза удалена</string>
+    <string name="view_title_favorite_phrases">Любимые фразы</string>
+    <string name="view_text_empty">Пусто</string>
+    <string name="view_title_category">Категории</string>
+    <string name="view_text_expect_next_update">Ожидайте следующего обновления!</string>
+    <string name="view_text_remove">Убрать</string>
+    <string name="view_text_name">Название</string>
+    <string name="view_text_executor">Исполнитель</string>
+    <string name="view_btn_delete">Удалить</string>
+    <string name="view_btn_cancel">Позже</string>
+    <string name="view_text_author">Автор</string>
+    <string name="view_title">Тильт</string>
+    <string name="view_btn_save">Сохранить</string>
+    <string name="view_btn_choose">Выбрать</string>
+    <string name="view_text_upload_file">Загрузите файл</string>
+    <string name="view_btn_edit">Редактировать</string>
+    <string name="view_btn_search">Поиск</string>
+    <string name="view_btn_positioning">Позиционирование</string>
+    <string name="view_text_delete_all">Удалить все записи</string>
+    <string name="view_text">Текст</string>
 </resources>

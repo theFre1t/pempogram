@@ -5,13 +5,13 @@
     <item
         android:id="@+id/app_bar_search"
         android:icon="@drawable/baseline_search_24"
-        android:title="Search"
+        android:title="@string/view_btn_search"
         app:actionViewClass="android.widget.SearchView"
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/btn_menu_positionSettingColl"
         android:icon="@drawable/baseline_reorder_24"
-        android:title="Collection position "
+        android:title="@string/view_btn_positioning"
         android:visible="false"
         app:showAsAction="ifRoom" />
 </menu>
