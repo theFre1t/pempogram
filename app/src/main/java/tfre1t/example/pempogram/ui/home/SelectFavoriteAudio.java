@@ -1,9 +1,12 @@
 package tfre1t.example.pempogram.ui.home;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.SearchView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,6 +32,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     private RecyclerView  rvSelectFavAu;
     private Toolbar tbSelectFavAu;
+    private SearchView searchView;
+    private SearchView.OnQueryTextListener queryTextListener;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -57,6 +62,48 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.toolbar_select_favoriteaudio_menu,  menu);
+        MenuItem searchItem = menu.findItem(R.id.app_bar_search);
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    //h.sendEmptyMessage(DATA_DOWNLOAD);
+                    //Получаем данные
+                    homeViewModel.getDataSelAu(newText).observe(SelectFavoriteAudio.this, new Observer<List<DB_Table.AudiofileWithImg>>() {
+                        @Override
+                        public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                            listSelAu = list;
+                            setAdapter();
+                        }
+                    });
+                    /*dashboardViewModel.getDataColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
+                        @Override
+                        public void onChanged(List<Room_DB.Collection> list) {
+                            if (listColl != null) {
+                                //Запоминаем старые данные
+                                oldListColl = listColl;
+                            }
+                            listColl = list;
+                            //Отправляем сообщение о наличие данных
+                            h.sendEmptyMessage(DATA_TRUE);
+                        }
+                    });*/
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return true;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -67,9 +114,9 @@ public class SelectFavoriteAudio extends AppCompatActivity {
                 setResult(0);
                 finish();
                 return true;
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        searchView.setOnQueryTextListener(queryTextListener);
+        return super.onOptionsItemSelected(item);
     }
 
     private void loadData() {

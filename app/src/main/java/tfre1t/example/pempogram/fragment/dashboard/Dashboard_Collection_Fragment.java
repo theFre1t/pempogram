@@ -1,5 +1,6 @@
 package tfre1t.example.pempogram.fragment.dashboard;
 
+import android.app.SearchManager;
 import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -69,6 +71,8 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     private RecyclerView.LayoutManager lmOld;
     private ImageButton btnListCard, btnListClassic, btnListGrid;
     private TextView tvEmpty;
+    private SearchView searchView;
+    private SearchView.OnQueryTextListener queryTextListener;
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -111,6 +115,41 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     @Override
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_collection_menu, menu);
+        MenuItem searchItem = menu.findItem(R.id.app_bar_search);
+        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+
+        if (searchItem != null) {
+            searchView = (SearchView) searchItem.getActionView();
+        }
+        if (searchView != null) {
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+
+            queryTextListener = new SearchView.OnQueryTextListener() {
+                @Override
+                public boolean onQueryTextChange(String newText) {
+                    h.sendEmptyMessage(DATA_DOWNLOAD);
+                    //Получаем данные
+                    dashboardViewModel.getDataColl(newText).observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
+                        @Override
+                        public void onChanged(List<Room_DB.Collection> list) {
+                            if (listColl != null) {
+                                //Запоминаем старые данные
+                                oldListColl = listColl;
+                            }
+                            listColl = list;
+                            //Отправляем сообщение о наличие данных
+                            h.sendEmptyMessage(DATA_TRUE);
+                        }
+                    });
+                    return true;
+                }
+                @Override
+                public boolean onQueryTextSubmit(String query) {
+                    return true;
+                }
+            };
+            searchView.setOnQueryTextListener(queryTextListener);
+        }
         super.onCreateOptionsMenu(menu, inflater);
     }
 
@@ -121,9 +160,9 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                 ImageView imgV = v.findViewById(R.id.imgVHandle);
                 imgV.setVisibility(View.VISIBLE);
                 return true;*/
-            default:
-                return super.onOptionsItemSelected(item);
         }
+        searchView.setOnQueryTextListener(queryTextListener);
+        return super.onOptionsItemSelected(item);
     }
 
     //Получение и установка данных

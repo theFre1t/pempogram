@@ -72,13 +72,13 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
-            mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS);
-        }else {
+        //if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+        //    mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.OGG);
+        //    mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.VORBIS);
+        //}else {
             mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
             mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
-        }
+        //}
         mediaRecorder.setOutputFile(fileName);
 
         try {

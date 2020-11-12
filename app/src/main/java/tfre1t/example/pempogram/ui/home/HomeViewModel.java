@@ -42,9 +42,7 @@ public class HomeViewModel extends AndroidViewModel {
     ////////////////////////////////=Dashboard_Collection_Fragment=/////////////////////////////////
     /**Получение списка аудиозаписей Бысторого вызова*/
     public LiveData<List<DB_Table.AudiofileWithImg>> getDataFavAu(){
-        if(dataFavAu == null){
-            dataFavAu = favoriteAudioDao.getAll();
-        }
+        dataFavAu = favoriteAudioDao.getAll();
         return dataFavAu;
     }
 
@@ -71,10 +69,13 @@ public class HomeViewModel extends AndroidViewModel {
     /////////////////////////////////////=SelectFavoriteAudio=//////////////////////////////////////
     /**Получение списка аудиозаписей не используемых в наборе Бысторого вызова*/
     public LiveData<List<DB_Table.AudiofileWithImg>> getDataSelAu(){
-        if(dataSelAu == null){
-            dataSelAu = favoriteAudioDao.getAllNonFavAu();
-        }
+        dataSelAu = favoriteAudioDao.getAllNonFavAu();
         return dataSelAu;
+    }
+
+    /**Получение списка аудиозаписей не используемых в наборе Бысторого вызова по букве/слову/предложению???*/
+    public LiveData<List<DB_Table.AudiofileWithImg>> getDataSelAu(String searchText){
+        return favoriteAudioDao.searchAllNonFavAu("%"+searchText+"%");
     }
 
     /**Добавление аудиозаписи в набор Бысторого вызова*/

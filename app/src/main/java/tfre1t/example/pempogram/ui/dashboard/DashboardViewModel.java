@@ -27,6 +27,7 @@ public class DashboardViewModel extends AndroidViewModel {
     private static Room_DB.Collection_left_inDao collectionLeftInDao;
 
     private LiveData<Room_DB.Collection> dataCollById;
+    private LiveData<List<Room_DB.Collection>> dataColl;
     private LiveData<List<DB_Table.AudiofileFull>> audiofilesByIdColl;
     private LiveData<DB_Table.AudiofileWithImg> dataAudiofileById;
     private LiveData<List<DB_Table.AudiofileWithImg>> dataAudiofiles;
@@ -58,8 +59,12 @@ public class DashboardViewModel extends AndroidViewModel {
     ////////////////////////////////=Dashboard_Collection_Fragment=/////////////////////////////////
     /**Получение списка Наборов*/
     public LiveData<List<Room_DB.Collection>> getDataColl(){
-        LiveData<List<Room_DB.Collection>> dataColl = collectionDao.getAll();
+        dataColl = collectionDao.getAll();
         return dataColl;
+    }
+    /**Получение списка Наборов по букве/слову/предложению???*/
+    public LiveData<List<Room_DB.Collection>> getDataColl(String searchText){
+        return collectionDao.searchCollection("%"+searchText+"%");
     }
 
     /**<p>Запрос на получение данных о конкретном Наборе</p>

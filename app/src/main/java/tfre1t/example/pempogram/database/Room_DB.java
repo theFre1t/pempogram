@@ -127,6 +127,9 @@ public class Room_DB {
         @Query("Select * From collection")
         LiveData<List<Collection>> getAll();
 
+        @Query("Select * From collection Where name_collection LIKE :text OR author_collection LIKE :text")
+        LiveData<List<Collection>> searchCollection(String text);
+
         @Query("Select * From collection Where id_collection = :id")
         LiveData<Collection> getById(int id);
 
@@ -189,6 +192,14 @@ public class Room_DB {
                 " on Au.id_audiofile = Fav.id_audiofile" +
                 " Where Fav.id_audiofile is null")
         LiveData<List<DB_Table.AudiofileWithImg>> getAllNonFavAu();
+
+        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col" +
+                " on Au.id_collection = Col.id_collection" +
+                " left join FavoriteAudio as Fav" +
+                " on Au.id_audiofile = Fav.id_audiofile" +
+                " Where Fav.id_audiofile is null and" +
+                " (Au.name_audiofile LIKE :text OR Au.executor_audiofile LIKE :text)")
+        LiveData<List<DB_Table.AudiofileWithImg>> searchAllNonFavAu(String text);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au inner join collection as Col" +
                 " on Au.id_collection = Col.id_collection" +
