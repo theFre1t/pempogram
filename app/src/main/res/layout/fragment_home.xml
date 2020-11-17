@@ -36,12 +36,25 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
+            <TextView
+                android:id="@+id/tvQDS"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="@string/view_title_favorite_phrases"
+                android:textAppearance="@style/TextStylePrimary"
+                android:textSize="18sp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
             <ImageButton
                 android:id="@+id/btnDellFavAu"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:background="@android:color/transparent"
                 android:src="@drawable/baseline_delete_24"
+                android:tint="#FFFFFF"
                 app:layout_constraintBottom_toBottomOf="@+id/tvQDS"
                 app:layout_constraintEnd_toEndOf="@+id/rcViewFavorAudio"
                 app:layout_constraintTop_toTopOf="@+id/tvQDS" />
@@ -58,18 +71,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/tvQDS" />
-
-            <TextView
-                android:id="@+id/tvQDS"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="@string/view_title_favorite_phrases"
-                android:textAppearance="@style/TextStylePrimary"
-                android:textSize="18sp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
 
             <TextView
                 android:id="@+id/tvEmpty"

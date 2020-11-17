@@ -25,7 +25,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
     }
 
     private final Context ctx;
-    private final List<DB_Table.AudiofileWithImg> list;
+    private List<DB_Table.AudiofileWithImg> list;
 
     private final int layout;
 
@@ -59,7 +59,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SelectFavAuAdapter.SelectFavAuHolder holder, int position) {
-        DB_Table.AudiofileWithImg audiofile = list.get(list.size() - (position + 1));
+        DB_Table.AudiofileWithImg audiofile = list.get(position);
         holder.itemView.setId(audiofile.id_audiofile);
         holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
         holder.tvAudiofile.setText(audiofile.name_audiofile);
@@ -69,6 +69,10 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
     @Override
     public int getItemCount() {
         return list.size();
+    }
+
+    public void swipeData(List<DB_Table.AudiofileWithImg> listSelAu){
+        list = listSelAu;
     }
 }
 

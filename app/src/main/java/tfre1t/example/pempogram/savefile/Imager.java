@@ -58,7 +58,7 @@ public class Imager{
 
         SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmss", Locale.ENGLISH);
         String datetime = sdf.format(new Date(System.currentTimeMillis()));
-        String filename = "ImageCollection_" + datetime + ".png";
+        String filename = "ImageCollection_" + datetime + ".jpg";
 
         onSaverImage(filename, bitmap);
 
@@ -69,16 +69,17 @@ public class Imager{
         new Thread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
-                    savebitmap.compress(Bitmap.CompressFormat.PNG, 85, fOut);
-                    fOut.flush();
-                    fOut.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+
             }
         }).start();
+        try {
+            FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
+            savebitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+            fOut.flush();
+            fOut.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     public Bitmap setImageView(Context ctx, String path) {

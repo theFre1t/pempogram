@@ -20,7 +20,7 @@
         android:id="@+id/clCollMenu"
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:background="@color/colorPrimary"
+        android:background="@color/colorPrimaryDark"
         android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -31,8 +31,8 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/colorPrimaryLight"
+            android:background="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:src="@drawable/baseline_view_module_black_36"
             android:tint="@color/colorTextSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -44,24 +44,26 @@
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:backgroundTint="@color/colorPrimaryLight"
+            android:background="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:src="@drawable/baseline_table_rows_black_24"
             android:tint="@color/colorTextSecondary"
-            app:layout_constraintBottom_toBottomOf="@+id/btnlistGrid"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistGrid"
-            app:layout_constraintTop_toTopOf="@+id/btnlistGrid" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <ImageButton
             android:id="@+id/btnlistClassic"
             android:layout_width="50dp"
             android:layout_height="50dp"
             android:layout_gravity="center"
-            android:backgroundTint="@color/colorPrimaryLight"
+            android:background="@color/colorPrimaryDark"
+            android:backgroundTint="@color/colorPrimaryDark"
             android:src="@drawable/baseline_view_list_black_36"
             android:tint="@color/colorTextSecondary"
-            app:layout_constraintBottom_toBottomOf="@+id/btnlistCard"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistCard"
-            app:layout_constraintTop_toTopOf="@+id/btnlistCard" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/spinCategory"
@@ -84,7 +86,6 @@
         android:id="@+id/dividerColl"
         android:layout_width="0dp"
         android:layout_height="1dp"
-        android:background="?android:attr/listDivider"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/clCollMenu" />

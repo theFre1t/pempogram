@@ -50,15 +50,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private Context ctx;
     private static Handler h;
 
-    private List<DB_Table.AudiofileWithImg> listFavAu;
-    private List<DB_Table.AudiofileWithImg> oldListFavAu;
-    private static int statusBarHeight;
+    private List<DB_Table.AudiofileWithImg> oldListFavAu, listFavAu;
 
     private ImageButton btnDellFavAu;
     private ProgressBar pbLoader;
     private TextView tvEmpty;
     private RecyclerView rcVFavAu;
-    private View vStatusBar;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
@@ -75,10 +72,9 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         btnDellFavAu.setOnClickListener(this);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
-        vStatusBar = v.findViewById(R.id.vStatusBar);
+        View vStatusBar = v.findViewById(R.id.vStatusBar);
 
-        statusBarHeight = new StatusBarHeight().getStatusBarHeight(getActivity());
-        vStatusBar.getLayoutParams().height = statusBarHeight;
+        vStatusBar.getLayoutParams().height = new StatusBarHeight().getStatusBarHeight(getActivity());
     }
 
     //Получение и установка данных

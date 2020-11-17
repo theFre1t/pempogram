@@ -6,8 +6,8 @@
 
     <item>
         <bitmap
-            android:gravity="center"
-            android:src="@drawable/defaultimg"/>
+            android:gravity="bottom"
+            android:src="@drawable/pg_splash_logo"/>
     </item>
 
 </layer-list>

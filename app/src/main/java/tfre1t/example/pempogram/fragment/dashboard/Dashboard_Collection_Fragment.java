@@ -179,7 +179,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                 }
                 listColl = list;
                 //Отправляем сообщение о наличие данных
-                if (listColl == null) {
+                if (listColl.size() == 0) {
                     h.sendEmptyMessage(DATA_NONE);
                 } else {
                     h.sendEmptyMessage(DATA_TRUE);
@@ -317,7 +317,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     private ImageButton oldBtn;
     private void setColorBtn(ImageButton btn) {
         if(oldBtn != null){
-            oldBtn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryLight), PorterDuff.Mode.SRC_ATOP);
+            oldBtn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
             oldBtn.setColorFilter(getResources().getColor(R.color.colorTextSecondary), PorterDuff.Mode.SRC_ATOP);
         }
         oldBtn = btn;

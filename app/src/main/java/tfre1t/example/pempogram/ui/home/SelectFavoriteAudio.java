@@ -3,10 +3,14 @@ package tfre1t.example.pempogram.ui.home;
 import android.app.SearchManager;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ProgressBar;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,9 +19,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
@@ -25,13 +31,24 @@ import tfre1t.example.pempogram.database.DB_Table;
 import tfre1t.example.pempogram.myadapter.SelectFavAuAdapter;
 
 public class SelectFavoriteAudio extends AppCompatActivity {
+    private static final String TAG = "myLog";
+
+    private static int CURRENT_DATA; //Текущее состояние данных
+    private static final int DATA_NONE = 0; // Данных нет
+    private static final int DATA_TRUE = 1; // Данные есть
+    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private HomeViewModel homeViewModel;
+    private SelectFavAuAdapter scAdapter;
 
-    private List<DB_Table.AudiofileWithImg> listSelAu;
+    private static Handler h;
+
+    private List<DB_Table.AudiofileWithImg> oldListSelAu, listSelAu;
 
     private RecyclerView  rvSelectFavAu;
     private Toolbar tbSelectFavAu;
+    private ProgressBar pbLoader;
+    private TextView tvEmpty;
     private SearchView searchView;
     private SearchView.OnQueryTextListener queryTextListener;
 
@@ -40,6 +57,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_favoriteaudio);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
+        h = new MyHandler(this);
         findViewById();
         setToolbar();
         loadData();
@@ -48,6 +66,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     private void findViewById() {
         tbSelectFavAu = findViewById(R.id.tbSelectFavAu);
         rvSelectFavAu = findViewById(R.id.rvSelectFavAu);
+        pbLoader = findViewById(R.id.pbLoader);
+        tvEmpty = findViewById(R.id.tvEmpty);
     }
 
     private void setToolbar() {
@@ -64,37 +84,27 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.toolbar_select_favoriteaudio_menu,  menu);
         MenuItem searchItem = menu.findItem(R.id.app_bar_search);
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    //h.sendEmptyMessage(DATA_DOWNLOAD);
+                    h.sendEmptyMessage(DATA_DOWNLOAD);
                     //Получаем данные
                     homeViewModel.getDataSelAu(newText).observe(SelectFavoriteAudio.this, new Observer<List<DB_Table.AudiofileWithImg>>() {
                         @Override
                         public void onChanged(List<DB_Table.AudiofileWithImg> list) {
-                            listSelAu = list;
-                            setAdapter();
-                        }
-                    });
-                    /*dashboardViewModel.getDataColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
-                        @Override
-                        public void onChanged(List<Room_DB.Collection> list) {
-                            if (listColl != null) {
-                                //Запоминаем старые данные
-                                oldListColl = listColl;
+                            if (listSelAu != null) {
+                                oldListSelAu = listSelAu; //Запоминаем старые данные
                             }
-                            listColl = list;
+                            listSelAu = list;
                             //Отправляем сообщение о наличие данных
                             h.sendEmptyMessage(DATA_TRUE);
                         }
-                    });*/
+                    });
                     return true;
                 }
                 @Override
@@ -119,22 +129,118 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Получение и установка данных
     private void loadData() {
-        homeViewModel.getDataSelAu().observe(this, new Observer<List<DB_Table.AudiofileWithImg>>() {
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+        //Получаем данные
+        homeViewModel.getDataSelAu().observe(SelectFavoriteAudio.this, new Observer<List<DB_Table.AudiofileWithImg>>() {
             @Override
             public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                if (listSelAu != null) {
+                    oldListSelAu = listSelAu; //Запоминаем старые данные
+                }
                 listSelAu = list;
-                setAdapter();
+                //Отправляем сообщение о наличие данных
+                if (listSelAu.size() == 0) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
             }
         });
     }
 
-    private void setAdapter() {
-        RecyclerView.LayoutManager lm = new LinearLayoutManager(SelectFavoriteAudio.this);
-        SelectFavAuAdapter scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, listSelAu);
-        scAdapter.setItemClickListener(onItemClickListener);
-        rvSelectFavAu.setLayoutManager(lm);
-        rvSelectFavAu.setAdapter(scAdapter);
+    static class MyHandler extends Handler {
+        WeakReference<SelectFavoriteAudio> wr;
+        SelectFavoriteAudio newSFA;
+
+        public MyHandler(SelectFavoriteAudio sfa) {
+            wr = new WeakReference<>(sfa);
+        }
+
+        @Override
+        public void handleMessage(@NonNull Message msg) {
+            super.handleMessage(msg);
+            newSFA = wr.get();
+            if(newSFA != null){
+                switch (msg.what){
+                    case DATA_DOWNLOAD:
+                        CURRENT_DATA = DATA_DOWNLOAD;
+                        newSFA.setData();
+                        break;
+                    case DATA_NONE:
+                        CURRENT_DATA = DATA_NONE;
+                        newSFA.setData();
+                        break;
+                    case DATA_TRUE:
+                        CURRENT_DATA = DATA_TRUE;
+                        newSFA.setData();
+                        break;
+                }
+            }
+        }
+    }
+
+    private void setData(){
+        pbLoader.setVisibility(View.GONE);
+        tvEmpty.setVisibility(View.GONE);
+        switch (CURRENT_DATA) {
+            case DATA_DOWNLOAD:
+                pbLoader.setVisibility(View.VISIBLE);
+                break;
+            case DATA_NONE:
+                tvEmpty.setVisibility(View.VISIBLE);
+                break;
+            case DATA_TRUE:
+                if(scAdapter == null){
+                    scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, listSelAu);
+                    scAdapter.setItemClickListener(onItemClickListener);
+                    rvSelectFavAu.setLayoutManager(new LinearLayoutManager(SelectFavoriteAudio.this));
+                    rvSelectFavAu.setAdapter(scAdapter);
+                }else {
+                    SelectFavAuDiffUtilCallback DiffUtilCallback = new SelectFavAuDiffUtilCallback(oldListSelAu, listSelAu);
+                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
+                    scAdapter.swipeData(listSelAu);
+                    diffResult.dispatchUpdatesTo(scAdapter);
+                }
+                break;
+        }
+    }
+
+    //Обновляем RecyclerView
+    public static class SelectFavAuDiffUtilCallback extends DiffUtil.Callback{
+
+        List<DB_Table.AudiofileWithImg> oldList;
+        List<DB_Table.AudiofileWithImg> newList;
+
+        SelectFavAuDiffUtilCallback(List<DB_Table.AudiofileWithImg> oldList, List<DB_Table.AudiofileWithImg> newList){
+            this.oldList = oldList;
+            this.newList = newList;
+        }
+
+        @Override
+        public int getOldListSize() {
+            return oldList.size();
+        }
+
+        @Override
+        public int getNewListSize() {
+            return newList.size();
+        }
+
+        @Override
+        public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
+            int newId = newList.get(newItemPosition).id_audiofile;
+            int oldId = oldList.get(oldItemPosition).id_audiofile;
+            return newId == oldId;
+        }
+
+        @Override
+        public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
+            String newName = newList.get(newItemPosition).name_audiofile;
+            String oldName = oldList.get(oldItemPosition).name_audiofile;
+            return oldName.equals(newName);
+        }
     }
 
     private final View.OnClickListener onItemClickListener = new View.OnClickListener() {

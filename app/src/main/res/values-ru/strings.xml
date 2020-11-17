@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Мем Фразы</string>
-    <string name="title_activity_main">Мем Фразы</string>
+    <string name="app_name">Paizogram</string>
+    <string name="title_activity_main">Paizogram</string>
     <string name="title_home">Главная</string>
     <string name="title_dashboard">Коллекция</string>
     <string name="title_search">Поиск</string>

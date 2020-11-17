@@ -1,7 +1,7 @@
 <resources>
     //Название приложения
-    <string name="app_name">Meme Phrases</string>
-    <string name="title_activity_main">Meme Phrases</string>
+    <string name="app_name">Paizogram</string>
+    <string name="title_activity_main">Paizogram</string>
 
     //(Fragment) Домашняя страница
     <string name="title_home">Home</string>
