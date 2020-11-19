@@ -83,7 +83,7 @@ public class Imager{
     }
 
     public Bitmap setImageView(Context ctx, String path) {
-        bitmap = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.defaultimg);
+        bitmap = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.default_img);
         if(path != null) {
             try {
                 FileInputStream fis = ctx.openFileInput(path);

@@ -50,10 +50,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     private static final int DATA_TRUE = 1; // Данные есть
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
 
-    private static MyMediaPlayer myMediaPlayer;
+    private MyMediaPlayer myMediaPlayer;
     private DashboardViewModel dashboardViewModel;
     private SetSoundAdapter scAdapter;
-
 
     private View v;
     private Context ctx;
@@ -296,9 +295,26 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     @Override
     public void onDestroyView() {
         super.onDestroyView();
+        Cleaner();
+    }
+
+    @Override
+    public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner(){
+        if (h != null)
+            h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
+            myMediaPlayer = null;
         }
+        rvSetSounds.setAdapter(null);
+        scAdapter = null;
+        oldListAudiofiles = null;
+        listAudiofiles = null;
         getParentFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();
     }
 }

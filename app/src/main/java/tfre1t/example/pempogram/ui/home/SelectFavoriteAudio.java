@@ -41,7 +41,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     private HomeViewModel homeViewModel;
     private SelectFavAuAdapter scAdapter;
 
-    private static Handler h;
+    private Handler h;
 
     private List<DB_Table.AudiofileWithImg> oldListSelAu, listSelAu;
 
@@ -251,4 +251,19 @@ public class SelectFavoriteAudio extends AppCompatActivity {
             finish();
         }
     };
+
+    @Override
+    public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner(){
+        if (h != null)
+            h.removeCallbacksAndMessages(null);
+        rvSelectFavAu.setAdapter(null);
+        scAdapter = null;
+        oldListSelAu = null;
+        listSelAu = null;
+    }
 }

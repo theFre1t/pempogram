@@ -43,12 +43,12 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final int CODE_SELECT_AUDIO = 1; // Код перехода на добавления фразы
 
     private HomeViewModel homeViewModel;
-    private static MyMediaPlayer myMediaPlayer;
+    private MyMediaPlayer myMediaPlayer;
     private FavoriteAudioAdater favAuAdapter;
 
     private View v;
     private Context ctx;
-    private static Handler h;
+    private Handler h;
 
     private List<DB_Table.AudiofileWithImg> oldListFavAu, listFavAu;
 
@@ -260,13 +260,30 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         }
     }
 
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        Cleaner();
+    }
+
     @Override
     public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner(){
         if (h != null)
             h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
+            myMediaPlayer = null;
         }
-        super.onDestroy();
+        rcVFavAu.setAdapter(null);
+        favAuAdapter = null;
+        oldListFavAu = null;
+        listFavAu = null;
     }
 }

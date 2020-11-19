@@ -32,7 +32,7 @@
         android:id="@+id/tvAuthor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
+        android:layout_marginBottom="16dp"
         android:text="@string/view_text_author"
         android:textAppearance="@style/TextStyleSecondary"
         android:textSize="18sp"

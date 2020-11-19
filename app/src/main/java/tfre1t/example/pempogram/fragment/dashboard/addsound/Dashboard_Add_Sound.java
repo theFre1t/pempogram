@@ -116,4 +116,16 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
             }
         });
     }
+
+
+
+    @Override
+    public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner(){
+        vPagerAddSound.setAdapter(null);
+    }
 }

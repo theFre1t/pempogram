@@ -53,15 +53,14 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     private DashboardViewModel dashboardViewModel;
     private CollectionAdater cAdapter;
 
-    private static Handler h;
+    private Handler h;
     private FragmentTransaction fragTrans;
     private Preferenceser pref;
     private Context ctx;
     private View v;
 
     private static int type_ListCollection;
-    private List<Room_DB.Collection> listColl;
-    private List<Room_DB.Collection> oldListColl;
+    private List<Room_DB.Collection> listColl, oldListColl;
     private int lay;
 
     private Toolbar tbColl;
@@ -370,10 +369,20 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         super.onStop();
     }
 
+
+
     @Override
     public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner(){
         if (h != null)
             h.removeCallbacksAndMessages(null);
-        super.onDestroy();
+        rcVColl.setAdapter(null);
+        cAdapter = null;
+        oldListColl = null;
+        listColl = null;
     }
 }
