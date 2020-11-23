@@ -9,6 +9,7 @@ import android.provider.MediaStore;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,15 +34,19 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
     private static final int GALLERY_REQUEST = 1;
 
     private DashboardViewModel dashboardViewModel;
+    private Imager imager;
 
     private final Context ctx;
     private View v;
 
     private Bitmap bitmap;
+    private String ImgName;
+    private boolean isSave;
 
     private TextView dialogTvTitle;
     private EditText dialogEtAuthorCollection, dialogEtNameCollection;
     private RoundedImageView dialogRmvImgCollection;
+    private Button dialogBtnAdd;
 
     public Dialog_Add_Collection(Context ctx) {
         this.ctx = ctx;
@@ -55,6 +60,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
 
         findViewById();
 
+        isSave = false;
         dialogTvTitle.setText(R.string.dialog_title_adding_set);
         return v;
     }
@@ -65,9 +71,10 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
 
         dialogEtAuthorCollection =  v.findViewById(R.id.dialogEtAuthorCollection);
         dialogEtNameCollection = v.findViewById(R.id.dialogEtNameCollection);
+        dialogBtnAdd = v.findViewById(R.id.dialogBtnAdd);
 
+        dialogBtnAdd.setOnClickListener(this);
         v.findViewById(R.id.dialogRmvImgCollection).setOnClickListener(this);
-        v.findViewById(R.id.dialogBtnAdd).setOnClickListener(this);
         v.findViewById(R.id.dialogBtnCancel).setOnClickListener(this);
     }
 
@@ -77,12 +84,13 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
         if (id == R.id.dialogRmvImgCollection) {
             Intent intent = new Intent(Intent.ACTION_PICK).setType("image/*");
             startActivityForResult(intent, GALLERY_REQUEST);
+            dialogBtnAdd.setEnabled(false);
         } else if (id == R.id.dialogBtnAdd) {
             String NameColl = dialogEtNameCollection.getText().toString();
             String AuthorColl = dialogEtAuthorCollection.getText().toString();
             if (fillingCheck(NameColl, AuthorColl)) {
-                String ImgName = new Imager().saveImage(ctx, bitmap);
                 dashboardViewModel.addNewColl(NameColl, AuthorColl, ImgName);
+                isSave = true;
                 Toast.makeText(v.getContext(), R.string.message_set_added, Toast.LENGTH_SHORT).show();
                 dismiss();
             }
@@ -100,16 +108,47 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == GALLERY_REQUEST) {
-            if (resultCode == RESULT_OK) {
-                Uri selectedImage = data.getData();
-                try {
-                    bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), selectedImage);
-                } catch (IOException e) {
-                    e.printStackTrace();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (requestCode == GALLERY_REQUEST) {
+                    if (resultCode == RESULT_OK) {
+                        Uri selectedImage = data.getData();
+                        try {
+                            bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), selectedImage);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        imager = new Imager();
+                        ImgName = imager.saveImage(ctx, bitmap);
+                        getActivity().runOnUiThread(runSetImage);
+                    }
+                    getActivity().runOnUiThread(runSetEnable);
                 }
-                dialogRmvImgCollection.setImageBitmap(bitmap);
+            }
+        }).start();
+    }
+
+    Runnable runSetImage = new Runnable() {
+        @Override
+        public void run() {
+            dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, ImgName));
+        }
+    };
+
+    Runnable runSetEnable = new Runnable() {
+        @Override
+        public void run() {
+            dialogBtnAdd.setEnabled(true);
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        if(!isSave) {
+            if (ImgName != null) {
+                imager.deleteImage(ctx, ImgName);
             }
         }
     }

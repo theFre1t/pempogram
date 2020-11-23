@@ -21,6 +21,7 @@ public class Imager{
     private static final int EDIT = 2;
 
     private Context ctx;
+    private Thread thread;
 
     private static Bitmap oldBitmap;
     private static Bitmap bitmap;
@@ -61,25 +62,25 @@ public class Imager{
         String filename = "ImageCollection_" + datetime + ".jpg";
 
         onSaverImage(filename, bitmap);
-
+        while (thread.isAlive());
         return filename;
     }
 
     private void onSaverImage(final String filename, final Bitmap savebitmap) {
-        new Thread(new Runnable() {
+        thread = new Thread(new Runnable() {
             @Override
             public void run() {
-
+                try {
+                    FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
+                    savebitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+                    fOut.flush();
+                    fOut.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
-        }).start();
-        try {
-            FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
-            savebitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-            fOut.flush();
-            fOut.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        });
+        thread.start();
     }
 
     public Bitmap setImageView(Context ctx, String path) {
