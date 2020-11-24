@@ -13,4 +13,8 @@
     <!-- Color Text -->
     <color name="colorTextPrimary">#FFFFFF</color>
     <color name="colorTextSecondary">#CDCDCD</color>
+    <!-- Ofter Colors -->
+    <color name="colorLightGray">#A5A5A5</color>
+    <color name="colorGray">#828282</color>
+    <color name="colorDarkGray">#646464</color>
 </resources>
