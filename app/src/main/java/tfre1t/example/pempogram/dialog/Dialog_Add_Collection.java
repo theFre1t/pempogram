@@ -3,6 +3,7 @@ package tfre1t.example.pempogram.dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -40,7 +41,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
     private View v;
 
     private Bitmap bitmap;
-    private String ImgName;
+    private String nameImg;
     private boolean isSave;
 
     private TextView dialogTvTitle;
@@ -85,11 +86,12 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
             Intent intent = new Intent(Intent.ACTION_PICK).setType("image/*");
             startActivityForResult(intent, GALLERY_REQUEST);
             dialogBtnAdd.setEnabled(false);
+            dialogBtnAdd.getBackground().mutate().setColorFilter(ctx.getResources().getColor(R.color.colorLightGray), PorterDuff.Mode.SRC_ATOP);
         } else if (id == R.id.dialogBtnAdd) {
             String NameColl = dialogEtNameCollection.getText().toString();
             String AuthorColl = dialogEtAuthorCollection.getText().toString();
             if (fillingCheck(NameColl, AuthorColl)) {
-                dashboardViewModel.addNewColl(NameColl, AuthorColl, ImgName);
+                dashboardViewModel.addNewColl(NameColl, AuthorColl, nameImg);
                 isSave = true;
                 Toast.makeText(v.getContext(), R.string.message_set_added, Toast.LENGTH_SHORT).show();
                 dismiss();
@@ -120,35 +122,32 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
                             e.printStackTrace();
                         }
                         imager = new Imager();
-                        ImgName = imager.saveImage(ctx, bitmap);
-                        getActivity().runOnUiThread(runSetImage);
+                        nameImg = imager.saveImage(ctx, bitmap);
+                        getActivity().runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg));
+                            }
+                        });
                     }
-                    getActivity().runOnUiThread(runSetEnable);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            dialogBtnAdd.setEnabled(true);
+                            dialogBtnAdd.getBackground().mutate().setColorFilter(ctx.getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
+                        }
+                    });
                 }
             }
         }).start();
     }
 
-    Runnable runSetImage = new Runnable() {
-        @Override
-        public void run() {
-            dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, ImgName));
-        }
-    };
-
-    Runnable runSetEnable = new Runnable() {
-        @Override
-        public void run() {
-            dialogBtnAdd.setEnabled(true);
-        }
-    };
-
     @Override
     public void onDestroy() {
         super.onDestroy();
         if(!isSave) {
-            if (ImgName != null) {
-                imager.deleteImage(ctx, ImgName);
+            if (nameImg != null) {
+                imager.deleteImage(ctx, nameImg);
             }
         }
     }
