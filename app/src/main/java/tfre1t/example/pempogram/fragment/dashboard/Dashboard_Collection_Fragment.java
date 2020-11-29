@@ -30,6 +30,12 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -52,6 +58,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
 
     private DashboardViewModel dashboardViewModel;
     private CollectionAdater cAdapter;
+    private InterstitialAd mInterstitialAd;
 
     private Handler h;
     private FragmentTransaction fragTrans;
@@ -81,6 +88,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         type_ListCollection = (pref = new Preferenceser(ctx)).loadTypeViewCollection();
         findViewById();
         setToolbar();
+        adMod();
         loadData();
         return v;
     }
@@ -162,6 +170,16 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         }
         searchView.setOnQueryTextListener(queryTextListener);
         return super.onOptionsItemSelected(item);
+    }
+
+    private void adMod() {
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+        mInterstitialAd = new InterstitialAd(ctx);
+        mInterstitialAd.setAdUnitId(""+R.string.collection_interstitial_ad_unit_id);
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     //Получение и установка данных
@@ -307,23 +325,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         }
     }
 
-    /*@Override
-    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
-        mItemTouchHelper.startDrag(viewHolder);
-    }*/
-
-    //Выделяем выбранную кнопку
-    private ImageButton oldBtn;
-    private void setColorBtn(ImageButton btn) {
-        if(oldBtn != null){
-            oldBtn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
-            oldBtn.setColorFilter(getResources().getColor(R.color.colorTextSecondary), PorterDuff.Mode.SRC_ATOP);
-        }
-        oldBtn = btn;
-        btn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
-        btn.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
-    }
-
     private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View view) {
@@ -334,6 +335,10 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             fragTrans.replace(R.id.frmLayoutDashFrag, dashSetSoundCollFrag);
             fragTrans.addToBackStack(null);
             fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
+
+            if(mInterstitialAd.isLoaded()){
+                mInterstitialAd.show();
+            }
             fragTrans.commit();
         }
     };
@@ -361,6 +366,23 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             Dialog_Add_Collection dialog_AC = new Dialog_Add_Collection(ctx);
             dialog_AC.show(fragTrans, "addColl");
         }
+    }
+
+        /*@Override
+    public void onStartDrag(RecyclerView.ViewHolder viewHolder) {
+        mItemTouchHelper.startDrag(viewHolder);
+    }*/
+
+    //Выделяем выбранную кнопку
+    private ImageButton oldBtn;
+    private void setColorBtn(ImageButton btn) {
+        if(oldBtn != null){
+            oldBtn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorPrimaryDark), PorterDuff.Mode.SRC_ATOP);
+            oldBtn.setColorFilter(getResources().getColor(R.color.colorTextSecondary), PorterDuff.Mode.SRC_ATOP);
+        }
+        oldBtn = btn;
+        btn.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
+        btn.setColorFilter(getResources().getColor(R.color.colorPrimary), PorterDuff.Mode.SRC_ATOP);
     }
 
     @Override

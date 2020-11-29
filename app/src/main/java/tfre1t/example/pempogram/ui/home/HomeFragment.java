@@ -20,6 +20,12 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -56,12 +62,15 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     private ProgressBar pbLoader;
     private TextView tvEmpty;
     private RecyclerView rcVFavAu;
+    private AdView adHomeBanner;
 
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
         v = inflater.inflate(R.layout.fragment_home, container, false);
         ctx = v.getContext();
+
         findViewById();
+        adMod();
         loadData();
         return v;
     }
@@ -72,9 +81,22 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         btnDellFavAu.setOnClickListener(this);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
-        View vStatusBar = v.findViewById(R.id.vStatusBar);
+        adHomeBanner = v.findViewById(R.id.adHomeBanner);
 
+        View vStatusBar = v.findViewById(R.id.vStatusBar);
         vStatusBar.getLayoutParams().height = new StatusBarHeight().getStatusBarHeight(getActivity());
+    }
+
+    private void adMod() {
+        //test: ca-app-pub-3940256099942544/6300978111
+        //мой: ca-app-pub-0973407020138517/1231381531
+
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+        adHomeBanner.loadAd(new AdRequest.Builder().build());
     }
 
     //Получение и установка данных
