@@ -45,4 +45,6 @@
     <string name="view_btn_positioning">Позиционирование</string>
     <string name="view_text_delete_all">Удалить все записи</string>
     <string name="view_text">Текст</string>
+    <string name="homebanner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="collection_interstitial_ad_unit_id">ca-app-pub-3940256099942544/1033173712</string>
 </resources>

@@ -1,7 +1,6 @@
 package tfre1t.example.pempogram.ui.dashboard;
 
 import android.app.Application;
-import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -91,7 +90,6 @@ public class DashboardViewModel extends AndroidViewModel {
     ////////////////////////////=Dashboard_SetSoundsCollection_Fragment=////////////////////////////
     /**Получение данных о конкретном Наборе*/
     public LiveData<Room_DB.Collection> getDataSelectedColl(){
-        Log.d(TAG, "getDataSelectedColl: id = " + collectionId);
         dataCollById = collectionDao.getById(collectionId);
         return dataCollById;
     }
