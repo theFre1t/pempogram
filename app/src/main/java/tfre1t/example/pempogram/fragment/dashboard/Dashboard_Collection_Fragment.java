@@ -6,6 +6,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -178,7 +179,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             public void onInitializationComplete(InitializationStatus initializationStatus) {}
         });
         mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId(""+R.string.collection_interstitial_ad_unit_id);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
         mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
@@ -335,7 +336,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             fragTrans.replace(R.id.frmLayoutDashFrag, dashSetSoundCollFrag);
             fragTrans.addToBackStack(null);
             fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-
             if(mInterstitialAd.isLoaded()){
                 mInterstitialAd.show();
             }
