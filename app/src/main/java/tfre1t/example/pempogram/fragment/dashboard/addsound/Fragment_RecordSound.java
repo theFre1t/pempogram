@@ -141,7 +141,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         switch (status){
             case START_RECORD:
                 recordGroup.setVisibility(View.VISIBLE);
-                imgBtnRecordAudiofile.setImageResource(android.R.drawable.picture_frame);
+                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_stop_48);
                 imgBtnRecordAudiofile.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
                 tvTime.setBase(SystemClock.elapsedRealtime());
                 tvTime.start();
@@ -161,13 +161,13 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
                 else {
                     tvRecordTime.setBase(SystemClock.elapsedRealtime() - timeRecord);
                 }
-                imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_stop_black_48);
+                imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_stop_24);
                 sbAudiofile.setMax(timeRecord-1);
                 tvRecordTime.start();
                 break;
             case DELETE_CURRENT_RECORD:
                 tvRecordTime.stop();
-                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_mic_black_48);
+                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_mic_48);
                 imgBtnRecordAudiofile.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
                 recordGroup.setVisibility(View.VISIBLE);
                 break;
@@ -187,7 +187,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         if(!myMediaPlayer.mediaPlayerResume){
             tvRecordTime.stop();
             tvRecordTime.setText(ZERO_TIME);
-            imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_play_arrow_black_48);
+            imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_play_arrow_24);
         }
     }
 

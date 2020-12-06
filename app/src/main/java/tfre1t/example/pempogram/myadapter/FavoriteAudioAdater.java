@@ -73,7 +73,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
     }
 
     private void setHolderImgBtnAddFavAu(FavoriteAudioHolder holder) {
-        holder.imgv.setImageResource(R.drawable.baseline_add_black_48);
+        holder.imgv.setImageResource(R.drawable.baseline_add_24);
         holder.imgv.setColorFilter(ctx.getResources().getColor(R.color.colorTextSecondary), PorterDuff.Mode.SRC_ATOP);
     }
 

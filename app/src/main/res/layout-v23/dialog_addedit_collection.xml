@@ -103,7 +103,7 @@
         android:layout_marginTop="12dp"
         android:background="@drawable/rounder_4dp"
         android:backgroundTint="@color/colorPrimary"
-        android:foreground="@drawable/baseline_add_a_photo_black_48"
+        android:foreground="@drawable/baseline_add_a_photo_24"
         android:foregroundGravity="fill"
         android:foregroundTint="#A6FFFFFF"
         app:layout_constraintStart_toStartOf="@+id/dialogTvTitle"

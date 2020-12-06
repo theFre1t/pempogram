@@ -1,7 +1,7 @@
 <resources>
     <string name="homebanner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
-    //Название приложения
+    /Название приложения
     <string name="app_name">Paizogram</string>
     <string name="title_activity_main">Paizogram</string>
 
@@ -56,6 +56,9 @@
 
     //(Fragment) Аккаунт
     <string name="title_account">Account</string>
+    <string name="view_text_title_vk">VK community</string>
+    <string name="view_text_message_vk">Here you can leave requests to add your sets</string>
+    <string name="view_text_account">Your account will be here!</string>
 
     //Общии
     -Сообщения

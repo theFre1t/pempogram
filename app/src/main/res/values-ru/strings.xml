@@ -46,4 +46,7 @@
     <string name="view_text_delete_all">Удалить все записи</string>
     <string name="view_text">Текст</string>
     <string name="homebanner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="view_text_account">Здесь будет ваша учетная запись!</string>
+    <string name="view_text_title_vk">Сообщество Вконтакте</string>
+    <string name="view_text_message_vk">Здесь вы можете оставлять заявки на добавление своих наборов</string>
 </resources>
