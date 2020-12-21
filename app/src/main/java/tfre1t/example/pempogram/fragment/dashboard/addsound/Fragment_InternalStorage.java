@@ -16,6 +16,12 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.savefile.SaverAudio;
 import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
@@ -28,6 +34,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
     private static final int RQS_OPEN_AUDIO = 2;
 
     private DashboardViewModel dashboardViewModel;
+    private InterstitialAd mInterstitialAd;
 
     private View v;
     private Context ctx;
@@ -44,6 +51,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
         ctx = v.getContext();
 
         findViewById();
+        adMod();
 
         tvTitle.setText(R.string.title_upload_phrase);
         return v;
@@ -56,6 +64,16 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
         etNameSound = v.findViewById(R.id.etNameSound);
         v.findViewById(R.id.btnSelectAudiofile).setOnClickListener(this);
         v.findViewById(R.id.btnAdd).setOnClickListener(this);
+    }
+
+    private void adMod() {
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+        mInterstitialAd = new InterstitialAd(ctx);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -72,6 +90,11 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
             if (fillingCheck(nameSound, executorSound, selectedAudio)) {
                 String audiofile = new SaverAudio().saveAudio(v.getContext(), selectedAudio);
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, audiofile);
+
+                if(mInterstitialAd.isLoaded()){
+                    mInterstitialAd.show();
+                }
+
                 Toast.makeText(v.getContext(), R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }

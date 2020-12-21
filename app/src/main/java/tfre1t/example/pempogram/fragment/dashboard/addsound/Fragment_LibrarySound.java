@@ -19,6 +19,12 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.lang.ref.WeakReference;
 import java.util.List;
 
@@ -37,6 +43,7 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
 
     private DashboardViewModel dashboardViewModel;
     private LibrarySoundAdapter lsAdapter;
+    private InterstitialAd mInterstitialAd;
 
     private Handler h;
     private Context ctx;
@@ -55,7 +62,9 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.fragment_addsound_librarysound, null);
         ctx = v.getContext();
+
         findViewById();
+        adMod();
         loadData();
 
         tvTitle.setText(R.string.title_select_phrases);
@@ -68,6 +77,16 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         v.findViewById(R.id.btnAdd).setOnClickListener(this);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
+    }
+
+    private void adMod() {
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+        mInterstitialAd = new InterstitialAd(ctx);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     //Получение и установка данных
@@ -139,6 +158,11 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         int id = v.getId();
         if (id == R.id.btnAdd) {
             dashboardViewModel.editCollection(lsAdapter.getSounds());
+
+            if(mInterstitialAd.isLoaded()){
+                mInterstitialAd.show();
+            }
+
             Toast.makeText(ctx, R.string.message_saved, Toast.LENGTH_SHORT).show();
             getActivity().finish();
         }

@@ -21,6 +21,12 @@ import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.io.File;
 
 import tfre1t.example.pempogram.R;
@@ -39,6 +45,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
 
     private DashboardViewModel dashboardViewModel;
     private MyMediaPlayer myMediaPlayer;
+    private InterstitialAd mInterstitialAd;
 
     private Context ctx;
     private View v;
@@ -62,6 +69,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         ctx = v.getContext();
 
         findViewById();
+        adMod();
 
         isSave = false;
         tvTitle.setText(R.string.title_dictaphone);
@@ -92,6 +100,16 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
 
         recordGroup = v.findViewById(R.id.recordGroup);
         playGroup = v.findViewById(R.id.playGroup);
+    }
+
+    private void adMod() {
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+        mInterstitialAd = new InterstitialAd(ctx);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -129,6 +147,11 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
             if (fillingCheck(nameSound, executorSound, recordAudio)) {
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, recordAudio.getName());
                 isSave = true;
+
+                if(mInterstitialAd.isLoaded()){
+                    mInterstitialAd.show();
+                }
+
                 Toast.makeText(ctx, R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }

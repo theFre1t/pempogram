@@ -59,7 +59,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
 
     private DashboardViewModel dashboardViewModel;
     private CollectionAdater cAdapter;
-    private InterstitialAd mInterstitialAd;
 
     private Handler h;
     private FragmentTransaction fragTrans;
@@ -89,7 +88,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         type_ListCollection = (pref = new Preferenceser(ctx)).loadTypeViewCollection();
         findViewById();
         setToolbar();
-        adMod();
         loadData();
         return v;
     }
@@ -171,16 +169,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         }
         searchView.setOnQueryTextListener(queryTextListener);
         return super.onOptionsItemSelected(item);
-    }
-
-    private void adMod() {
-        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
-            @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {}
-        });
-        mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     //Получение и установка данных
@@ -336,9 +324,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             fragTrans.replace(R.id.frmLayoutDashFrag, dashSetSoundCollFrag);
             fragTrans.addToBackStack(null);
             fragTrans.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE);
-            if(mInterstitialAd.isLoaded()){
-                mInterstitialAd.show();
-            }
             fragTrans.commit();
         }
     };
