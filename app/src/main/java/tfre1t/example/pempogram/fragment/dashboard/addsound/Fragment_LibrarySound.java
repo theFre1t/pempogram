@@ -29,7 +29,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.myadapter.LibrarySoundAdapter;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
@@ -49,8 +49,8 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
     private Context ctx;
     private View v;
 
-    private List<DB_Table.AudiofileWithImg> listAudiofiles;
-    private List<DB_Table.AudiofileFull> listSelectedAudiofiles;
+    private List<Tables.AudiofileWithImg> listAudiofiles;
+    private List<Tables.AudiofileFull> listSelectedAudiofiles;
 
     private TextView tvTitle, tvEmpty;
     private RecyclerView rvLibSound;
@@ -94,9 +94,9 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.getAllAudiofiles().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileWithImg>>() {
+        dashboardViewModel.getAllAudiofiles().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileWithImg>>() {
             @Override
-            public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+            public void onChanged(List<Tables.AudiofileWithImg> list) {
                 listAudiofiles = list;
                 //Отправляем сообщение о наличие данных
                 if (listAudiofiles == null) {
@@ -106,9 +106,9 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
                 }
             }
         });
-        dashboardViewModel.getAudiofilesByIdColl().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileFull>>() {
+        dashboardViewModel.getAudiofilesByIdColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
             @Override
-            public void onChanged(List<DB_Table.AudiofileFull> list) {
+            public void onChanged(List<Tables.AudiofileFull> list) {
                 listSelectedAudiofiles = list;
             }
         });

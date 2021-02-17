@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import tfre1t.example.pempogram.database.App;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
 import tfre1t.example.pempogram.myadapter.LibrarySoundAdapter;
@@ -27,9 +27,9 @@ public class DashboardViewModel extends AndroidViewModel {
 
     private LiveData<Room_DB.Collection> dataCollById;
     private LiveData<List<Room_DB.Collection>> dataColl;
-    private LiveData<List<DB_Table.AudiofileFull>> audiofilesByIdColl;
-    private LiveData<DB_Table.AudiofileWithImg> dataAudiofileById;
-    private LiveData<List<DB_Table.AudiofileWithImg>> dataAudiofiles;
+    private LiveData<List<Tables.AudiofileFull>> audiofilesByIdColl;
+    private LiveData<Tables.AudiofileWithImg> dataAudiofileById;
+    private LiveData<List<Tables.AudiofileWithImg>> dataAudiofiles;
 
     private int collectionId;
     private int audiofileId;
@@ -95,7 +95,7 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /**Получение списка аудиозаписей выбранного Набора*/
-    public LiveData<List<DB_Table.AudiofileFull>> getAudiofilesSelectedColl(){
+    public LiveData<List<Tables.AudiofileFull>> getAudiofilesSelectedColl(){
         audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
         return audiofilesByIdColl;
     }
@@ -150,7 +150,7 @@ public class DashboardViewModel extends AndroidViewModel {
 
     ///////////////////////////////////////=Dialog_Edit_Sound=//////////////////////////////////////
     /**Получение данных о конкретном Наборе*/
-    public LiveData<DB_Table.AudiofileWithImg> getDataSelectedAudio(){
+    public LiveData<Tables.AudiofileWithImg> getDataSelectedAudio(){
         return dataAudiofileById;
     }
 
@@ -171,7 +171,7 @@ public class DashboardViewModel extends AndroidViewModel {
             @Override
             public void run() {
                 Room_DB.Audiofile audiofile = new Room_DB.Audiofile();
-                DB_Table.AudiofileWithImg audiofileWithImg = audiofileDao.getNonLiveById(audiofileId);
+                Tables.AudiofileWithImg audiofileWithImg = audiofileDao.getNonLiveById(audiofileId);
                 audiofile.id_audiofile = audiofileWithImg.id_audiofile;
                 audiofile.name_audiofile = audiofileWithImg.name_audiofile;
                 audiofileDao_abstract.delete(getApplication(), audiofile);
@@ -188,13 +188,13 @@ public class DashboardViewModel extends AndroidViewModel {
 
     ////////////////////////////////////=Fragment_LibrarySound=/////////////////////////////////////
     /**Получем все аудиозаписи*/
-    public LiveData<List<DB_Table.AudiofileWithImg>> getAllAudiofiles(){
+    public LiveData<List<Tables.AudiofileWithImg>> getAllAudiofiles(){
         dataAudiofiles = audiofileDao.getAll();
         return dataAudiofiles;
     }
 
     /**Получаем аудиозаписи привязанные к Набору*/
-    public LiveData<List<DB_Table.AudiofileFull>> getAudiofilesByIdColl(){
+    public LiveData<List<Tables.AudiofileFull>> getAudiofilesByIdColl(){
         audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
         return audiofilesByIdColl;
     }

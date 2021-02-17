@@ -13,7 +13,7 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.savefile.Imager;
 
 public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.SelectFavAuHolder> {
@@ -25,7 +25,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
     }
 
     private final Context ctx;
-    private List<DB_Table.AudiofileWithImg> list;
+    private List<Tables.AudiofileWithImg> list;
 
     private final int layout;
 
@@ -44,7 +44,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
         }
     }
 
-    public SelectFavAuAdapter(Context context, List<DB_Table.AudiofileWithImg> list) {
+    public SelectFavAuAdapter(Context context, List<Tables.AudiofileWithImg> list) {
         ctx = context;
         this.list = list;
         layout = R.layout.card_home_favoriteaudio_select_classiclist;
@@ -59,7 +59,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull SelectFavAuAdapter.SelectFavAuHolder holder, int position) {
-        DB_Table.AudiofileWithImg audiofile = list.get(position);
+        Tables.AudiofileWithImg audiofile = list.get(position);
         holder.itemView.setId(audiofile.id_audiofile);
         holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
         holder.tvAudiofile.setText(audiofile.name_audiofile);
@@ -71,7 +71,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
         return list.size();
     }
 
-    public void swipeData(List<DB_Table.AudiofileWithImg> listSelAu){
+    public void swipeData(List<Tables.AudiofileWithImg> listSelAu){
         list = listSelAu;
     }
 }

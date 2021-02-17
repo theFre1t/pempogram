@@ -140,27 +140,27 @@ public class Room_DB {
     @Dao
     public interface AudiofileDao{
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection")
-        LiveData<List<DB_Table.AudiofileWithImg>> getAll();
+        LiveData<List<Tables.AudiofileWithImg>> getAll();
 
         @Query("Select Au.*, Col.img_collection, Colli.id_collection as id_collection_colli From Audiofile as Au left join Collection as Col" +
                 " on Au.id_collection = Col.id_collection" +
                 " left join Collection_left_in as Colli" +
                 " on Au.id_audiofile = Colli.id_audiofile" +
                 " Where Colli.id_collection = :id")
-        LiveData<List<DB_Table.AudiofileFull>> getAllByIdCollection(int id);
+        LiveData<List<Tables.AudiofileFull>> getAllByIdCollection(int id);
 
         @Query("Select Au.*, Colli.id_collection as id_collection_colli From Audiofile as Au left join Collection_left_in as Colli" +
                 " on Au.id_audiofile = Colli.id_audiofile" +
                 " Where Au.id_audiofile = :id")
-        LiveData<DB_Table.AudiofileWithColli> getAllById(int id);
+        LiveData<Tables.AudiofileWithColli> getAllById(int id);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection" +
                 " Where Au.id_audiofile = :id")
-        LiveData<DB_Table.AudiofileWithImg> getById(int id);
+        LiveData<Tables.AudiofileWithImg> getById(int id);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection" +
                 " Where Au.id_audiofile = :id")
-        DB_Table.AudiofileWithImg getNonLiveById(int id);
+        Tables.AudiofileWithImg getNonLiveById(int id);
 
         @Query("Update Audiofile Set name_audiofile = :name, executor_audiofile = :executor Where id_audiofile = :id")
         void update(int id, String name, String executor);
@@ -191,7 +191,7 @@ public class Room_DB {
                 " left join FavoriteAudio as Fav" +
                 " on Au.id_audiofile = Fav.id_audiofile" +
                 " Where Fav.id_audiofile is null")
-        LiveData<List<DB_Table.AudiofileWithImg>> getAllNonFavAu();
+        LiveData<List<Tables.AudiofileWithImg>> getAllNonFavAu();
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col" +
                 " on Au.id_collection = Col.id_collection" +
@@ -199,13 +199,13 @@ public class Room_DB {
                 " on Au.id_audiofile = Fav.id_audiofile" +
                 " Where Fav.id_audiofile is null and" +
                 " (Au.name_audiofile LIKE :text OR Au.executor_audiofile LIKE :text)")
-        LiveData<List<DB_Table.AudiofileWithImg>> searchAllNonFavAu(String text);
+        LiveData<List<Tables.AudiofileWithImg>> searchAllNonFavAu(String text);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au inner join collection as Col" +
                 " on Au.id_collection = Col.id_collection" +
                 " inner join FavoriteAudio as Fav" +
                 " on Au.id_audiofile = Fav.id_audiofile")
-        LiveData<List<DB_Table.AudiofileWithImg>> getAll();
+        LiveData<List<Tables.AudiofileWithImg>> getAll();
 
         @Query("Select * From FavoriteAudio Where id_favau = :id")
         LiveData<FavoriteAudio> getById(int id);

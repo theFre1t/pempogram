@@ -14,7 +14,7 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.savefile.Imager;
 
 public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdater.FavoriteAudioHolder> {
@@ -28,7 +28,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
     }
 
     private final Context ctx;
-    private List<DB_Table.AudiofileWithImg> list;
+    private List<Tables.AudiofileWithImg> list;
     private final int layout;
 
     static class FavoriteAudioHolder extends RecyclerView.ViewHolder {
@@ -45,7 +45,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
         }
     }
 
-    public FavoriteAudioAdater(Context context, List<DB_Table.AudiofileWithImg> list) {
+    public FavoriteAudioAdater(Context context, List<Tables.AudiofileWithImg> list) {
         ctx = context;
         this.list = list;
         layout = R.layout.card_home_favoriteaudio_cardgrid;
@@ -65,7 +65,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
             holder.tvNameAudio.setVisibility(View.GONE); //holder.tvNameAudio.setText("Добавить новый");
             setHolderImgBtnAddFavAu(holder);
         } else {
-            DB_Table.AudiofileWithImg audiofile =  list.get(position);
+            Tables.AudiofileWithImg audiofile =  list.get(position);
             holder.itemView.setId(audiofile.id_audiofile);
             holder.tvNameAudio.setText(audiofile.name_audiofile);
             holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
@@ -87,7 +87,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
         return count;
     }
 
-    public void swipeCursor(List<DB_Table.AudiofileWithImg> newList){
+    public void swipeCursor(List<Tables.AudiofileWithImg> newList){
         list = newList;
     }
 }

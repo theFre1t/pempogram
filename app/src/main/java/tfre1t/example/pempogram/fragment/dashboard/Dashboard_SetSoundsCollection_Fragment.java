@@ -31,7 +31,7 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Sound;
@@ -58,7 +58,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     private Context ctx;
     private Handler h;
 
-    private List<DB_Table.AudiofileFull> listAudiofiles, oldListAudiofiles;
+    private List<Tables.AudiofileFull> listAudiofiles, oldListAudiofiles;
 
     private Toolbar tbSetSound;
     private ProgressBar pbLoader;
@@ -143,9 +143,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileFull>>() {
+        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
             @Override
-            public void onChanged(List<DB_Table.AudiofileFull> list) {
+            public void onChanged(List<Tables.AudiofileFull> list) {
                 if (listAudiofiles != null) {
                     oldListAudiofiles = listAudiofiles; //Запоминаем старые данные
                 }
@@ -209,10 +209,10 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     //Обновляем RecyclerView
     public static class AudiofilesDiffUtilCallback extends DiffUtil.Callback{
 
-        List<DB_Table.AudiofileFull> oldList;
-        List<DB_Table.AudiofileFull> newList;
+        List<Tables.AudiofileFull> oldList;
+        List<Tables.AudiofileFull> newList;
 
-        AudiofilesDiffUtilCallback(List<DB_Table.AudiofileFull> oldList, List<DB_Table.AudiofileFull> newList){
+        AudiofilesDiffUtilCallback(List<Tables.AudiofileFull> oldList, List<Tables.AudiofileFull> newList){
             this.oldList = oldList;
             this.newList = newList;
         }

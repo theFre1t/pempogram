@@ -16,6 +16,7 @@ import tfre1t.example.pempogram.R;
 import static android.content.Context.MODE_PRIVATE;
 
 public class Imager{
+    private static final String TAG = "myLog";
 
     private static final int ADD = 1;
     private static final int EDIT = 2;

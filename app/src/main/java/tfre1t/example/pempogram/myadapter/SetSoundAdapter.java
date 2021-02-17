@@ -14,7 +14,7 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.savefile.Imager;
 
 public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSoundHolder> {
@@ -34,7 +34,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
     private final Context ctx;
 
     private final int layout;
-    private List<DB_Table.AudiofileFull> listAudiofiles;
+    private List<Tables.AudiofileFull> listAudiofiles;
 
     class SetSoundHolder extends RecyclerView.ViewHolder {
         private final RoundedImageView imgAudiofile;
@@ -54,7 +54,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
         }
     }
 
-    public SetSoundAdapter(Context context, List<DB_Table.AudiofileFull> list) {
+    public SetSoundAdapter(Context context, List<Tables.AudiofileFull> list) {
         ctx = context;
         listAudiofiles = list;
         layout = R.layout.card_dashboard_setsounds_collection_classiclist;
@@ -69,7 +69,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
 
     @Override
     public void onBindViewHolder(@NonNull SetSoundAdapter.SetSoundHolder holder, int position) {
-        DB_Table.AudiofileFull audiofile = listAudiofiles.get(position);
+        Tables.AudiofileFull audiofile = listAudiofiles.get(position);
         holder.itemView.setId(audiofile.id_audiofile);
         holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
         holder.tvAudiofile.setText(audiofile.name_audiofile);
@@ -82,7 +82,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
         return listAudiofiles.size();
     }
 
-    public void swipeList(List<DB_Table.AudiofileFull> list){
+    public void swipeList(List<Tables.AudiofileFull> list){
         listAudiofiles = list;
     }
 }

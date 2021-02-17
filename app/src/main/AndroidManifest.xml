@@ -42,6 +42,14 @@
             </intent-filter>
         </activity>
 
+        <activity android:name=".ui.dashboard.OnlineLibrary"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.ONLINE_LIBRARY" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <activity android:name=".fragment.dashboard.addsound.Dashboard_Add_Sound"
             android:screenOrientation="portrait">
             <intent-filter>

@@ -49,4 +49,6 @@
     <string name="view_text_account">Здесь будет ваша учетная запись!</string>
     <string name="view_text_title_vk">Сообщество Вконтакте</string>
     <string name="view_text_message_vk">Здесь вы можете оставлять заявки на добавление своих наборов</string>
+    <string name="view_btn_online_library">Онлайн библиотека</string>
+    <string name="title_online_library">Онлайн библиотека</string>
 </resources>

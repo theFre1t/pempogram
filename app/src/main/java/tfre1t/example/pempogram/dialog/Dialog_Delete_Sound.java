@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -50,7 +49,6 @@ public class Dialog_Delete_Sound extends DialogFragment implements View.OnClickL
         int id = v.getId();
         if (id == R.id.dialogBtnYes) {
             dashboardViewModel.deleteAudiofile();
-            Toast.makeText(v.getContext(), R.string.message_phrase_deleted, Toast.LENGTH_SHORT).show();
             dismiss();
         } else if (id == R.id.dialogBtnCancel) {
             dismiss();

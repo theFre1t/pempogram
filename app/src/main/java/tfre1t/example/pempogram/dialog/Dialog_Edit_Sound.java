@@ -16,7 +16,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
@@ -53,9 +53,9 @@ public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickLis
     }
 
     private void loadEditData() {
-        dashboardViewModel.getDataSelectedAudio().observe(getViewLifecycleOwner(), new Observer<DB_Table.AudiofileWithImg>() {
+        dashboardViewModel.getDataSelectedAudio().observe(getViewLifecycleOwner(), new Observer<Tables.AudiofileWithImg>() {
             @Override
-            public void onChanged(DB_Table.AudiofileWithImg audiofile) {
+            public void onChanged(Tables.AudiofileWithImg audiofile) {
                 dialogEtNameSound.setText(audiofile.name_audiofile);
                 dialogEtExecutorSound.setText(audiofile.executor_audiofile);
             }

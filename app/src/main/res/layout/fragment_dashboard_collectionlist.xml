@@ -65,6 +65,23 @@
             app:layout_constraintEnd_toStartOf="@+id/btnlistCard"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <Button
+            android:id="@+id/btnOnlineLibrary"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimaryLight"
+            android:text="@string/view_btn_online_library"
+            android:textAppearance="@style/TextStylePrimary"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnlistClassic"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
         <Spinner
             android:id="@+id/spinCategory"
             android:layout_width="0dp"
@@ -75,6 +92,7 @@
             android:layout_marginBottom="8dp"
             android:background="@color/colorPrimaryLight"
             android:spinnerMode="dropdown"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistClassic"
             app:layout_constraintStart_toStartOf="parent"

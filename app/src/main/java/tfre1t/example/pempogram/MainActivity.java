@@ -13,6 +13,8 @@ import tfre1t.example.pempogram.trashсanclasses.CheckPermission;
 
 public class MainActivity extends AppCompatActivity {
 
+    private static final String TAG = "myLog";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

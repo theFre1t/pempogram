@@ -2,17 +2,18 @@ package tfre1t.example.pempogram.fragment.dashboard;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
@@ -30,12 +31,6 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -76,6 +71,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     private RecyclerView.LayoutManager lm;
     private RecyclerView.LayoutManager lmOld;
     private ImageButton btnListCard, btnListClassic, btnListGrid;
+    private Button btnOnlineLibrary;
     private TextView tvEmpty;
     private SearchView searchView;
     private SearchView.OnQueryTextListener queryTextListener;
@@ -96,6 +92,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         btnListCard = v.findViewById(R.id.btnlistCard);
         btnListClassic = v.findViewById(R.id.btnlistClassic);
         btnListGrid = v.findViewById(R.id.btnlistGrid);
+        //btnOnlineLibrary = v.findViewById(R.id.btnOnlineLibrary);
         rcVColl = v.findViewById(R.id.rcViewColl);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
@@ -104,6 +101,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         btnListCard.setOnClickListener(this);
         btnListClassic.setOnClickListener(this);
         btnListGrid.setOnClickListener(this);
+        v.findViewById(R.id.btnOnlineLibrary).setOnClickListener(this);
         v.findViewById(R.id.floatBtnAddColl).setOnClickListener(this);
     }
 
@@ -113,7 +111,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         activity.setSupportActionBar(tbColl);
         ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
-        if(actionBar != null) {
+        if (actionBar != null) {
             actionBar.setTitle(R.string.title_sets);
         }
     }
@@ -149,6 +147,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                     });
                     return true;
                 }
+
                 @Override
                 public boolean onQueryTextSubmit(String query) {
                     return true;
@@ -161,7 +160,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-        switch (item.getItemId()){
+        switch (item.getItemId()) {
             /*case R.id.btn_menu_positionSettingColl:
                 ImageView imgV = v.findViewById(R.id.imgVHandle);
                 imgV.setVisibility(View.VISIBLE);
@@ -206,8 +205,8 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
             newDCF = wrDCF.get();
-            if(newDCF != null){
-                switch (msg.what){
+            if (newDCF != null) {
+                switch (msg.what) {
                     case DATA_DOWNLOAD:
                         CURRENT_DATA = DATA_DOWNLOAD;
                         newDCF.setData();
@@ -225,7 +224,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         }
     }
 
-    private void setData(){
+    private void setData() {
         pbLoader.setVisibility(View.GONE);
         tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
@@ -236,7 +235,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                 tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
-                if(lm != null){
+                if (lm != null) {
                     lmOld = lm;
                 }
                 switch (type_ListCollection) {
@@ -259,13 +258,12 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                         lm = new GridLayoutManager(ctx, 2);
                         break;
                 }
-                if(lmOld == lm) {
+                if (lmOld == lm) {
                     CollDiffUtilCallback CollDiffUtil = new CollDiffUtilCallback(oldListColl, listColl);
                     DiffUtil.DiffResult CollDiffResult = DiffUtil.calculateDiff(CollDiffUtil);
                     cAdapter.swipeCursor(listColl);
                     CollDiffResult.dispatchUpdatesTo(cAdapter);
-                }
-                else {
+                } else {
                     cAdapter = new CollectionAdater(ctx, lay, listColl/*,this*/);
                     cAdapter.setItemClickListener(onItemClickListener);
                     rcVColl.setLayoutManager(lm);
@@ -279,12 +277,12 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     }
 
     //Обновляем RecyclerView
-    public static class CollDiffUtilCallback extends DiffUtil.Callback{
+    public static class CollDiffUtilCallback extends DiffUtil.Callback {
 
         List<Room_DB.Collection> oldList;
         List<Room_DB.Collection> newList;
 
-        CollDiffUtilCallback(List<Room_DB.Collection> oldList, List<Room_DB.Collection> newList){
+        CollDiffUtilCallback(List<Room_DB.Collection> oldList, List<Room_DB.Collection> newList) {
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -346,6 +344,9 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                 type_ListCollection = 2;
                 setData();
             }
+        } else if (id == R.id.btnOnlineLibrary) {
+            Intent intent = new Intent("android.intent.action.ONLINE_LIBRARY");
+            startActivity(intent);
         } else if (id == R.id.floatBtnAddColl) {
             fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
             Dialog_Add_Collection dialog_AC = new Dialog_Add_Collection(ctx);

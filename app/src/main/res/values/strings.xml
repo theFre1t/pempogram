@@ -20,6 +20,10 @@
     <string name="title_dashboard">Dashboard</string>
     <string name="title_сategories">Categories</string>
     <string name="title_sets">Sets</string>
+    <string name="view_btn_online_library">Online library</string>
+
+    --(Activity) Добавление новой аудиозаписи(фразы)
+    <string name="title_online_library">Online library</string>
 
     --(Dialog) Добавление нового набора
     <string name="dialog_title_adding_set">Add a set</string>

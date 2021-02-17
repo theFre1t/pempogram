@@ -17,7 +17,7 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.customviewers.RoundedImageView;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.savefile.Imager;
 
 public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapter.LibrarySoundHolder> {
@@ -26,8 +26,8 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
     private final Context ctx;
     private final int layout;
 
-    private final List<DB_Table.AudiofileWithImg> list;
-    private final List<DB_Table.AudiofileFull> listSAudio;
+    private final List<Tables.AudiofileWithImg> list;
+    private final List<Tables.AudiofileFull> listSAudio;
     private final HashMap<Integer,Check> oldCheckList, checkList;
 
     public static class Check{
@@ -58,7 +58,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
         }
     }
 
-    public LibrarySoundAdapter(Context context, List<DB_Table.AudiofileWithImg> list, List<DB_Table.AudiofileFull> listSAudio) {
+    public LibrarySoundAdapter(Context context, List<Tables.AudiofileWithImg> list, List<Tables.AudiofileFull> listSAudio) {
         ctx = context;
         layout = R.layout.card_addsound_librarysound_classiclist;
         this.list = list;
@@ -95,7 +95,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
 
     @Override
     public void onBindViewHolder(@NonNull LibrarySoundHolder holder, int position) {
-        DB_Table.AudiofileWithImg audiofile =  list.get(getItemCount()- (position + 1));
+        Tables.AudiofileWithImg audiofile =  list.get(getItemCount()- (position + 1));
 
         holder.itemView.setId(audiofile.id_audiofile);
         holder.imgv.setImageBitmap(new Imager().setImageView(ctx ,audiofile.img_collection));
@@ -111,7 +111,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
     private boolean checkBoxChecker(int id) {
         check = false;
         if(listSAudio.size() != 0) {
-            for (DB_Table.AudiofileFull audio : listSAudio) {
+            for (Tables.AudiofileFull audio : listSAudio) {
                 if (check = audio.id_audiofile == id) { break; }
             }
         }
