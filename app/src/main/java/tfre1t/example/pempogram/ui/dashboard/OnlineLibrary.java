@@ -39,9 +39,11 @@ import java.util.Objects;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import tfre1t.example.pempogram.BottomSheet.DialogFragment.bsOnlineLibrary;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.myadapter.OnlineLibraryAdapter;
+import tfre1t.example.pempogram.adapter.OnlineLibraryAdapter;
+import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
 
 public class OnlineLibrary extends AppCompatActivity {
     private static final String TAG = "myLog";
@@ -71,7 +73,7 @@ public class OnlineLibrary extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_library);
         //dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
-        h = new MyHandler(this);
+
         findViewById();
         setToolbar();
         loadData();
@@ -148,7 +150,7 @@ public class OnlineLibrary extends AppCompatActivity {
     //Получение и установка данных
     private void loadData() {
         //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
-
+        h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         listColl = new ArrayList<>();
         listAud = new ArrayList<>();
@@ -166,7 +168,7 @@ public class OnlineLibrary extends AppCompatActivity {
                         if(type.equals("dir")){
                             String public_url = obj.getString("public_url");
                             String[] name_author = obj.getString("name").split("\\|",2);
-                            String resource_id = obj.getString("resource_id");
+                            int coll_revision = obj.getInt("revision");
 
                             Tables.Online_Collection collection = null;
                             Tables.Online_Audiofile audiofile = null;
@@ -181,14 +183,14 @@ public class OnlineLibrary extends AppCompatActivity {
                                 if(item_media_type.equals("image")){
                                     String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
                                     String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
-                                    collection = new Tables.Online_Collection(resource_id, name_author[0], name_author[1], item_img_file, item_img_preview); //Упаковываем
+                                    collection = new Tables.Online_Collection(coll_revision, name_author[0], name_author[1], item_img_file, item_img_preview); //Упаковываем
                                     //Log.d(TAG, "OnlineLibrary image:\nitem_img_file: " + item_img_file + "\nitem_img_preview: "+ item_img_preview);
                                 }
                                 else if(item_media_type.equals("audio")) {
-                                    String item_resource_id = item_obj.getString("resource_id"); //Получаем resource_id
+                                    int item_revision = item_obj.getInt("revision"); //Получаем revision
                                     String[] item_name = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
                                     String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
-                                    audiofile = new Tables.Online_Audiofile(item_resource_id, item_name[0], item_file_url, resource_id); //Упаковываем
+                                    audiofile = new Tables.Online_Audiofile(item_revision, item_name[0], item_file_url, coll_revision); //Упаковываем
                                     listAud.add(audiofile); //Добавляем в список аудио
                                     //Log.d(TAG, "OnlineLibrary audio:\nitem_resource_id: " + item_resource_id + "\nitem_name: "+ item_name[0] +"\nitem_file_url: " + item_file_url);
                                 }
@@ -208,24 +210,6 @@ public class OnlineLibrary extends AppCompatActivity {
                 }
             }
         }).start();
-
-        /**
-        dashboardViewModel.getDataSelAu().observe(tfre1t.example.pempogram.ui.home.SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {
-            @Override
-            public void onChanged(List<Tables.AudiofileWithImg> list) {
-                if (listSelAu != null) {
-                    oldListSelAu = listSelAu; //Запоминаем старые данные
-                }
-                listSelAu = list;
-                //Отправляем сообщение о наличие данных
-                if (listSelAu.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
-            }
-        });
-         **/
     }
 
     private JSONArray getJsonContent(String public_key) {
@@ -275,20 +259,8 @@ public class OnlineLibrary extends AppCompatActivity {
             super.handleMessage(msg);
             newCurrClass = wr.get();
             if(newCurrClass != null){
-                switch (msg.what){
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newCurrClass.setData();
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newCurrClass.setData();
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newCurrClass.setData();
-                        break;
-                }
+                CURRENT_DATA = msg.what;
+                newCurrClass.setData();
             }
         }
     }
@@ -359,9 +331,7 @@ public class OnlineLibrary extends AppCompatActivity {
     private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
-            //dashboardViewModel.addNewFavAu(v.getId());
-            setResult(v.getId());
-            finish();
+            new bsOnlineLibrary().show(getSupportFragmentManager().beginTransaction(), "showSetSound");
         }
     };
 

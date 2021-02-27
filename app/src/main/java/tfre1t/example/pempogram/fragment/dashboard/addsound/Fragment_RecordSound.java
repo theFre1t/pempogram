@@ -30,9 +30,9 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import java.io.File;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
-import tfre1t.example.pempogram.trashсanclasses.CheckPermission;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.TrashcanClasses.CheckPermission;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_RecordSound extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Chronometer.OnChronometerTickListener {

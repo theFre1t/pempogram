@@ -12,8 +12,8 @@ import java.util.List;
 import tfre1t.example.pempogram.database.App;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
-import tfre1t.example.pempogram.myadapter.LibrarySoundAdapter;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.adapter.LibrarySoundAdapter;
 
 public class DashboardViewModel extends AndroidViewModel {
     private static final String TAG = "myLog";
@@ -55,12 +55,13 @@ public class DashboardViewModel extends AndroidViewModel {
         }
     }
 
-    ////////////////////////////////=Dashboard_Collection_Fragment=/////////////////////////////////
+    //Dashboard_Collection_Fragment//==================================================================
     /**Получение списка Наборов*/
     public LiveData<List<Room_DB.Collection>> getDataColl(){
         dataColl = collectionDao.getAll();
         return dataColl;
     }
+
     /**Получение списка Наборов по букве/слову/предложению???*/
     public LiveData<List<Room_DB.Collection>> getDataColl(String searchText){
         return collectionDao.searchCollection("%"+searchText+"%");
@@ -87,11 +88,10 @@ public class DashboardViewModel extends AndroidViewModel {
         }).start();
     }
 
-    ////////////////////////////=Dashboard_SetSoundsCollection_Fragment=////////////////////////////
+    //Dashboard_SetSoundsCollection_Fragment//=========================================================
     /**Получение данных о конкретном Наборе*/
     public LiveData<Room_DB.Collection> getDataSelectedColl(){
-        dataCollById = collectionDao.getById(collectionId);
-        return dataCollById;
+        return collectionDao.getById(collectionId);
     }
 
     /**Получение списка аудиозаписей выбранного Набора*/
@@ -180,7 +180,7 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
 
-    //Dashboard_Add_sound//=========================================================================
+    //Dashboard_Add_sound//============================================================================
     /**Передаем id Набора*/
     public void setIdCollection(int id){
         collectionId = id;
@@ -233,6 +233,75 @@ public class DashboardViewModel extends AndroidViewModel {
             @Override
             public void run() {
                 audiofileDao_abstract.insert(audio);
+            }
+        }).start();
+    }
+
+    //OnlineLibrary//==================================================================================
+    /**Добавление нового Набора*/
+    public void OnlineLibrary_AddNewColl(String nameColl, String authorColl, String imgName){
+        Room_DB.Collection collection = new Room_DB.Collection();
+        collection.name_collection = nameColl;
+        collection.author_collection = authorColl;
+        collection.img_collection = imgName;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                collectionDao_abstract.insert(collection);
+            }
+        }).start();
+    }
+
+    /**Добавляем аудиозапись(с автопривязкой к Набору)*/
+    public void OnlineLibrary_AddNewAudiofile(String nameSound, String executorSound, String audiofile){
+        Room_DB.Audiofile audio = new Room_DB.Audiofile();
+        audio.name_audiofile = nameSound;
+        audio.executor_audiofile = executorSound;
+        audio.audiofile = audiofile;
+        audio.id_collection = collectionId;
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                audiofileDao_abstract.insert(audio);
+            }
+        }).start();
+    }
+
+    /**Получение списка Наборов*/
+    public LiveData<List<Room_DB.Collection>> OnlineLibrary_GetDataColl(){
+        dataColl = collectionDao.getAll();
+        return dataColl;
+    }
+
+    /**Получение списка Наборов по букве/слову/предложению???*/
+    public LiveData<List<Room_DB.Collection>> OnlineLibrary_GetDataColl(String searchText){
+        return collectionDao.searchCollection("%"+searchText+"%");
+    }
+
+    /**<p>Запрос на получение данных о конкретном Наборе</p>
+     * <p>Метод для получения данных  {@link #getDataSelectedColl()}</p>*/
+    public void OnlineLibrary_SelectCollById(int id){
+        collectionId = id;
+    }
+
+    ///////////////////////////////////////=bsOnlineLibrary=////////////////////////////////////////
+    /**Получение данных о конкретном Наборе*/
+    public LiveData<Room_DB.Collection> OnlineLibrary_GetDataSelectedColl(){
+        return collectionDao.getById(collectionId);
+    }
+
+    /**Получение списка аудиозаписей выбранного Набора*/
+    public LiveData<List<Tables.AudiofileFull>> OnlineLibrary_GetAudiofilesSelectedColl(){
+        audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
+        return audiofilesByIdColl;
+    }
+
+    /**Проигрывание аудиозаписи*/
+    public void OnlineLibrary_PlayAudio(MyMediaPlayer myMediaPlayer, int id) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                myMediaPlayer.play(getApplication(), audiofileDao.getNonLiveById(id).audiofile);
             }
         }).start();
     }

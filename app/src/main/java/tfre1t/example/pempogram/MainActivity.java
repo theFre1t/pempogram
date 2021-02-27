@@ -9,7 +9,7 @@ import androidx.navigation.ui.NavigationUI;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import tfre1t.example.pempogram.trashсanclasses.CheckPermission;
+import tfre1t.example.pempogram.TrashcanClasses.CheckPermission;
 
 public class MainActivity extends AppCompatActivity {
 

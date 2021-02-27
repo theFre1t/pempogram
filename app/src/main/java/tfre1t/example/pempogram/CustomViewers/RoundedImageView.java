@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.customviewers;
+package tfre1t.example.pempogram.CustomViewers;
 
 import android.content.Context;
 import android.graphics.Bitmap;

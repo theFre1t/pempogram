@@ -24,10 +24,10 @@ import androidx.lifecycle.ViewModelProvider;
 import java.io.IOException;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.savefile.Imager;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.SaveFile.Imager;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 import static android.app.Activity.RESULT_OK;

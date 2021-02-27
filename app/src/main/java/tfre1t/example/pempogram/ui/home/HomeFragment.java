@@ -31,9 +31,10 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
-import tfre1t.example.pempogram.myadapter.FavoriteAudioAdater;
-import tfre1t.example.pempogram.trashсanclasses.StatusBarHeight;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.adapter.FavoriteAudioAdater;
+import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_Collection_Fragment;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "myLog";
@@ -122,32 +123,20 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     static class MyHandler extends Handler {
-        WeakReference<HomeFragment> wrHF;
-        HomeFragment newHF;
+        WeakReference<HomeFragment> wr;
+        HomeFragment newCurrClass;
 
-        public MyHandler(HomeFragment hf) {
-            wrHF = new WeakReference<HomeFragment>(hf);
+        public MyHandler(HomeFragment currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newHF = wrHF.get();
-            if(newHF != null){
-                switch (msg.what){
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newHF.setData();
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newHF.setData();
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newHF.setData();
-                        break;
-                }
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
+                CURRENT_DATA = msg.what;
+                newCurrClass.setData();
             }
         }
     }

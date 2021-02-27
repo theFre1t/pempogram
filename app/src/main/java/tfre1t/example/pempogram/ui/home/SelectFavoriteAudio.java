@@ -29,7 +29,8 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.myadapter.SelectFavAuAdapter;
+import tfre1t.example.pempogram.adapter.SelectFavAuAdapter;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 
 public class SelectFavoriteAudio extends AppCompatActivity {
     private static final String TAG = "myLog";
@@ -154,31 +155,19 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     static class MyHandler extends Handler {
         WeakReference<SelectFavoriteAudio> wr;
-        SelectFavoriteAudio newSFA;
+        SelectFavoriteAudio newCurrClass;
 
-        public MyHandler(SelectFavoriteAudio sfa) {
-            wr = new WeakReference<>(sfa);
+        public MyHandler(SelectFavoriteAudio currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newSFA = wr.get();
-            if(newSFA != null){
-                switch (msg.what){
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newSFA.setData();
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newSFA.setData();
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newSFA.setData();
-                        break;
-                }
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
+                CURRENT_DATA = msg.what;
+                newCurrClass.setData();
             }
         }
     }

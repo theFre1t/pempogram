@@ -23,8 +23,8 @@ import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.savefile.SaverAudio;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.SaveFile.SaverAudio;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 import static android.app.Activity.RESULT_OK;

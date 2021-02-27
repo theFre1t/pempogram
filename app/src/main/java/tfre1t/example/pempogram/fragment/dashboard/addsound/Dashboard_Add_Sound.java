@@ -12,16 +12,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.viewpager2.widget.ViewPager2;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.myadapter.AddSoundFragmentPagerAdapter;
+import tfre1t.example.pempogram.adapter.AddSoundFragmentPagerAdapter;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Add_Sound extends AppCompatActivity {

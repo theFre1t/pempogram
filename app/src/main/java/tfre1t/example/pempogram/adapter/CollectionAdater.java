@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.myadapter;
+package tfre1t.example.pempogram.adapter;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -14,11 +14,11 @@ import java.util.Collections;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.helper.DragAndSwipeHelper.ItemTouchHelperAdapter;
 import tfre1t.example.pempogram.helper.DragAndSwipeHelper.ItemTouchHelperViewHolder;
-import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.SaveFile.Imager;
 
 public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.CollectionHolder> implements ItemTouchHelperAdapter {
 

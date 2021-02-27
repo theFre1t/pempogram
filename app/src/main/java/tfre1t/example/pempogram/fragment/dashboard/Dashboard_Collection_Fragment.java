@@ -35,12 +35,13 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import tfre1t.example.pempogram.BottomSheet.DialogFragment.bsOnlineLibrary;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Add_Collection;
-import tfre1t.example.pempogram.myadapter.CollectionAdater;
+import tfre1t.example.pempogram.adapter.CollectionAdater;
 import tfre1t.example.pempogram.preferences.Preferenceser;
-import tfre1t.example.pempogram.trashсanclasses.StatusBarHeight;
+import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Collection_Fragment extends Fragment implements View.OnClickListener /*onStartDragListener*/ {
@@ -194,32 +195,20 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     }
 
     static class MyHandler extends Handler {
-        WeakReference<Dashboard_Collection_Fragment> wrDCF;
-        Dashboard_Collection_Fragment newDCF;
+        WeakReference<Dashboard_Collection_Fragment> wr;
+        Dashboard_Collection_Fragment newCurrClass;
 
-        public MyHandler(Dashboard_Collection_Fragment dcf) {
-            wrDCF = new WeakReference<>(dcf);
+        public MyHandler(Dashboard_Collection_Fragment currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newDCF = wrDCF.get();
-            if (newDCF != null) {
-                switch (msg.what) {
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newDCF.setData();
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newDCF.setData();
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newDCF.setData();
-                        break;
-                }
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
+                CURRENT_DATA = msg.what;
+                newCurrClass.setData();
             }
         }
     }

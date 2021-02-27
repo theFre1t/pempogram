@@ -11,7 +11,7 @@ import java.util.List;
 import tfre1t.example.pempogram.database.App;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
 
 public class HomeViewModel extends AndroidViewModel {
     private static final String TAG = "myLog";

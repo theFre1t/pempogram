@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.myadapter;
+package tfre1t.example.pempogram.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -14,7 +14,7 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Tables;
 
 public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdapter.OnlineLibraryHolder> {
@@ -61,7 +61,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
     @Override
     public void onBindViewHolder(@NonNull OnlineLibraryAdapter.OnlineLibraryHolder holder, int position) {
         Tables.Online_Collection collection = list.get(position);
-        //holder.itemView.setId(position);
+        holder.itemView.setId(collection.revision_collection);
         Picasso.get().load(collection.img_preview_collection).resize(150, 150).centerCrop().into(holder.imgCollection);
         holder.tvCollection.setText(collection.name_collection);
         holder.tvAuthor.setText(collection.author_collection);

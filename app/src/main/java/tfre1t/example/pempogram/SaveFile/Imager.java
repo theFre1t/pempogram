@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.savefile;
+package tfre1t.example.pempogram.SaveFile;
 
 import android.content.Context;
 import android.graphics.Bitmap;

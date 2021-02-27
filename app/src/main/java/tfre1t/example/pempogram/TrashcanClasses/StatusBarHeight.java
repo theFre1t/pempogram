@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.trashсanclasses;
+package tfre1t.example.pempogram.TrashcanClasses;
 
 import android.app.Activity;
 

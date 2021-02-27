@@ -30,7 +30,8 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.myadapter.LibrarySoundAdapter;
+import tfre1t.example.pempogram.adapter.LibrarySoundAdapter;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_LibrarySound extends Fragment implements View.OnClickListener {
@@ -115,20 +116,20 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
     }
 
     static class MyHandler extends Handler {
-        WeakReference<Fragment_LibrarySound> wrFLS;
-        Fragment_LibrarySound newFLS;
+        WeakReference<Fragment_LibrarySound> wr;
+        Fragment_LibrarySound newCurrClass;
 
-        public MyHandler(Fragment_LibrarySound fls) {
-            wrFLS = new WeakReference<>(fls);
+        public MyHandler(Fragment_LibrarySound currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newFLS = wrFLS.get();
-            if(newFLS != null){
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
                 CURRENT_DATA = msg.what;
-                newFLS.setData();
+                newCurrClass.setData();
             }
         }
     }

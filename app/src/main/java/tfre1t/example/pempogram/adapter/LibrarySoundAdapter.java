@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.myadapter;
+package tfre1t.example.pempogram.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -16,9 +16,9 @@ import java.util.HashMap;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.SaveFile.Imager;
 
 public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapter.LibrarySoundHolder> {
     private final static String TAG = "myLog";

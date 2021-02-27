@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.mediaplayer;
+package tfre1t.example.pempogram.MediaPlayer;
 
 import android.content.Context;
 import android.media.AudioAttributes;

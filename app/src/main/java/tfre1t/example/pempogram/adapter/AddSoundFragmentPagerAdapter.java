@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.myadapter;
+package tfre1t.example.pempogram.adapter;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;

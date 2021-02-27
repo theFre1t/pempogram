@@ -19,7 +19,7 @@ import androidx.room.Update;
 
 import java.util.List;
 
-import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.SaveFile.Imager;
 
 import static androidx.room.ForeignKey.CASCADE;
 import static androidx.room.ForeignKey.SET_NULL;

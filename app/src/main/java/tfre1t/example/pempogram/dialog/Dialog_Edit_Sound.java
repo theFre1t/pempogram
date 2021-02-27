@@ -17,7 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dialog_Edit_Sound extends DialogFragment implements View.OnClickListener {

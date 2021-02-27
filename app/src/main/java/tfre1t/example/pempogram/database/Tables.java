@@ -55,7 +55,7 @@ public class Tables {
 
     public static class Online_Collection {
 
-        public String resource_id_collection;
+        public int revision_collection;
 
         public String name_collection;
 
@@ -67,8 +67,8 @@ public class Tables {
 
         public String img_preview_collection;
 
-        public Online_Collection(String res_id, String name, String author, String img_file, String img_preview) {
-            resource_id_collection = res_id;
+        public Online_Collection(int rev_id, String name, String author, String img_file, String img_preview) {
+            revision_collection = rev_id;
             name_collection = name;
             author_collection = author;
             img_file_collection = img_file;
@@ -78,19 +78,19 @@ public class Tables {
 
     public static class Online_Audiofile {
 
-        public String resource_id_audiofile;
+        public int revision_audiofile;
 
         public String name_audiofile;
 
         public String audiofile;
 
-        public String resource_id_collection;
+        public int resource_id_collection;
 
-        public Online_Audiofile(String res_id, String name, String file_url, String coll_res_id) {
-            resource_id_audiofile = res_id;
+        public Online_Audiofile(int rev_id, String name, String file_url, int coll_rev) {
+            revision_audiofile = rev_id;
             name_audiofile = name;
             audiofile = file_url;
-            resource_id_collection = coll_res_id;
+            resource_id_collection = coll_rev;
         }
     }
 }

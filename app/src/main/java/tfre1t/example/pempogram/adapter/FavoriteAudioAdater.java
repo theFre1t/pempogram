@@ -1,4 +1,4 @@
-package tfre1t.example.pempogram.myadapter;
+package tfre1t.example.pempogram.adapter;
 
 import android.content.Context;
 import android.graphics.PorterDuff;
@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.SaveFile.Imager;
 
 public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdater.FavoriteAudioHolder> {
 

@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.trashсanclasses.StatusBarHeight;
+import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
 
 public class AccountFragment extends Fragment implements View.OnClickListener {
 
