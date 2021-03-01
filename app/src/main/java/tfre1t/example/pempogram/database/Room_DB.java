@@ -9,6 +9,7 @@ import androidx.room.Database;
 import androidx.room.Delete;
 import androidx.room.Entity;
 import androidx.room.ForeignKey;
+import androidx.room.Ignore;
 import androidx.room.Index;
 import androidx.room.Insert;
 import androidx.room.PrimaryKey;
@@ -39,8 +40,8 @@ public class Room_DB {
         public String img_collection;
     }
 
-    @Entity(foreignKeys = @ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "id_collection", onDelete = SET_NULL),
-            indices = @Index(value = {"id_audiofile","id_collection"}, unique = true))
+    @Entity(foreignKeys = @ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = SET_NULL),
+            indices = @Index(value = {"id_audiofile","_id_collection"}, unique = true))
     public static class Audiofile {
         @PrimaryKey(autoGenerate = true)
         public int id_audiofile;
@@ -52,7 +53,7 @@ public class Room_DB {
         public String audiofile;
 
         @ColumnInfo(index = true)
-        public int id_collection;
+        public int _id_collection;
     }
 
     @Entity
@@ -65,35 +66,75 @@ public class Room_DB {
         public String img_categories;
     }
 
-    @Entity(foreignKeys = @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "id_audiofile", onDelete = CASCADE))
+    @Entity(foreignKeys = @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "_id_audiofile", onDelete = CASCADE))
     public static class FavoriteAudio {
         @PrimaryKey(autoGenerate = true)
         public int id_favau;
 
         @ColumnInfo(index = true)
-        public int id_audiofile;
+        public int _id_audiofile;
     }
 
-    @Entity(foreignKeys = {@ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "id_collection", onDelete = CASCADE),
-                           @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "id_audiofile", onDelete = CASCADE)},
-            indices = @Index(value = {"id_audiofile","id_collection"}, unique = true))
+    @Entity(foreignKeys = {@ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = CASCADE),
+                           @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "_id_audiofile", onDelete = CASCADE)},
+            indices = @Index(value = {"_id_audiofile", "_id_collection"}, unique = true))
     public static class Collection_left_in {
         @PrimaryKey(autoGenerate = true)
         public int id;
 
         @ColumnInfo(index = true)
-        public int id_collection;
+        public int _id_collection;
 
         @ColumnInfo(index = true)
-        public int id_audiofile;
+        public int _id_audiofile;
     }
 
     @Entity
     public static class Categories_left_in {
         @PrimaryKey(autoGenerate = true)
         public int id;
-        public int id_categories;
-        public int id_collection;
+        public int _id_categories;
+        public int _id_collection;
+    }
+
+    @Entity(foreignKeys = @ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = SET_NULL),
+            indices = @Index(value = {"revision_collection","_id_collection"},
+                    unique = true))
+    public static class Online_Collection {
+        @PrimaryKey(autoGenerate = true)
+        public int revision_collection;
+
+        public String name_collection;
+
+        public String author_collection;
+
+        public String public_url_collection;
+
+        public String img_file_collection;
+
+        public String img_preview_collection;
+
+        @ColumnInfo(index = true)
+        public int _id_collection;
+    }
+
+    @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "revision_collection", childColumns = "_revision_collection", onDelete = CASCADE),
+                           @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "_id_audiofile", onDelete = SET_NULL)},
+            indices = @Index(value = {"_id_audiofile", "_id_collection"}, unique = true))
+    public static class Online_Audiofile {
+        @PrimaryKey(autoGenerate = true)
+        public int revision_audiofile;
+
+        public String name_audiofile;
+
+        public String author_audiofile;
+
+        public String audiofile;
+
+        public int _revision_collection;
+
+        @ColumnInfo(index = true)
+        public int _id_audiofile;
     }
 
     /*@Entity
@@ -139,26 +180,26 @@ public class Room_DB {
 
     @Dao
     public interface AudiofileDao{
-        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection")
+        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au._id_collection = Col.id_collection")
         LiveData<List<Tables.AudiofileWithImg>> getAll();
 
-        @Query("Select Au.*, Col.img_collection, Colli.id_collection as id_collection_colli From Audiofile as Au left join Collection as Col" +
-                " on Au.id_collection = Col.id_collection" +
+        @Query("Select Au.*, Col.img_collection, Colli._id_collection as id_collection_colli From Audiofile as Au left join Collection as Col" +
+                " on Au._id_collection = Col.id_collection" +
                 " left join Collection_left_in as Colli" +
-                " on Au.id_audiofile = Colli.id_audiofile" +
-                " Where Colli.id_collection = :id")
+                " on Au.id_audiofile = Colli._id_audiofile" +
+                " Where Colli._id_collection = :id")
         LiveData<List<Tables.AudiofileFull>> getAllByIdCollection(int id);
 
-        @Query("Select Au.*, Colli.id_collection as id_collection_colli From Audiofile as Au left join Collection_left_in as Colli" +
-                " on Au.id_audiofile = Colli.id_audiofile" +
+        @Query("Select Au.*, Colli._id_collection as id_collection_colli From Audiofile as Au left join Collection_left_in as Colli" +
+                " on Au.id_audiofile = Colli._id_audiofile" +
                 " Where Au.id_audiofile = :id")
         LiveData<Tables.AudiofileWithColli> getAllById(int id);
 
-        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection" +
+        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au._id_collection = Col.id_collection" +
                 " Where Au.id_audiofile = :id")
         LiveData<Tables.AudiofileWithImg> getById(int id);
 
-        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au.id_collection = Col.id_collection" +
+        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au._id_collection = Col.id_collection" +
                 " Where Au.id_audiofile = :id")
         Tables.AudiofileWithImg getNonLiveById(int id);
 
@@ -187,24 +228,24 @@ public class Room_DB {
     @Dao
     public interface FavoriteAudioDao{
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col" +
-                " on Au.id_collection = Col.id_collection" +
+                " on Au._id_collection = Col.id_collection" +
                 " left join FavoriteAudio as Fav" +
-                " on Au.id_audiofile = Fav.id_audiofile" +
-                " Where Fav.id_audiofile is null")
+                " on Au.id_audiofile = Fav._id_audiofile" +
+                " Where Fav._id_audiofile is null")
         LiveData<List<Tables.AudiofileWithImg>> getAllNonFavAu();
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col" +
-                " on Au.id_collection = Col.id_collection" +
+                " on Au._id_collection = Col.id_collection" +
                 " left join FavoriteAudio as Fav" +
-                " on Au.id_audiofile = Fav.id_audiofile" +
-                " Where Fav.id_audiofile is null and" +
+                " on Au.id_audiofile = Fav._id_audiofile" +
+                " Where Fav._id_audiofile is null and" +
                 " (Au.name_audiofile LIKE :text OR Au.executor_audiofile LIKE :text)")
         LiveData<List<Tables.AudiofileWithImg>> searchAllNonFavAu(String text);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au inner join collection as Col" +
-                " on Au.id_collection = Col.id_collection" +
+                " on Au._id_collection = Col.id_collection" +
                 " inner join FavoriteAudio as Fav" +
-                " on Au.id_audiofile = Fav.id_audiofile")
+                " on Au.id_audiofile = Fav._id_audiofile")
         LiveData<List<Tables.AudiofileWithImg>> getAll();
 
         @Query("Select * From FavoriteAudio Where id_favau = :id")
@@ -216,7 +257,7 @@ public class Room_DB {
         @Update
         void update(FavoriteAudio favoriteAudio);
 
-        @Query("Delete from FavoriteAudio Where id_audiofile = :id_audiofile")
+        @Query("Delete from FavoriteAudio Where _id_audiofile = :id_audiofile")
         void delete(int id_audiofile);
     }
 
@@ -225,7 +266,7 @@ public class Room_DB {
         @Query("Select * From Collection_left_in")
         LiveData<List<Collection_left_in>> getAll();
 
-        @Query("Select * From Collection_left_in Where id_collection = :id")
+        @Query("Select * From Collection_left_in Where _id_collection = :id")
         LiveData<Collection_left_in> getById(int id);
 
         @Insert
@@ -234,7 +275,7 @@ public class Room_DB {
         @Update
         void update(Collection_left_in collectionLeftIn);
 
-        @Query("Delete from Collection_left_in Where id_collection = :idColl and id_audiofile = :idAud")
+        @Query("Delete from Collection_left_in Where _id_collection = :idColl and _id_audiofile = :idAud")
         void delete(int idColl, int idAud);
     }
 
@@ -250,10 +291,46 @@ public class Room_DB {
         void insert(Categories_left_in categoriesLeftIn);
 
         @Update
-        void update(Categories_left_in categories_left_in);
+        void update(Categories_left_in categoriesLeftIn);
 
         @Delete
         void delete(Categories_left_in categoriesLeftIn);
+    }
+
+    @Dao
+    public interface Online_CollectionDao{
+        @Query("Select * From Online_Collection")
+        LiveData<List<Online_Collection>> getAll();
+
+        @Query("Select * From Online_Collection Where revision_collection = :revision")
+        LiveData<Online_Collection> getByRevision(int revision);
+
+        @Insert
+        void insert(Online_Collection online_collection);
+
+        @Update
+        void update(Online_Collection online_collection);
+
+        @Delete
+        void delete(Online_Collection online_collection);
+    }
+
+    @Dao
+    public interface Online_AudiofileDao{
+        @Query("Select * From Online_Audiofile")
+        LiveData<List<Online_Audiofile>> getAll();
+
+        @Query("Select * From Online_Audiofile Where revision_audiofile = :revision")
+        LiveData<Online_Audiofile> getByRevision(int revision);
+
+        @Insert
+        void insert(Online_Audiofile online_audiofile);
+
+        @Update
+        void update(Online_Audiofile online_audiofile);
+
+        @Delete
+        void delete(Online_Audiofile online_audiofile);
     }
 
     @Dao
@@ -269,10 +346,10 @@ public class Room_DB {
             insertCollection(collection);
         }
 
-        @Query("Select audiofile From audiofile Where id_collection = :id")
+        @Query("Select audiofile From audiofile Where _id_collection = :id")
         protected abstract List<String> getAudiofiles(int id);
 
-        @Query("Delete from Audiofile Where id_collection = :id")
+        @Query("Delete from Audiofile Where _id_collection = :id")
         protected abstract void deleAllAudiofilesByIdCollection(int id);
 
         @Delete
@@ -307,8 +384,8 @@ public class Room_DB {
         public void insert(Audiofile aud){
             Collection_left_in collectionLeftIn = new Collection_left_in();
             insertAudiofile(aud);
-            collectionLeftIn.id_audiofile = getInsertAudiofile();
-            collectionLeftIn.id_collection = aud.id_collection;
+            collectionLeftIn._id_audiofile = getInsertAudiofile();
+            collectionLeftIn._id_collection = aud._id_collection;
             insertCollection_left_in(collectionLeftIn);
         }
 
@@ -332,5 +409,7 @@ public class Room_DB {
         public abstract FavoriteAudioDao favoriteAudioDao();
         public abstract Collection_left_inDao collectionLeftInDao();
         public abstract Categories_left_inDao categoriesLeftInDao();
+        public abstract Online_CollectionDao onlineCollectionDao();
+        public abstract Online_AudiofileDao onlineAudiofileDao();
     }
 }

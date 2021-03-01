@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -41,6 +42,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import tfre1t.example.pempogram.BottomSheet.DialogFragment.bsOnlineLibrary;
 import tfre1t.example.pempogram.R;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.adapter.OnlineLibraryAdapter;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
@@ -58,8 +60,7 @@ public class OnlineLibrary extends AppCompatActivity {
 
     private Handler h;
 
-    private List<Tables.Online_Collection> oldListColl, listColl;
-    private List<Tables.Online_Audiofile> oldListAud, listAud;
+    private List<Room_DB.Online_Collection> oldListColl, listColl;
 
     private RecyclerView rvOnlineLibrary;
     private Toolbar tbOnlineLibrary;
@@ -72,10 +73,11 @@ public class OnlineLibrary extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_online_library);
-        //dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
+        dashboardViewModel = new ViewModelProvider(this).get(DashboardViewModel.class);
 
         findViewById();
         setToolbar();
+        updateLibrary();
         loadData();
     }
 
@@ -147,20 +149,64 @@ public class OnlineLibrary extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    private void updateLibrary() {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q");
+                    for (int i = 0; i < json_arr.length(); i++) {
+                        JSONObject obj = json_arr.getJSONObject(i);
+                        String type = obj.getString("type");
+
+                        if(type.equals("dir")){
+                            String public_url = obj.getString("public_url");
+                            String[] name_author = obj.getString("name").split("\\|",2);
+                            int coll_revision = obj.getInt("revision");
+
+                            dashboardViewModel.OnlineLibrary_AddUpdColl(coll_revision, name_author[0], name_author[1]); //Добавляем/Обновляем в БД набор
+
+                            JSONArray json_items_arr = getJsonData(public_url);
+                            for (int j = 0; j < Objects.requireNonNull(json_items_arr).length(); j++) {
+                                JSONObject item_obj = json_items_arr.getJSONObject(j);
+                                String item_media_type = item_obj.getString("media_type"); //Получаем тип ресурса
+
+                                if(item_media_type.equals("image")){
+                                    String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
+                                    String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
+
+                                    dashboardViewModel.OnlineLibrary_AddUpdImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
+                                }
+                                else if(item_media_type.equals("audio")) {
+                                    int item_revision = item_obj.getInt("revision"); //Получаем revision
+                                    String[] item_fullname = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
+                                    String[] item_name = item_fullname[0].split("\\|",2);
+                                    String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
+
+                                    dashboardViewModel.OnlineLibrary_AddUpdAudiofile(item_revision, item_name[0], item_name[1], item_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
+                                }
+                            }
+                        }
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        }).start();
+    }
+
     //Получение и установка данных
     private void loadData() {
         //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
-        listColl = new ArrayList<>();
-        listAud = new ArrayList<>();
 
         //Получаем данные
-        new Thread(new Runnable() {
+        /*new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    JSONArray json_arr = getJsonContent("https://yadi.sk/d/VXunsH1ZDcsz0Q");
+                    JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q");
                     for (int i = 0; i < json_arr.length(); i++) {
                         JSONObject obj = json_arr.getJSONObject(i);
                         String type = obj.getString("type");
@@ -175,7 +221,7 @@ public class OnlineLibrary extends AppCompatActivity {
 
                             //Log.d(TAG, "OnlineLibrary:\nname:" + name_author[0] + "\nauthor: "+ name_author[1] + "\ntype: "+ type +"\npublic_url: " + public_url);
 
-                            JSONArray json_items_arr = getJsonContent(public_url);
+                            JSONArray json_items_arr = getJsonData(public_url);
                             for (int j = 0; j < Objects.requireNonNull(json_items_arr).length(); j++) {
                                 JSONObject item_obj = json_items_arr.getJSONObject(j);
                                 String item_media_type = item_obj.getString("media_type"); //Получаем тип ресурса
@@ -209,10 +255,10 @@ public class OnlineLibrary extends AppCompatActivity {
                     h.sendEmptyMessage(DATA_TRUE);
                 }
             }
-        }).start();
+        }).start();*/
     }
 
-    private JSONArray getJsonContent(String public_key) {
+    private JSONArray getJsonData(String public_key) {
         String pathYaDisk = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key=";
         HttpsURLConnection connection;
         try {
@@ -295,10 +341,10 @@ public class OnlineLibrary extends AppCompatActivity {
     //Обновляем RecyclerView
     public static class SelectFavAuDiffUtilCallback extends DiffUtil.Callback{
 
-        List<Tables.AudiofileWithImg> oldList;
-        List<Tables.AudiofileWithImg> newList;
+        List<Room_DB.Online_Collection> oldList;
+        List<Room_DB.Online_Collection> newList;
 
-        SelectFavAuDiffUtilCallback(List<Tables.AudiofileWithImg> oldList, List<Tables.AudiofileWithImg> newList){
+        SelectFavAuDiffUtilCallback(List<Room_DB.Online_Collection> oldList, List<Room_DB.Online_Collection> newList){
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -315,16 +361,20 @@ public class OnlineLibrary extends AppCompatActivity {
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            int newId = newList.get(newItemPosition).id_audiofile;
-            int oldId = oldList.get(oldItemPosition).id_audiofile;
+            int newId = newList.get(newItemPosition).revision_collection;
+            int oldId = oldList.get(oldItemPosition).revision_collection;
             return newId == oldId;
         }
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            String newName = newList.get(newItemPosition).name_audiofile;
-            String oldName = oldList.get(oldItemPosition).name_audiofile;
-            return oldName.equals(newName);
+            String newName = newList.get(newItemPosition).name_collection;
+            String oldName = oldList.get(oldItemPosition).name_collection;
+            String newAuthor = newList.get(newItemPosition).author_collection;
+            String oldAuthor = oldList.get(oldItemPosition).author_collection;
+            String newPreview = newList.get(newItemPosition).img_preview_collection;
+            String oldPreview = oldList.get(oldItemPosition).img_preview_collection;
+            return oldName.equals(newName) && oldAuthor.equals(newAuthor) && oldPreview.equals(newPreview);
         }
     }
 

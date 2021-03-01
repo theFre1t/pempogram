@@ -207,8 +207,8 @@ public class DashboardViewModel extends AndroidViewModel {
                 for (LibrarySoundAdapter.Check check: checkList.values()) {
 
                     Room_DB.Collection_left_in collectionLeftIn = new Room_DB.Collection_left_in();
-                    collectionLeftIn.id_audiofile = check.id;
-                    collectionLeftIn.id_collection = collectionId;
+                    collectionLeftIn._id_audiofile = check.id;
+                    collectionLeftIn._id_collection = collectionId;
 
                     if(check.check){
                         collectionLeftInDao.insert(collectionLeftIn);
@@ -224,23 +224,23 @@ public class DashboardViewModel extends AndroidViewModel {
     ///////////////////////////////////=Fragment_InternalStorage=///////////////////////////////////
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
     public void addNewAudiofile(String nameSound, String executorSound, String audiofile){
-        Room_DB.Audiofile audio = new Room_DB.Audiofile();
+        /*Room_DB.Audiofile audio = new Room_DB.Audiofile();
         audio.name_audiofile = nameSound;
         audio.executor_audiofile = executorSound;
         audio.audiofile = audiofile;
-        audio.id_collection = collectionId;
+        audio._id_collection = collectionId;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 audiofileDao_abstract.insert(audio);
             }
-        }).start();
+        }).start();*/
     }
 
     //OnlineLibrary//==================================================================================
     /**Добавление нового Набора*/
-    public void OnlineLibrary_AddNewColl(String nameColl, String authorColl, String imgName){
-        Room_DB.Collection collection = new Room_DB.Collection();
+    public void OnlineLibrary_AddUpdColl(int revision, String name_coll, String author_coll){
+        /*Room_DB.Collection collection = new Room_DB.Collection();
         collection.name_collection = nameColl;
         collection.author_collection = authorColl;
         collection.img_collection = imgName;
@@ -249,22 +249,26 @@ public class DashboardViewModel extends AndroidViewModel {
             public void run() {
                 collectionDao_abstract.insert(collection);
             }
-        }).start();
+        }).start();*/
     }
 
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
-    public void OnlineLibrary_AddNewAudiofile(String nameSound, String executorSound, String audiofile){
-        Room_DB.Audiofile audio = new Room_DB.Audiofile();
+    public void OnlineLibrary_AddUpdAudiofile(int rev_id, String name, String author, String file_url, int coll_rev){
+        /*Room_DB.Audiofile audio = new Room_DB.Audiofile();
         audio.name_audiofile = nameSound;
         audio.executor_audiofile = executorSound;
         audio.audiofile = audiofile;
-        audio.id_collection = collectionId;
+        audio._id_collection = collectionId;
         new Thread(new Runnable() {
             @Override
             public void run() {
                 audiofileDao_abstract.insert(audio);
             }
-        }).start();
+        }).start();*/
+    }
+
+    /**Добавление изображения Набора*/
+    public void OnlineLibrary_AddUpdImgColl(int revision, String img_file, String img_preview) {
     }
 
     /**Получение списка Наборов*/
@@ -305,4 +309,4 @@ public class DashboardViewModel extends AndroidViewModel {
             }
         }).start();
     }
- }
+}

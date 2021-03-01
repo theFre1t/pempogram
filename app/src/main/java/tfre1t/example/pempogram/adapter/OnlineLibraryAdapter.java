@@ -15,6 +15,7 @@ import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
 
 public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdapter.OnlineLibraryHolder> {
@@ -26,7 +27,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
     }
 
     private final Context ctx;
-    private List<Tables.Online_Collection> list;
+    private List<Room_DB.Online_Collection> list;
 
     private final int layout;
 
@@ -45,7 +46,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
         }
     }
 
-    public OnlineLibraryAdapter(Context context, List<Tables.Online_Collection> listColl) {
+    public OnlineLibraryAdapter(Context context, List<Room_DB.Online_Collection> listColl) {
         ctx = context;
         this.list = listColl;
         layout = R.layout.card_dashboard_online_collection_classiclist;
@@ -60,7 +61,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
 
     @Override
     public void onBindViewHolder(@NonNull OnlineLibraryAdapter.OnlineLibraryHolder holder, int position) {
-        Tables.Online_Collection collection = list.get(position);
+        Room_DB.Online_Collection collection = list.get(position);
         holder.itemView.setId(collection.revision_collection);
         Picasso.get().load(collection.img_preview_collection).resize(150, 150).centerCrop().into(holder.imgCollection);
         holder.tvCollection.setText(collection.name_collection);
@@ -72,7 +73,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
         return list.size();
     }
 
-    public void swipeData(List<Tables.Online_Collection> listColl){
+    public void swipeData(List<Room_DB.Online_Collection> listColl){
         list = listColl;
     }
 }
