@@ -90,7 +90,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
         dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
             @Override
             public void onChanged(List<Tables.AudiofileFull> list) {
-                if (listAudiofiles != null) {
+                /*if (listAudiofiles != null) {
                     oldListAudiofiles = listAudiofiles; //Запоминаем старые данные
                 }
                 listAudiofiles = list;
@@ -99,7 +99,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
                     h.sendEmptyMessage(DATA_NONE);
                 } else {
                     h.sendEmptyMessage(DATA_TRUE);
-                }
+                }*/
             }
         });
     }
@@ -135,7 +135,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
                 break;
             case DATA_TRUE:
                 if(ssAdapter == null) {
-                    ssAdapter = new OnlineLibrary_SetSoundAdapter(ctx, listAudiofiles);
+                    //ssAdapter = new OnlineLibrary_SetSoundAdapter(ctx, listAudiofiles);
                     ssAdapter.setItemClickListener(onItemClickListener);
                     rvSetSound.setLayoutManager(new LinearLayoutManager(ctx));
                     rvSetSound.setAdapter(ssAdapter);

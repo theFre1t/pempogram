@@ -14,7 +14,7 @@ public class Tables {
 
         public String audiofile;
 
-        public int id_collection;
+        public int _id_collection;
 
         public String img_collection;
     }
@@ -29,7 +29,7 @@ public class Tables {
 
         public String audiofile;
 
-        public int id_collection;
+        public int _id_collection;
 
         @ColumnInfo(name = "id_collection_colli")
         public int id_collectionColLI;
@@ -45,7 +45,7 @@ public class Tables {
 
         public String audiofile;
 
-        public int id_collection;
+        public int _id_collection;
 
         public String img_collection;
 

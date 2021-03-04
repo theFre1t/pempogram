@@ -81,7 +81,7 @@ public class HomeViewModel extends AndroidViewModel {
     /**Добавление аудиозаписи в набор Бысторого вызова*/
     public void addNewFavAu(int id){
         Room_DB.FavoriteAudio favoriteAudio = new Room_DB.FavoriteAudio();
-        favoriteAudio.id_audiofile = id;
+        favoriteAudio._id_audiofile = id;
         new Thread(new Runnable() {
             @Override
             public void run() {
