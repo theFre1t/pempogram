@@ -18,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -77,7 +78,6 @@ public class OnlineLibrary extends AppCompatActivity {
 
         findViewById();
         setToolbar();
-        updateLibrary();
         loadData();
     }
 
@@ -107,19 +107,18 @@ public class OnlineLibrary extends AppCompatActivity {
         }
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
-            /**
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
                     h.sendEmptyMessage(DATA_DOWNLOAD);
                     //Получаем данные
-                    dashboardViewModel.getDataSelAu(newText).observe(this, new Observer<List<Tables.AudiofileWithImg>>() {
+                    dashboardViewModel.OnlineLibrary_GetDataColl(newText).observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
                         @Override
-                        public void onChanged(List<Tables.AudiofileWithImg> list) {
-                            if (listSelAu != null) {
-                                oldListSelAu = listSelAu; //Запоминаем старые данные
+                        public void onChanged(List<Room_DB.Online_Collection> list) {
+                            if (listColl != null) {
+                                oldListColl = listColl; //Запоминаем старые данные
                             }
-                            listSelAu = list;
+                            listColl = list;
                             //Отправляем сообщение о наличие данных
                             h.sendEmptyMessage(DATA_TRUE);
                         }
@@ -131,7 +130,6 @@ public class OnlineLibrary extends AppCompatActivity {
                     return true;
                 }
             };
-             **/
             searchView.setOnQueryTextListener(queryTextListener);
         }
         return super.onCreateOptionsMenu(menu);
@@ -195,69 +193,6 @@ public class OnlineLibrary extends AppCompatActivity {
         }).start();
     }
 
-    //Получение и установка данных
-    private void loadData() {
-        //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
-        h = new MyHandler(this);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
-
-        //Получаем данные
-        /*new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q");
-                    for (int i = 0; i < json_arr.length(); i++) {
-                        JSONObject obj = json_arr.getJSONObject(i);
-                        String type = obj.getString("type");
-
-                        if(type.equals("dir")){
-                            String public_url = obj.getString("public_url");
-                            String[] name_author = obj.getString("name").split("\\|",2);
-                            int coll_revision = obj.getInt("revision");
-
-                            Tables.Online_Collection collection = null;
-                            Tables.Online_Audiofile audiofile = null;
-
-                            //Log.d(TAG, "OnlineLibrary:\nname:" + name_author[0] + "\nauthor: "+ name_author[1] + "\ntype: "+ type +"\npublic_url: " + public_url);
-
-                            JSONArray json_items_arr = getJsonData(public_url);
-                            for (int j = 0; j < Objects.requireNonNull(json_items_arr).length(); j++) {
-                                JSONObject item_obj = json_items_arr.getJSONObject(j);
-                                String item_media_type = item_obj.getString("media_type"); //Получаем тип ресурса
-
-                                if(item_media_type.equals("image")){
-                                    String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
-                                    String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
-                                    collection = new Tables.Online_Collection(coll_revision, name_author[0], name_author[1], item_img_file, item_img_preview); //Упаковываем
-                                    //Log.d(TAG, "OnlineLibrary image:\nitem_img_file: " + item_img_file + "\nitem_img_preview: "+ item_img_preview);
-                                }
-                                else if(item_media_type.equals("audio")) {
-                                    int item_revision = item_obj.getInt("revision"); //Получаем revision
-                                    String[] item_name = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
-                                    String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
-                                    audiofile = new Tables.Online_Audiofile(item_revision, item_name[0], item_file_url, coll_revision); //Упаковываем
-                                    listAud.add(audiofile); //Добавляем в список аудио
-                                    //Log.d(TAG, "OnlineLibrary audio:\nitem_resource_id: " + item_resource_id + "\nitem_name: "+ item_name[0] +"\nitem_file_url: " + item_file_url);
-                                }
-                            }
-                            listColl.add(collection); //Добавляем в список наборов
-                        }
-                    }
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-
-                //Отправляем сообщение о наличие данных
-                if (listColl.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
-            }
-        }).start();*/
-    }
-
     private JSONArray getJsonData(String public_key) {
         String pathYaDisk = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key=";
         HttpsURLConnection connection;
@@ -290,6 +225,31 @@ public class OnlineLibrary extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
+    }
+
+    //Получение и установка данных
+    private void loadData() {
+        //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+
+        //Получаем данные
+        dashboardViewModel.OnlineLibrary_GetDataColl().observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
+            @Override
+            public void onChanged(List<Room_DB.Online_Collection> list) {
+                if (listColl != null) {
+                    oldListColl = listColl; //Запоминаем старые данные
+                }
+                listColl = list;
+                //Отправляем сообщение о наличие данных
+                if (listColl.size() == 0) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
+            }
+        });
+        updateLibrary();
     }
 
     static class MyHandler extends Handler {
@@ -327,24 +287,23 @@ public class OnlineLibrary extends AppCompatActivity {
                     olAdapter.setItemClickListener(onItemClickListener);
                     rvOnlineLibrary.setLayoutManager(new LinearLayoutManager(OnlineLibrary.this));
                     rvOnlineLibrary.setAdapter(olAdapter);
-                }/**else {
-                    tfre1t.example.pempogram.ui.home.SelectFavoriteAudio.SelectFavAuDiffUtilCallback DiffUtilCallback = new tfre1t.example.pempogram.ui.home.SelectFavoriteAudio.SelectFavAuDiffUtilCallback(oldListSelAu, listSelAu);
+                }else {
+                    DiffUtilCallback DiffUtilCallback = new DiffUtilCallback(oldListColl, listColl);
                     DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
-                    scAdapter.swipeData(listSelAu);
-                    diffResult.dispatchUpdatesTo(scAdapter);
+                    olAdapter.swipeData(listColl);
+                    diffResult.dispatchUpdatesTo(olAdapter);
                 }
-                 **/
                 break;
         }
     }
 
     //Обновляем RecyclerView
-    public static class SelectFavAuDiffUtilCallback extends DiffUtil.Callback{
+    public static class DiffUtilCallback extends DiffUtil.Callback{
 
         List<Room_DB.Online_Collection> oldList;
         List<Room_DB.Online_Collection> newList;
 
-        SelectFavAuDiffUtilCallback(List<Room_DB.Online_Collection> oldList, List<Room_DB.Online_Collection> newList){
+        DiffUtilCallback(List<Room_DB.Online_Collection> oldList, List<Room_DB.Online_Collection> newList){
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -372,9 +331,7 @@ public class OnlineLibrary extends AppCompatActivity {
             String oldName = oldList.get(oldItemPosition).name_collection;
             String newAuthor = newList.get(newItemPosition).author_collection;
             String oldAuthor = oldList.get(oldItemPosition).author_collection;
-            String newPreview = newList.get(newItemPosition).img_preview_collection;
-            String oldPreview = oldList.get(oldItemPosition).img_preview_collection;
-            return oldName.equals(newName) && oldAuthor.equals(newAuthor) && oldPreview.equals(newPreview);
+            return oldName.equals(newName) && oldAuthor.equals(newAuthor);
         }
     }
 
@@ -396,8 +353,8 @@ public class OnlineLibrary extends AppCompatActivity {
             h.removeCallbacksAndMessages(null);
         rvOnlineLibrary.setAdapter(null);
         FileUtils.deleteQuietly(FileUtils.getFile(getCacheDir().getPath()+"/picasso-cache"));
-        /*scAdapter = null;
-        oldListSelAu = null;
-        listSelAu = null;*/
+        olAdapter = null;
+        oldListColl = null;
+        listColl = null;
     }
 }
