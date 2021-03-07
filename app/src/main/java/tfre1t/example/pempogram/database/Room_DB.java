@@ -101,10 +101,12 @@ public class Room_DB {
         public int _id_audiofile;
     }
 
-    @Entity
+    @Entity(indices = @Index(value = {"revision_collection"}, unique = true))
     public static class Online_Collection {
         @PrimaryKey(autoGenerate = true)
-        public int revision_collection;
+        public int id_online_collection;
+
+        public long revision_collection;
 
         public String name_collection;
 
@@ -117,15 +119,15 @@ public class Room_DB {
         public String img_preview_collection;
     }
 
-    @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "revision_collection", childColumns = "_revision_collection", onDelete = CASCADE),
+    @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "id_online_collection", childColumns = "_id_online_collection", onDelete = CASCADE),
                            @ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = CASCADE)},
-            indices = @Index(value = {"_revision_collection", "_id_collection"}, unique = true))
+            indices = @Index(value = {"_id_online_collection", "_id_collection"}, unique = true))
     public static class Online_Collection_with_Collection {
         @PrimaryKey(autoGenerate = true)
         public int id;
 
         @ColumnInfo(index = true)
-        public int _revision_collection;
+        public int _id_online_collection;
 
         @ColumnInfo(index = true)
         public int _id_collection;
@@ -135,7 +137,10 @@ public class Room_DB {
             indices = @Index(value = {"revision_audiofile", "_revision_collection"}, unique = true))
     public static class Online_Audiofile {
         @PrimaryKey(autoGenerate = true)
-        public int revision_audiofile;
+        public int id_online_audiofile;
+
+        @ColumnInfo(index = true)
+        public long revision_audiofile;
 
         public String name_audiofile;
 
@@ -144,18 +149,18 @@ public class Room_DB {
         public String audiofile;
 
         @ColumnInfo(index = true)
-        public int _revision_collection;
+        public long _revision_collection;
     }
 
-    @Entity(foreignKeys = {@ForeignKey(entity = Online_Audiofile.class, parentColumns = "revision_audiofile", childColumns = "_revision_audiofile", onDelete = CASCADE),
+    @Entity(foreignKeys = {@ForeignKey(entity = Online_Audiofile.class, parentColumns = "id_online_audiofile", childColumns = "_id_online_audiofile", onDelete = CASCADE),
                            @ForeignKey(entity = Audiofile.class, parentColumns = "id_audiofile", childColumns = "_id_audiofile", onDelete = CASCADE)},
-            indices = @Index(value = {"_revision_audiofile", "_id_audiofile"}, unique = true))
+            indices = @Index(value = {"_id_online_audiofile", "_id_audiofile"}, unique = true))
     public static class Online_Audiofile_with_Audiofile {
         @PrimaryKey(autoGenerate = true)
         public int id;
 
         @ColumnInfo(index = true)
-        public int _revision_audiofile;
+        public int _id_online_audiofile;
 
         @ColumnInfo(index = true)
         public int _id_audiofile;
@@ -326,8 +331,8 @@ public class Room_DB {
         @Query("Select * From Online_Collection")
         LiveData<List<Online_Collection>> getAll();
 
-        @Query("Select * From Online_Collection Where revision_collection = :revision")
-        LiveData<Online_Collection> getByRevision(int revision);
+        @Query("Select * From Online_Collection Where id_online_collection = :id")
+        LiveData<Online_Collection> getById(int id);
 
         @Query("Select * From Online_Collection Where name_collection LIKE :text OR author_collection LIKE :text")
         LiveData<List<Online_Collection>> searchOnlineCollection(String text);
@@ -347,8 +352,16 @@ public class Room_DB {
         @Query("Select * From Online_Audiofile")
         LiveData<List<Online_Audiofile>> getAll();
 
-        @Query("Select * From Online_Audiofile Where revision_audiofile = :revision")
-        LiveData<Online_Audiofile> getByRevision(int revision);
+        @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
+        LiveData<Online_Audiofile> getById(int id);
+
+        @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
+                " on Au._revision_collection = Col.revision_collection" +
+                " Where Col.id_online_collection = :id")
+        LiveData<List<Room_DB.Online_Audiofile>> getAllByIdCollection(int id);
+
+        @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
+        Room_DB.Online_Audiofile getNonLiveById(int id);
 
         @Insert
         void insert(Online_Audiofile online_audiofile);
@@ -429,7 +442,7 @@ public class Room_DB {
     @Dao
     public static abstract class Online_CollectionDao_abstract{
         @Query("Select * From Online_Collection Where revision_collection = :revision")
-        protected abstract Online_Collection getByRevision(int revision);
+        protected abstract Online_Collection getByRevision(long revision);
 
         @Insert
         protected abstract void insertCollection(Online_Collection online_collection);
@@ -438,7 +451,7 @@ public class Room_DB {
         protected abstract void updateCollection(Online_Collection online_collection);
 
         @Transaction
-        public void insUpd(int revision, String name_coll, String author_coll){
+        public void insUpd(long revision, String name_coll, String author_coll){
             Online_Collection onlineCollection = getByRevision(revision);
             if(Objects.equals(onlineCollection, null)){
                 onlineCollection = new Online_Collection();
@@ -456,7 +469,7 @@ public class Room_DB {
         }
 
         @Transaction
-        public void updateImage(int revision, String img_file, String img_preview){
+        public void updateImage(long revision, String img_file, String img_preview){
             Online_Collection onlineCollection = getByRevision(revision);
             if(!onlineCollection.equals(null)){
                 onlineCollection.img_file_collection = img_file;
@@ -492,7 +505,7 @@ public class Room_DB {
     public abstract static class Online_AudiofileDao_abstract{
 
         @Query("Select * From Online_Audiofile Where revision_audiofile = :revision")
-        protected abstract Online_Audiofile getByRevision(int revision);
+        protected abstract Online_Audiofile getByRevision(long revision);
 
         @Insert
         protected abstract void insertAudio(Online_Audiofile online_audiofile);
@@ -501,7 +514,7 @@ public class Room_DB {
         protected abstract void updateAudio(Online_Audiofile online_audiofile);
 
         @Transaction
-        public void insUpd(int rev_id, String name, String author, String file_url, int coll_rev) {
+        public void insUpd(long rev_id, String name, String author, String file_url, long coll_rev) {
             //Получаем запись по revision
             Online_Audiofile online_audiofile = getByRevision(rev_id);
             //Проверяем на наличие записи

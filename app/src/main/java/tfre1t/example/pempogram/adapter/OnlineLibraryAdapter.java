@@ -62,7 +62,7 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
     @Override
     public void onBindViewHolder(@NonNull OnlineLibraryAdapter.OnlineLibraryHolder holder, int position) {
         Room_DB.Online_Collection collection = list.get(position);
-        holder.itemView.setId(collection.revision_collection);
+        holder.itemView.setId(collection.id_online_collection);
         Picasso.get().load(collection.img_preview_collection).resize(150, 150).centerCrop().into(holder.imgCollection);
         holder.tvCollection.setText(collection.name_collection);
         holder.tvAuthor.setText(collection.author_collection);

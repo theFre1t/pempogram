@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="650dp">
+    android:minHeight="700dp">
 
     <View
         android:id="@+id/divider"
@@ -20,7 +20,7 @@
         android:id="@+id/imgColl"
         android:layout_width="100dp"
         android:layout_height="100dp"
-        android:layout_marginStart="8dp"
+        android:layout_marginStart="16dp"
         android:layout_marginTop="12dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/divider"
@@ -48,6 +48,18 @@
         android:textSize="14sp"
         app:layout_constraintStart_toStartOf="@+id/tvCollection"
         app:layout_constraintTop_toBottomOf="@+id/tvCollection" />
+
+    <View
+        android:id="@+id/divider2"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="@color/colorPrimaryLight"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/imgColl" />
 
     <ProgressBar
         android:id="@+id/pbLoader"
@@ -81,13 +93,13 @@
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
-        android:layout_marginTop="12dp"
         android:layout_marginEnd="8dp"
         android:layout_marginBottom="8dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/imgColl">
+        app:layout_constraintTop_toBottomOf="@+id/divider2">
 
     </androidx.recyclerview.widget.RecyclerView>
 

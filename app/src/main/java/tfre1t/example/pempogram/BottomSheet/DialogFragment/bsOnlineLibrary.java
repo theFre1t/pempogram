@@ -13,11 +13,15 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
+import com.squareup.picasso.Picasso;
+
+import org.apache.commons.io.FileUtils;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -29,6 +33,7 @@ import tfre1t.example.pempogram.SaveFile.Imager;
 import tfre1t.example.pempogram.adapter.OnlineLibraryAdapter;
 import tfre1t.example.pempogram.adapter.OnlineLibrary_SetSoundAdapter;
 import tfre1t.example.pempogram.adapter.SetSoundAdapter;
+import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
@@ -50,6 +55,8 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
     private View v;
     private Context ctx;
 
+    private List<Room_DB.Online_Audiofile> oldListAudio, listAudio;
+
     private RoundedImageView imgColl;
     private TextView tvCollection, tvAuthor, tvEmpty;
     private ProgressBar pbLoader;
@@ -58,11 +65,12 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.bs_dialog_onlinelibrary_setsound, null);
         ctx = v.getContext();
 
         findViewById();
-        setContent();
+        loadPresenColl();
         loadData();
         return v;
     }
@@ -76,10 +84,16 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
         rvSetSound = v.findViewById(R.id.rvSetSound);
     }
 
-    private void setContent() {
-        /*imgColl.setImageBitmap(new Imager().setImageView(ctx, ));
-        tvCollection.setText("");
-        tvAuthor.setText("");*/
+    private void loadPresenColl() {
+        dashboardViewModel.OnlineLibrary_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Online_Collection>() {
+            @Override
+            public void onChanged(Room_DB.Online_Collection online_collection) {
+                Picasso.get().load(online_collection.img_preview_collection).resize(150, 150).centerCrop().into(imgColl);
+                //imgColl.setImageBitmap(new Imager().setImageView(ctx, ));
+                tvCollection.setText(online_collection.name_collection);
+                tvAuthor.setText(online_collection.author_collection);
+            }
+        });
     }
 
     //Получение и установка данных
@@ -87,19 +101,19 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
+        dashboardViewModel.OnlineLibrary_GetAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Online_Audiofile>>() {
             @Override
-            public void onChanged(List<Tables.AudiofileFull> list) {
-                /*if (listAudiofiles != null) {
-                    oldListAudiofiles = listAudiofiles; //Запоминаем старые данные
+            public void onChanged(List<Room_DB.Online_Audiofile> list) {
+                if (listAudio != null) {
+                    oldListAudio = listAudio; //Запоминаем старые данные
                 }
-                listAudiofiles = list;
+                listAudio = list;
                 //Отправляем сообщение о наличие данных
-                if (listAudiofiles == null) {
+                if (listAudio == null) {
                     h.sendEmptyMessage(DATA_NONE);
                 } else {
                     h.sendEmptyMessage(DATA_TRUE);
-                }*/
+                }
             }
         });
     }
@@ -135,27 +149,27 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
                 break;
             case DATA_TRUE:
                 if(ssAdapter == null) {
-                    //ssAdapter = new OnlineLibrary_SetSoundAdapter(ctx, listAudiofiles);
+                    ssAdapter = new OnlineLibrary_SetSoundAdapter(ctx, listAudio);
                     ssAdapter.setItemClickListener(onItemClickListener);
                     rvSetSound.setLayoutManager(new LinearLayoutManager(ctx));
                     rvSetSound.setAdapter(ssAdapter);
-                }/**else {
-                    Dashboard_SetSoundsCollection_Fragment.AudiofilesDiffUtilCallback AudDiffUtil = new Dashboard_SetSoundsCollection_Fragment.AudiofilesDiffUtilCallback(oldListAudiofiles, listAudiofiles);
+                }else {
+                    AudiofilesDiffUtilCallback AudDiffUtil = new AudiofilesDiffUtilCallback(oldListAudio, listAudio);
                     DiffUtil.DiffResult AudDiffResult = DiffUtil.calculateDiff(AudDiffUtil);
-                    scAdapter.swipeList(listAudiofiles);
-                    AudDiffResult.dispatchUpdatesTo(scAdapter);
-                }**/
+                    ssAdapter.swipeList(listAudio);
+                    AudDiffResult.dispatchUpdatesTo(ssAdapter);
+                }
                 break;
         }
     }
 
     //Обновляем RecyclerView
-    /*public static class AudiofilesDiffUtilCallback extends DiffUtil.Callback{
+    public static class AudiofilesDiffUtilCallback extends DiffUtil.Callback{
 
-        List<Tables.AudiofileFull> oldList;
-        List<Tables.AudiofileFull> newList;
+        List<Room_DB.Online_Audiofile> oldList;
+        List<Room_DB.Online_Audiofile> newList;
 
-        AudiofilesDiffUtilCallback(List<Tables.AudiofileFull> oldList, List<Tables.AudiofileFull> newList){
+        AudiofilesDiffUtilCallback(List<Room_DB.Online_Audiofile> oldList, List<Room_DB.Online_Audiofile> newList){
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -172,20 +186,20 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            int newId = newList.get(newItemPosition).id_audiofile;
-            int oldId = oldList.get(oldItemPosition).id_audiofile;
-            return newId == oldId;
+            long newRevision = newList.get(newItemPosition).revision_audiofile;
+            long oldRevision = oldList.get(oldItemPosition).revision_audiofile;
+            return newRevision == oldRevision;
         }
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             String newName = newList.get(newItemPosition).name_audiofile;
             String oldName = oldList.get(oldItemPosition).name_audiofile;
-            String newExecutor = newList.get(newItemPosition).executor_audiofile;
-            String oldExecutor = oldList.get(oldItemPosition).executor_audiofile;
-            return oldName.equals(newName) && oldExecutor.equals(newExecutor);
+            String newAuthor = newList.get(newItemPosition).author_audiofile;
+            String oldAuthor = oldList.get(oldItemPosition).author_audiofile;
+            return oldName.equals(newName) && oldAuthor.equals(newAuthor);
         }
-    }*/
+    }
 
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
@@ -194,7 +208,26 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
             if (myMediaPlayer == null) {
                 myMediaPlayer = new MyMediaPlayer();
             }
-            dashboardViewModel.playAudio(myMediaPlayer ,v.getId());
+            dashboardViewModel.OnlineLibrary_PlayAudio(myMediaPlayer ,v.getId());
         }
     };
+
+    @Override
+    public void onDestroy() {
+        Cleaner();
+        super.onDestroy();
+    }
+
+    private void Cleaner() {
+        if (h != null)
+            h.removeCallbacksAndMessages(null);
+        if(myMediaPlayer != null){
+            myMediaPlayer.release();
+            myMediaPlayer = null;
+        }
+        rvSetSound.setAdapter(null);
+        ssAdapter = null;
+        oldListAudio = null;
+        listAudio = null;
+    }
 }

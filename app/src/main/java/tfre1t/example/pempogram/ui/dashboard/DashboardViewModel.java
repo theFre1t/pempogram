@@ -35,9 +35,12 @@ public class DashboardViewModel extends AndroidViewModel {
     private LiveData<Tables.AudiofileWithImg> dataAudiofileById;
     private LiveData<List<Tables.AudiofileWithImg>> dataAudiofiles;
     private LiveData<List<Room_DB.Online_Collection>> dataOnlineColl;
+    private LiveData<List<Room_DB.Online_Audiofile>> onlineAudiofilesByIdColl;
 
     private int collectionId;
     private int audiofileId;
+    private int online_collectionId;
+    private int online_audiofileId;
 
     public DashboardViewModel(@NonNull Application application) {
         super(application);
@@ -248,7 +251,7 @@ public class DashboardViewModel extends AndroidViewModel {
 
     //OnlineLibrary//==================================================================================
     /**Добавление нового Набора*/
-    public void OnlineLibrary_AddUpdColl(int revision, String name_coll, String author_coll){
+    public void OnlineLibrary_AddUpdColl(long revision, String name_coll, String author_coll){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -258,7 +261,7 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
-    public void OnlineLibrary_AddUpdAudiofile(int rev_id, String name, String author, String file_url, int coll_rev){
+    public void OnlineLibrary_AddUpdAudiofile(long rev_id, String name, String author, String file_url, long coll_rev){
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -268,7 +271,7 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /**Добавление изображения Набора*/
-    public void OnlineLibrary_AddUpdImgColl(int revision, String img_file, String img_preview) {
+    public void OnlineLibrary_AddUpdImgColl(long revision, String img_file, String img_preview) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -289,21 +292,21 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /**<p>Запрос на получение данных о конкретном Наборе</p>
-     * <p>Метод для получения данных  {@link #getDataSelectedColl()}</p>*/
+     * <p>Метод для получения данных  {@link #OnlineLibrary_GetDataSelectedColl()}</p>*/
     public void OnlineLibrary_SelectCollById(int id){
-        collectionId = id;
+        online_collectionId = id;
     }
 
     ///////////////////////////////////////=bsOnlineLibrary=////////////////////////////////////////
     /**Получение данных о конкретном Наборе*/
-    /*public LiveData<Room_DB.Online_Collection> OnlineLibrary_GetDataSelectedColl(){
-        return collectionDao.getById(collectionId);
-    }*/
+    public LiveData<Room_DB.Online_Collection> OnlineLibrary_GetDataSelectedColl(){
+        return onlineCollectionDao.getById(online_collectionId);
+    }
 
     /**Получение списка аудиозаписей выбранного Набора*/
-    public LiveData<List<Tables.AudiofileFull>> OnlineLibrary_GetAudiofilesSelectedColl(){
-        audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
-        return audiofilesByIdColl;
+    public LiveData<List<Room_DB.Online_Audiofile>> OnlineLibrary_GetAudiofilesSelectedColl(){
+        onlineAudiofilesByIdColl = onlineAudiofileDao.getAllByIdCollection(online_collectionId);
+        return onlineAudiofilesByIdColl;
     }
 
     /**Проигрывание аудиозаписи*/
@@ -311,7 +314,7 @@ public class DashboardViewModel extends AndroidViewModel {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                myMediaPlayer.play(getApplication(), audiofileDao.getNonLiveById(id).audiofile);
+                myMediaPlayer.playURL(onlineAudiofileDao.getNonLiveById(id).audiofile);
             }
         }).start();
     }

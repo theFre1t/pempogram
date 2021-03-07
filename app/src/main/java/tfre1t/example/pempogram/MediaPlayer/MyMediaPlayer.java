@@ -42,6 +42,28 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
         mediaPlayer.setOnCompletionListener(this);
     }
 
+    public void playURL(String audiofile){
+        if (mediaPlayerResume) {
+            mediaPlayer.release();
+        }
+        try {
+            mediaPlayer = new MediaPlayer();
+            mediaPlayer.setAudioAttributes(
+                    new AudioAttributes.Builder()
+                            .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
+                            .setUsage(AudioAttributes.USAGE_MEDIA)
+                            .build()
+            );
+            mediaPlayer.setDataSource(audiofile);
+            mediaPlayer.prepare();
+            mediaPlayer.start();
+            mediaPlayerResume = true;
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        mediaPlayer.setOnCompletionListener(this);
+    }
+
     @Override
     public void onCompletion(MediaPlayer mp) {
         mediaPlayerResume = false;

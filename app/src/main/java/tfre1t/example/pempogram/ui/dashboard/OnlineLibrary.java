@@ -147,6 +147,31 @@ public class OnlineLibrary extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    //Получение и установка данных
+    private void loadData() {
+        //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
+        h = new MyHandler(this);
+        h.sendEmptyMessage(DATA_DOWNLOAD);
+
+        //Получаем данные
+        dashboardViewModel.OnlineLibrary_GetDataColl().observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
+            @Override
+            public void onChanged(List<Room_DB.Online_Collection> list) {
+                if (listColl != null) {
+                    oldListColl = listColl; //Запоминаем старые данные
+                }
+                listColl = list;
+                //Отправляем сообщение о наличие данных
+                if (listColl.size() == 0) {
+                    h.sendEmptyMessage(DATA_NONE);
+                } else {
+                    h.sendEmptyMessage(DATA_TRUE);
+                }
+            }
+        });
+        updateLibrary();
+    }
+
     private void updateLibrary() {
         new Thread(new Runnable() {
             @Override
@@ -160,7 +185,7 @@ public class OnlineLibrary extends AppCompatActivity {
                         if(type.equals("dir")){
                             String public_url = obj.getString("public_url");
                             String[] name_author = obj.getString("name").split("\\|",2);
-                            int coll_revision = obj.getInt("revision");
+                            long coll_revision = obj.getLong("revision");
 
                             dashboardViewModel.OnlineLibrary_AddUpdColl(coll_revision, name_author[0], name_author[1]); //Добавляем/Обновляем в БД набор
 
@@ -176,7 +201,7 @@ public class OnlineLibrary extends AppCompatActivity {
                                     dashboardViewModel.OnlineLibrary_AddUpdImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
                                 }
                                 else if(item_media_type.equals("audio")) {
-                                    int item_revision = item_obj.getInt("revision"); //Получаем revision
+                                    long item_revision = item_obj.getLong("revision"); //Получаем revision
                                     String[] item_fullname = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
                                     String[] item_name = item_fullname[0].split("\\|",2);
                                     String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
@@ -199,6 +224,7 @@ public class OnlineLibrary extends AppCompatActivity {
         try {
             connection = (HttpsURLConnection) new URL(pathYaDisk + public_key).openConnection();
             connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "OAuth ");
             connection.setRequestProperty("Accept", "application/json");
             connection.setReadTimeout(10000);
             connection.connect();
@@ -225,31 +251,6 @@ public class OnlineLibrary extends AppCompatActivity {
             e.printStackTrace();
         }
         return null;
-    }
-
-    //Получение и установка данных
-    private void loadData() {
-        //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
-        h = new MyHandler(this);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
-
-        //Получаем данные
-        dashboardViewModel.OnlineLibrary_GetDataColl().observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
-            @Override
-            public void onChanged(List<Room_DB.Online_Collection> list) {
-                if (listColl != null) {
-                    oldListColl = listColl; //Запоминаем старые данные
-                }
-                listColl = list;
-                //Отправляем сообщение о наличие данных
-                if (listColl.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
-            }
-        });
-        updateLibrary();
     }
 
     static class MyHandler extends Handler {
@@ -320,9 +321,9 @@ public class OnlineLibrary extends AppCompatActivity {
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            int newId = newList.get(newItemPosition).revision_collection;
-            int oldId = oldList.get(oldItemPosition).revision_collection;
-            return newId == oldId;
+            long newRevision = newList.get(newItemPosition).revision_collection;
+            long oldRevision = oldList.get(oldItemPosition).revision_collection;
+            return newRevision == oldRevision;
         }
 
         @Override
@@ -338,6 +339,7 @@ public class OnlineLibrary extends AppCompatActivity {
     private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            dashboardViewModel.OnlineLibrary_SelectCollById(v.getId());
             new bsOnlineLibrary().show(getSupportFragmentManager().beginTransaction(), "showSetSound");
         }
     };
