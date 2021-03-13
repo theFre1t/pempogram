@@ -8,19 +8,30 @@
         <item name="colorControlNormal">@color/colorTextSecondary</item>
         <item name="android:navigationBarColor">@color/Black</item>
         <item name="android:editTextColor">@color/colorTextSecondary</item>
+        <item name="bottomSheetDialogTheme">@style/AppBottomSheetDialogTheme</item>
     </style>
+
+    <!--ToolBar-->
     <style name="MainActivityTheme" parent="AppTheme">
         <item name="android:windowTranslucentStatus">true</item>
     </style>
+
+    <!--Splash-->
     <style name="SplashTheme" parent="AppTheme">
         <item name="android:windowBackground">@drawable/splash_screen</item>
     </style>
+
+    <!--Background-->
     <style name="BackgroundStyle" >
         <item name="android:background">@color/colorPrimary</item>
     </style>
+
+    <!--Card-->
     <style name="CardBackgroundStyle" >
         <item name="cardBackgroundColor">@color/colorPrimaryLight</item>
     </style>
+
+    <!--Text-->
     <style name="TextStylePrimary" >
         <item name="fontFamily">@font/fira_sans</item>
         <item name="android:textColor">@color/colorTextPrimary</item>
@@ -29,6 +40,8 @@
         <item name="fontFamily">@font/fira_sans</item>
         <item name="android:textColor">@color/colorTextSecondary</item>
     </style>
+
+    <!--ToolBar-->
     <style name="ToolBarStyle" parent="Widget.AppCompat.Toolbar">
         <item name="titleTextAppearance">@style/TextAppearance.AppCompat.Large</item>
         <item name="titleTextColor">@color/colorTextSecondary</item>
@@ -36,4 +49,16 @@
         <item name="android:minHeight">56dp</item>
         <item name="android:maxHeight">56dp</item>
     </style>
+
+    <!--BottomSheetDialog-->
+    <style name="AppBottomSheetDialogTheme"
+        parent="Theme.MaterialComponents.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/AppModalStyle</item>
+    </style>
+    <style name="AppModalStyle"
+        parent="Widget.Design.BottomSheet.Modal">
+        <item name="android:background">@drawable/rounded_dialog</item>
+    </style>
+
+
 </resources>

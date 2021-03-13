@@ -13,6 +13,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import java.util.Objects;
+
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
@@ -28,7 +30,7 @@ public class Dialog_Delete_Collecton extends DialogFragment implements View.OnCl
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.dialog_delete, null);
 
         findViewById();

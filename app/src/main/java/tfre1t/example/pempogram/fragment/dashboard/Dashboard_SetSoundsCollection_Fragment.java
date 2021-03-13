@@ -1,5 +1,6 @@
 package tfre1t.example.pempogram.fragment.dashboard;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -29,17 +30,18 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Collecton;
 import tfre1t.example.pempogram.dialog.Dialog_Delete_Sound;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Collection;
 import tfre1t.example.pempogram.dialog.Dialog_Edit_Sound;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
-import tfre1t.example.pempogram.myadapter.SetSoundAdapter;
-import tfre1t.example.pempogram.savefile.Imager;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.adapter.SetSoundAdapter;
+import tfre1t.example.pempogram.SaveFile.Imager;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements View.OnClickListener{
@@ -52,13 +54,13 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
 
     private MyMediaPlayer myMediaPlayer;
     private DashboardViewModel dashboardViewModel;
-    private SetSoundAdapter scAdapter;
+    private SetSoundAdapter ssAdapter;
 
     private View v;
     private Context ctx;
     private Handler h;
 
-    private List<DB_Table.AudiofileFull> listAudiofiles, oldListAudiofiles;
+    private List<Tables.AudiofileFull> listAudiofiles, oldListAudiofiles;
 
     private Toolbar tbSetSound;
     private ProgressBar pbLoader;
@@ -68,7 +70,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.fragment_dashboard_setsounds_collection, null);
         ctx = v.getContext();
 
@@ -91,7 +93,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     }
 
     private void setToolbar() {
-        AppCompatActivity activity = (AppCompatActivity) getActivity();
+        AppCompatActivity activity = (AppCompatActivity) requireActivity();
         activity.setSupportActionBar(tbSetSound);
         ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
@@ -107,16 +109,17 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         super.onCreateOptionsMenu(menu, inflater);
     }
 
+
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()){
             case R.id.btn_menu_editColl:
                 //Вызывает диалог редактирования коллекции
-                new Dialog_Edit_Collection().show(getActivity().getSupportFragmentManager().beginTransaction(), "editColl");
+                new Dialog_Edit_Collection().show(requireActivity().getSupportFragmentManager().beginTransaction(), "editColl");
                 return true;
             case R.id.btn_menu_delColl:
                 //Вызывает диалог удаления коллекции
-                new Dialog_Delete_Collecton().show(getActivity().getSupportFragmentManager().beginTransaction(), "dellColl");
+                new Dialog_Delete_Collecton().show(requireActivity().getSupportFragmentManager().beginTransaction(), "dellColl");
                 return true;
             case android.R.id.home:
                 //Возвращаемся назад
@@ -143,9 +146,9 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<DB_Table.AudiofileFull>>() {
+        dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
             @Override
-            public void onChanged(List<DB_Table.AudiofileFull> list) {
+            public void onChanged(List<Tables.AudiofileFull> list) {
                 if (listAudiofiles != null) {
                     oldListAudiofiles = listAudiofiles; //Запоминаем старые данные
                 }
@@ -161,20 +164,20 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     }
 
     static class MyHandler extends Handler {
-        WeakReference<Dashboard_SetSoundsCollection_Fragment> wrDSSCF;
-        Dashboard_SetSoundsCollection_Fragment newDSSCF;
+        WeakReference<Dashboard_SetSoundsCollection_Fragment> wr;
+        Dashboard_SetSoundsCollection_Fragment newCurrClass;
 
-        public MyHandler(Dashboard_SetSoundsCollection_Fragment dsscf) {
-            wrDSSCF = new WeakReference<>(dsscf);
+        public MyHandler(Dashboard_SetSoundsCollection_Fragment currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newDSSCF = wrDSSCF.get();
-            if(newDSSCF != null){
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
                 CURRENT_DATA = msg.what;
-                newDSSCF.setData();
+                newCurrClass.setData();
             }
         }
     }
@@ -190,17 +193,17 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
                 tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
-                if(scAdapter == null) {
-                    scAdapter = new SetSoundAdapter(ctx, listAudiofiles);
-                    scAdapter.setItemClickListener(onItemClickListener);
-                    scAdapter.setMenuClickListener(onMenuClickListener);
+                if(ssAdapter == null) {
+                    ssAdapter = new SetSoundAdapter(ctx, listAudiofiles);
+                    ssAdapter.setItemClickListener(onItemClickListener);
+                    ssAdapter.setMenuClickListener(onMenuClickListener);
                     rvSetSounds.setLayoutManager(new LinearLayoutManager(ctx));
-                    rvSetSounds.setAdapter(scAdapter);
+                    rvSetSounds.setAdapter(ssAdapter);
                 }else {
                     AudiofilesDiffUtilCallback AudDiffUtil = new AudiofilesDiffUtilCallback(oldListAudiofiles, listAudiofiles);
                     DiffUtil.DiffResult AudDiffResult = DiffUtil.calculateDiff(AudDiffUtil);
-                    scAdapter.swipeList(listAudiofiles);
-                    AudDiffResult.dispatchUpdatesTo(scAdapter);
+                    ssAdapter.swipeList(listAudiofiles);
+                    AudDiffResult.dispatchUpdatesTo(ssAdapter);
                 }
                 break;
         }
@@ -209,10 +212,10 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     //Обновляем RecyclerView
     public static class AudiofilesDiffUtilCallback extends DiffUtil.Callback{
 
-        List<DB_Table.AudiofileFull> oldList;
-        List<DB_Table.AudiofileFull> newList;
+        List<Tables.AudiofileFull> oldList;
+        List<Tables.AudiofileFull> newList;
 
-        AudiofilesDiffUtilCallback(List<DB_Table.AudiofileFull> oldList, List<DB_Table.AudiofileFull> newList){
+        AudiofilesDiffUtilCallback(List<Tables.AudiofileFull> oldList, List<Tables.AudiofileFull> newList){
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -255,7 +258,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         }
     }
 
-    private View.OnClickListener onItemClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             //Воиспроизведение
@@ -266,7 +269,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         }
     };
 
-    private View.OnClickListener onMenuClickListener = new View.OnClickListener() {
+    private final View.OnClickListener onMenuClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             PopupMenu popup = new PopupMenu(ctx, v);
@@ -278,11 +281,11 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
                     int itemId = item.getItemId();
                     if (itemId == R.id.btn_popup_editsound) {
                         //Редактировние аудиозаписи
-                        new Dialog_Edit_Sound().show(getActivity().getSupportFragmentManager().beginTransaction(), "editSound");
+                        new Dialog_Edit_Sound().show(requireActivity().getSupportFragmentManager().beginTransaction(), "editSound");
                         return true;
                     } else if (itemId == R.id.btn_popup_deletesound) {
                         //Удаление аудиозаписи
-                        new Dialog_Delete_Sound().show(getActivity().getSupportFragmentManager().beginTransaction(), "dellSound");
+                        new Dialog_Delete_Sound().show(requireActivity().getSupportFragmentManager().beginTransaction(), "dellSound");
                         return true;
                     }
                     return false;
@@ -312,7 +315,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
             myMediaPlayer = null;
         }
         rvSetSounds.setAdapter(null);
-        scAdapter = null;
+        ssAdapter = null;
         oldListAudiofiles = null;
         listAudiofiles = null;
         getParentFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();

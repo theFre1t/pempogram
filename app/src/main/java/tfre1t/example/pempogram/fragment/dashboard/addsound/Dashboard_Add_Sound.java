@@ -16,7 +16,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayoutMediator;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.myadapter.AddSoundFragmentPagerAdapter;
+import tfre1t.example.pempogram.adapter.AddSoundFragmentPagerAdapter;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Add_Sound extends AppCompatActivity {
@@ -117,12 +117,10 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
         });
     }
 
-
-
     @Override
     public void onDestroy() {
-        Cleaner();
         super.onDestroy();
+        Cleaner();
     }
 
     private void Cleaner(){

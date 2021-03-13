@@ -3,10 +3,10 @@
 
     <item
         android:id="@+id/btn_popup_editsound"
-        android:icon="@drawable/baseline_edit_black_24"
+        android:icon="@drawable/baseline_edit_24"
         android:title="@string/view_btn_edit" />
     <item
         android:id="@+id/btn_popup_deletesound"
-        android:icon="@drawable/baseline_delete_black_24"
+        android:icon="@drawable/baseline_delete_24"
         android:title="@string/view_btn_delete" />
 </menu>

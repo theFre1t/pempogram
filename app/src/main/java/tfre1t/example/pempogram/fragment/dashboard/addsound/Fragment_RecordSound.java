@@ -21,12 +21,18 @@ import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+
 import java.io.File;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
-import tfre1t.example.pempogram.trashсanclasses.CheckPermission;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.TrashcanClasses.CheckPermission;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_RecordSound extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Chronometer.OnChronometerTickListener {
@@ -39,6 +45,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
 
     private DashboardViewModel dashboardViewModel;
     private MyMediaPlayer myMediaPlayer;
+    private InterstitialAd mInterstitialAd;
 
     private Context ctx;
     private View v;
@@ -62,6 +69,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         ctx = v.getContext();
 
         findViewById();
+        adMod();
 
         isSave = false;
         tvTitle.setText(R.string.title_dictaphone);
@@ -92,6 +100,16 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
 
         recordGroup = v.findViewById(R.id.recordGroup);
         playGroup = v.findViewById(R.id.playGroup);
+    }
+
+    private void adMod() {
+        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+        });
+        mInterstitialAd = new InterstitialAd(ctx);
+        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
+        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -129,6 +147,11 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
             if (fillingCheck(nameSound, executorSound, recordAudio)) {
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, recordAudio.getName());
                 isSave = true;
+
+                if(mInterstitialAd.isLoaded()){
+                    mInterstitialAd.show();
+                }
+
                 Toast.makeText(ctx, R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
                 getActivity().finish();
             }
@@ -141,7 +164,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         switch (status){
             case START_RECORD:
                 recordGroup.setVisibility(View.VISIBLE);
-                imgBtnRecordAudiofile.setImageResource(android.R.drawable.picture_frame);
+                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_stop_48);
                 imgBtnRecordAudiofile.getBackground().mutate().setColorFilter(getResources().getColor(android.R.color.holo_red_dark), PorterDuff.Mode.SRC_ATOP);
                 tvTime.setBase(SystemClock.elapsedRealtime());
                 tvTime.start();
@@ -161,13 +184,13 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
                 else {
                     tvRecordTime.setBase(SystemClock.elapsedRealtime() - timeRecord);
                 }
-                imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_stop_black_48);
+                imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_stop_24);
                 sbAudiofile.setMax(timeRecord-1);
                 tvRecordTime.start();
                 break;
             case DELETE_CURRENT_RECORD:
                 tvRecordTime.stop();
-                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_mic_black_48);
+                imgBtnRecordAudiofile.setImageResource(R.drawable.baseline_mic_48);
                 imgBtnRecordAudiofile.getBackground().mutate().setColorFilter(getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
                 recordGroup.setVisibility(View.VISIBLE);
                 break;
@@ -187,7 +210,7 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
         if(!myMediaPlayer.mediaPlayerResume){
             tvRecordTime.stop();
             tvRecordTime.setText(ZERO_TIME);
-            imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_play_arrow_black_48);
+            imgBtnPlayAudiofile.setImageResource(R.drawable.baseline_play_arrow_24);
         }
     }
 

@@ -9,9 +9,9 @@ import androidx.lifecycle.LiveData;
 import java.util.List;
 
 import tfre1t.example.pempogram.database.App;
-import tfre1t.example.pempogram.database.DB_Table;
+import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.mediaplayer.MyMediaPlayer;
+import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
 
 public class HomeViewModel extends AndroidViewModel {
     private static final String TAG = "myLog";
@@ -20,8 +20,8 @@ public class HomeViewModel extends AndroidViewModel {
     private static Room_DB.FavoriteAudioDao favoriteAudioDao;
     private static Room_DB.AudiofileDao audiofileDao;
 
-    private LiveData<List<DB_Table.AudiofileWithImg>> dataFavAu;
-    private LiveData<List<DB_Table.AudiofileWithImg>> dataSelAu;
+    private LiveData<List<Tables.AudiofileWithImg>> dataFavAu;
+    private LiveData<List<Tables.AudiofileWithImg>> dataSelAu;
 
     public HomeViewModel(@NonNull Application app) {
         super(app);
@@ -41,7 +41,7 @@ public class HomeViewModel extends AndroidViewModel {
 
     ////////////////////////////////=Dashboard_Collection_Fragment=/////////////////////////////////
     /**Получение списка аудиозаписей Бысторого вызова*/
-    public LiveData<List<DB_Table.AudiofileWithImg>> getDataFavAu(){
+    public LiveData<List<Tables.AudiofileWithImg>> getDataFavAu(){
         dataFavAu = favoriteAudioDao.getAll();
         return dataFavAu;
     }
@@ -68,20 +68,20 @@ public class HomeViewModel extends AndroidViewModel {
 
     /////////////////////////////////////=SelectFavoriteAudio=//////////////////////////////////////
     /**Получение списка аудиозаписей не используемых в наборе Бысторого вызова*/
-    public LiveData<List<DB_Table.AudiofileWithImg>> getDataSelAu(){
+    public LiveData<List<Tables.AudiofileWithImg>> getDataSelAu(){
         dataSelAu = favoriteAudioDao.getAllNonFavAu();
         return dataSelAu;
     }
 
     /**Получение списка аудиозаписей не используемых в наборе Бысторого вызова по букве/слову/предложению???*/
-    public LiveData<List<DB_Table.AudiofileWithImg>> getDataSelAu(String searchText){
+    public LiveData<List<Tables.AudiofileWithImg>> getDataSelAu(String searchText){
         return favoriteAudioDao.searchAllNonFavAu("%"+searchText+"%");
     }
 
     /**Добавление аудиозаписи в набор Бысторого вызова*/
     public void addNewFavAu(int id){
         Room_DB.FavoriteAudio favoriteAudio = new Room_DB.FavoriteAudio();
-        favoriteAudio.id_audiofile = id;
+        favoriteAudio._id_audiofile = id;
         new Thread(new Runnable() {
             @Override
             public void run() {

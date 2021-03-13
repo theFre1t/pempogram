@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -27,8 +28,9 @@ import java.lang.ref.WeakReference;
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.DB_Table;
-import tfre1t.example.pempogram.myadapter.SelectFavAuAdapter;
+import tfre1t.example.pempogram.database.Tables;
+import tfre1t.example.pempogram.adapter.SelectFavAuAdapter;
+import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 
 public class SelectFavoriteAudio extends AppCompatActivity {
     private static final String TAG = "myLog";
@@ -43,7 +45,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     private Handler h;
 
-    private List<DB_Table.AudiofileWithImg> oldListSelAu, listSelAu;
+    private List<Tables.AudiofileWithImg> oldListSelAu, listSelAu;
 
     private RecyclerView  rvSelectFavAu;
     private Toolbar tbSelectFavAu;
@@ -94,9 +96,9 @@ public class SelectFavoriteAudio extends AppCompatActivity {
                 public boolean onQueryTextChange(String newText) {
                     h.sendEmptyMessage(DATA_DOWNLOAD);
                     //Получаем данные
-                    homeViewModel.getDataSelAu(newText).observe(SelectFavoriteAudio.this, new Observer<List<DB_Table.AudiofileWithImg>>() {
+                    homeViewModel.getDataSelAu(newText).observe(SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {
                         @Override
-                        public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+                        public void onChanged(List<Tables.AudiofileWithImg> list) {
                             if (listSelAu != null) {
                                 oldListSelAu = listSelAu; //Запоминаем старые данные
                             }
@@ -131,11 +133,12 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     //Получение и установка данных
     private void loadData() {
+        Log.d(TAG, "setData: rvSelectFavAu "+ rvSelectFavAu);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        homeViewModel.getDataSelAu().observe(SelectFavoriteAudio.this, new Observer<List<DB_Table.AudiofileWithImg>>() {
+        homeViewModel.getDataSelAu().observe(SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {
             @Override
-            public void onChanged(List<DB_Table.AudiofileWithImg> list) {
+            public void onChanged(List<Tables.AudiofileWithImg> list) {
                 if (listSelAu != null) {
                     oldListSelAu = listSelAu; //Запоминаем старые данные
                 }
@@ -152,31 +155,19 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     static class MyHandler extends Handler {
         WeakReference<SelectFavoriteAudio> wr;
-        SelectFavoriteAudio newSFA;
+        SelectFavoriteAudio newCurrClass;
 
-        public MyHandler(SelectFavoriteAudio sfa) {
-            wr = new WeakReference<>(sfa);
+        public MyHandler(SelectFavoriteAudio currClass) {
+            wr = new WeakReference<>(currClass);
         }
 
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
-            newSFA = wr.get();
-            if(newSFA != null){
-                switch (msg.what){
-                    case DATA_DOWNLOAD:
-                        CURRENT_DATA = DATA_DOWNLOAD;
-                        newSFA.setData();
-                        break;
-                    case DATA_NONE:
-                        CURRENT_DATA = DATA_NONE;
-                        newSFA.setData();
-                        break;
-                    case DATA_TRUE:
-                        CURRENT_DATA = DATA_TRUE;
-                        newSFA.setData();
-                        break;
-                }
+            newCurrClass = wr.get();
+            if(newCurrClass != null){
+                CURRENT_DATA = msg.what;
+                newCurrClass.setData();
             }
         }
     }
@@ -210,10 +201,10 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     //Обновляем RecyclerView
     public static class SelectFavAuDiffUtilCallback extends DiffUtil.Callback{
 
-        List<DB_Table.AudiofileWithImg> oldList;
-        List<DB_Table.AudiofileWithImg> newList;
+        List<Tables.AudiofileWithImg> oldList;
+        List<Tables.AudiofileWithImg> newList;
 
-        SelectFavAuDiffUtilCallback(List<DB_Table.AudiofileWithImg> oldList, List<DB_Table.AudiofileWithImg> newList){
+        SelectFavAuDiffUtilCallback(List<Tables.AudiofileWithImg> oldList, List<Tables.AudiofileWithImg> newList){
             this.oldList = oldList;
             this.newList = newList;
         }

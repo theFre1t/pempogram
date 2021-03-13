@@ -33,7 +33,7 @@
             android:layout_gravity="center"
             android:background="@color/colorPrimaryDark"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:src="@drawable/baseline_view_module_black_36"
+            android:src="@drawable/baseline_view_module_36"
             android:tint="@color/colorTextSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -46,7 +46,7 @@
             android:layout_gravity="center"
             android:background="@color/colorPrimaryDark"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:src="@drawable/baseline_table_rows_black_24"
+            android:src="@drawable/baseline_table_rows_24"
             android:tint="@color/colorTextSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistGrid"
@@ -59,10 +59,27 @@
             android:layout_gravity="center"
             android:background="@color/colorPrimaryDark"
             android:backgroundTint="@color/colorPrimaryDark"
-            android:src="@drawable/baseline_view_list_black_36"
+            android:src="@drawable/baseline_view_list_36"
             android:tint="@color/colorTextSecondary"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistCard"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <Button
+            android:id="@+id/btnOnlineLibrary"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="8dp"
+            android:background="@color/colorPrimaryLight"
+            android:text="@string/view_btn_online_library"
+            android:textAppearance="@style/TextStylePrimary"
+            android:textSize="18sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btnlistClassic"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
@@ -75,6 +92,7 @@
             android:layout_marginBottom="8dp"
             android:background="@color/colorPrimaryLight"
             android:spinnerMode="dropdown"
+            android:visibility="gone"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btnlistClassic"
             app:layout_constraintStart_toStartOf="parent"
@@ -132,7 +150,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:maxImageSize="36dp"
         app:rippleColor="@color/colorSecondaryDark"
-        app:srcCompat="@drawable/baseline_add_black_36" />
+        app:srcCompat="@drawable/baseline_add_24" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rcViewColl"

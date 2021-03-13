@@ -22,12 +22,13 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.customviewers.RoundedImageView;
+import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.savefile.Imager;
-import tfre1t.example.pempogram.trashсanclasses.FillingCheck;
+import tfre1t.example.pempogram.SaveFile.Imager;
+import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 import static android.app.Activity.RESULT_OK;
@@ -141,14 +142,14 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
                         }
                         imager = new Imager();
                         nameImg = imager.saveImage(ctx, bitmap);
-                        getActivity().runOnUiThread(new Runnable() {
+                        requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
                                 dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg));
                             }
                         });
                     }
-                    getActivity().runOnUiThread(new Runnable() {
+                    requireActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             dialogBtnAdd.setEnabled(true);
