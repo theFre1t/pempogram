@@ -98,7 +98,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
         Tables.AudiofileWithImg audiofile =  list.get(getItemCount()- (position + 1));
 
         holder.itemView.setId(audiofile.id_audiofile);
-        holder.imgv.setImageBitmap(new Imager().setImageView(ctx ,audiofile.img_collection));
+        holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
         holder.tvNameAudio.setText(audiofile.name_audiofile);
         holder.tvExecuteAudio.setText(audiofile.executor_audiofile);
         holder.chbSound.setChecked(checkBoxChecker(audiofile.id_audiofile));

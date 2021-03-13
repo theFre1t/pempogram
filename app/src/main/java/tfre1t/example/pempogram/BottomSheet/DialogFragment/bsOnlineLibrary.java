@@ -1,9 +1,12 @@
 package tfre1t.example.pempogram.BottomSheet.DialogFragment;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +26,11 @@ import com.squareup.picasso.Picasso;
 
 import org.apache.commons.io.FileUtils;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.ref.WeakReference;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.List;
 
 import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
@@ -88,8 +95,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
         dashboardViewModel.OnlineLibrary_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Online_Collection>() {
             @Override
             public void onChanged(Room_DB.Online_Collection online_collection) {
-                Picasso.get().load(online_collection.img_preview_collection).resize(150, 150).centerCrop().into(imgColl);
-                //imgColl.setImageBitmap(new Imager().setImageView(ctx, ));
+                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.img_file_preview_collection));
                 tvCollection.setText(online_collection.name_collection);
                 tvAuthor.setText(online_collection.author_collection);
             }

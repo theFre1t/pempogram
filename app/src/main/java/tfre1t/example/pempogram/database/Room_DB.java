@@ -1,6 +1,7 @@
 package tfre1t.example.pempogram.database;
 
 import android.content.Context;
+import android.media.Image;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
@@ -114,9 +115,9 @@ public class Room_DB {
 
         public String public_url_collection;
 
-        public String img_file_collection;
+        public String url_img_file_collection;
 
-        public String img_preview_collection;
+        public String img_file_preview_collection;
     }
 
     @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "id_online_collection", childColumns = "_id_online_collection", onDelete = CASCADE),
@@ -469,11 +470,11 @@ public class Room_DB {
         }
 
         @Transaction
-        public void updateImage(long revision, String img_file, String img_preview){
+        public void updateImage(Context ctx, long revision, String img_file, String img_preview){
             Online_Collection onlineCollection = getByRevision(revision);
-            if(!onlineCollection.equals(null)){
-                onlineCollection.img_file_collection = img_file;
-                onlineCollection.img_preview_collection = img_preview;
+            if(onlineCollection != null){
+                onlineCollection.url_img_file_collection = img_file;
+                onlineCollection.img_file_preview_collection = new Imager().saveCacheImage(ctx, img_preview, onlineCollection.img_file_preview_collection);
                 updateCollection(onlineCollection);
             }
         }

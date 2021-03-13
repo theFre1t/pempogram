@@ -149,7 +149,8 @@ public class OnlineLibrary extends AppCompatActivity {
 
     //Получение и установка данных
     private void loadData() {
-        //Log.d(TAG, "setData: rvOnlineLibrary "+ rvOnlineLibrary);
+        updateLibrary();
+
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
 
@@ -169,7 +170,6 @@ public class OnlineLibrary extends AppCompatActivity {
                 }
             }
         });
-        updateLibrary();
     }
 
     private void updateLibrary() {
@@ -198,7 +198,7 @@ public class OnlineLibrary extends AppCompatActivity {
                                     String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
                                     String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
 
-                                    dashboardViewModel.OnlineLibrary_AddUpdImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
+                                    dashboardViewModel.OnlineLibrary_AddUpdImgColl(getApplication(), coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
                                 }
                                 else if(item_media_type.equals("audio")) {
                                     long item_revision = item_obj.getLong("revision"); //Получаем revision
@@ -332,7 +332,12 @@ public class OnlineLibrary extends AppCompatActivity {
             String oldName = oldList.get(oldItemPosition).name_collection;
             String newAuthor = newList.get(newItemPosition).author_collection;
             String oldAuthor = oldList.get(oldItemPosition).author_collection;
-            return oldName.equals(newName) && oldAuthor.equals(newAuthor);
+            String newImage = newList.get(newItemPosition).img_file_preview_collection;
+            String oldImage = oldList.get(oldItemPosition).img_file_preview_collection;
+            if(newImage == null && newImage.equals(oldImage)){
+                return oldName.equals(newName) && oldAuthor.equals(newAuthor);
+            }
+            return oldName.equals(newName) && oldAuthor.equals(newAuthor) && newImage.equals(oldImage);
         }
     }
 
@@ -354,7 +359,7 @@ public class OnlineLibrary extends AppCompatActivity {
         if (h != null)
             h.removeCallbacksAndMessages(null);
         rvOnlineLibrary.setAdapter(null);
-        FileUtils.deleteQuietly(FileUtils.getFile(getCacheDir().getPath()+"/picasso-cache"));
+        //FileUtils.deleteQuietly(FileUtils.getFile(getCacheDir().getPath()+"/picasso-cache"));
         olAdapter = null;
         oldListColl = null;
         listColl = null;

@@ -1,6 +1,7 @@
 package tfre1t.example.pempogram.ui.dashboard;
 
 import android.app.Application;
+import android.content.Context;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -8,6 +9,7 @@ import androidx.lifecycle.LiveData;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import tfre1t.example.pempogram.database.App;
 import tfre1t.example.pempogram.database.Tables;
@@ -92,18 +94,14 @@ public class DashboardViewModel extends AndroidViewModel {
         collection.name_collection = nameColl;
         collection.author_collection = authorColl;
         collection.img_collection = imgName;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                collectionDao_abstract.insert(collection);
-            }
-        }).start();
+        new Thread(() -> collectionDao_abstract.insert(collection)).start();
     }
 
     //Dashboard_SetSoundsCollection_Fragment//=========================================================
     /**Получение данных о конкретном Наборе*/
     public LiveData<Room_DB.Collection> getDataSelectedColl(){
-        return collectionDao.getById(collectionId);
+        dataCollById = collectionDao.getById(collectionId);
+        return dataCollById;
     }
 
     /**Получение списка аудиозаписей выбранного Набора*/
@@ -125,39 +123,25 @@ public class DashboardViewModel extends AndroidViewModel {
 
     /**Проигрывание аудиозаписи*/
     public void playAudio(MyMediaPlayer myMediaPlayer, int id) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                myMediaPlayer.play(getApplication(), audiofileDao.getNonLiveById(id).audiofile);
-            }
-        }).start();
+        new Thread(() -> myMediaPlayer.play(getApplication(), audiofileDao.getNonLiveById(id).audiofile)).start();
     }
 
     ////////////////////////////////////=Dialog_Edit_Collection=////////////////////////////////////
     /**Обновление данных о Наборе*/
     public void updateCollection(String newNameColl, String newAuthorColl, String newNameImg){
-        Room_DB.Collection collection = new Room_DB.Collection();
-        collection.id_collection = collectionId;
-        collection.name_collection = newNameColl;
-        collection.author_collection = newAuthorColl;
-        collection.img_collection = newNameImg;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                collectionDao.update(collection);
-            }
-        }).start();
+        Room_DB.Collection collection = dataCollById.getValue();
+        if(collection != null){
+            collection.name_collection = newNameColl;
+            collection.author_collection = newAuthorColl;
+            collection.img_collection = newNameImg;
+            new Thread(() -> collectionDao.update(collection)).start();
+        }
     }
 
     ////////////////////////////////////=Dialog_Delete_Collecton=///////////////////////////////////
     /**Удаление Набора*/
     public void deleteCollection(boolean full){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                collectionDao_abstract.delete(getApplication(), dataCollById.getValue(), full);
-            }
-        }).start();
+        new Thread(() -> collectionDao_abstract.delete(getApplication(), Objects.requireNonNull(dataCollById.getValue()), full)).start();
     }
 
     ///////////////////////////////////////=Dialog_Edit_Sound=//////////////////////////////////////
@@ -168,26 +152,18 @@ public class DashboardViewModel extends AndroidViewModel {
 
     /**Обновление данных о Наборе*/
     public void updateAudiofile(String newNameSound, String newExecutorSound){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                audiofileDao.update(audiofileId, newNameSound, newExecutorSound);
-            }
-        }).start();
+        new Thread(() -> audiofileDao.update(audiofileId, newNameSound, newExecutorSound)).start();
     }
 
     //////////////////////////////////////=Dialog_Delete_Sound=/////////////////////////////////////
     /**Удаление аудиозаписи*/
     public void deleteAudiofile(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Room_DB.Audiofile audiofile = new Room_DB.Audiofile();
-                Tables.AudiofileWithImg audiofileWithImg = audiofileDao.getNonLiveById(audiofileId);
-                audiofile.id_audiofile = audiofileWithImg.id_audiofile;
-                audiofile.name_audiofile = audiofileWithImg.name_audiofile;
-                audiofileDao_abstract.delete(getApplication(), audiofile);
-            }
+        new Thread(() -> {
+            Room_DB.Audiofile audiofile = new Room_DB.Audiofile();
+            Tables.AudiofileWithImg audiofileWithImg = audiofileDao.getNonLiveById(audiofileId);
+            audiofile.id_audiofile = audiofileWithImg.id_audiofile;
+            audiofile.name_audiofile = audiofileWithImg.name_audiofile;
+            audiofileDao_abstract.delete(getApplication(), audiofile);
         }).start();
     }
 
@@ -213,20 +189,17 @@ public class DashboardViewModel extends AndroidViewModel {
 
     /**Передаем ArrayList для Добавления/Удаления привязки аудиозаписей с Набором*/
     public void editCollection(HashMap<Integer, LibrarySoundAdapter.Check> checkList) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                for (LibrarySoundAdapter.Check check: checkList.values()) {
+        new Thread(() -> {
+            for (LibrarySoundAdapter.Check check: checkList.values()) {
 
-                    Room_DB.Collection_with_Audiofile collection_with_audiofile = new Room_DB.Collection_with_Audiofile();
-                    collection_with_audiofile._id_audiofile = check.id;
-                    collection_with_audiofile._id_collection = collectionId;
+                Room_DB.Collection_with_Audiofile collection_with_audiofile = new Room_DB.Collection_with_Audiofile();
+                collection_with_audiofile._id_audiofile = check.id;
+                collection_with_audiofile._id_collection = collectionId;
 
-                    if(check.check){
-                        collectionWithAudiofileDao.insert(collection_with_audiofile);
-                    }else {
-                        collectionWithAudiofileDao.delete(collectionId, check.id);
-                    }
+                if(check.check){
+                    collectionWithAudiofileDao.insert(collection_with_audiofile);
+                }else {
+                    collectionWithAudiofileDao.delete(collectionId, check.id);
                 }
             }
         }).start();
@@ -241,43 +214,23 @@ public class DashboardViewModel extends AndroidViewModel {
         audio.executor_audiofile = executorSound;
         audio.audiofile = audiofile;
         audio._id_collection = collectionId;
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                audiofileDao_abstract.insert(audio);
-            }
-        }).start();
+        new Thread(() -> audiofileDao_abstract.insert(audio)).start();
     }
 
     //OnlineLibrary//==================================================================================
     /**Добавление нового Набора*/
     public void OnlineLibrary_AddUpdColl(long revision, String name_coll, String author_coll){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                onlineCollectionDao_abstract.insUpd(revision, name_coll, author_coll);
-            }
-        }).start();
+        new Thread(() -> onlineCollectionDao_abstract.insUpd(revision, name_coll, author_coll)).start();
     }
 
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
     public void OnlineLibrary_AddUpdAudiofile(long rev_id, String name, String author, String file_url, long coll_rev){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                onlineAudiofileDao_abstract.insUpd(rev_id,name,author,file_url,coll_rev);
-            }
-        }).start();
+        new Thread(() -> onlineAudiofileDao_abstract.insUpd(rev_id,name,author,file_url,coll_rev)).start();
     }
 
     /**Добавление изображения Набора*/
-    public void OnlineLibrary_AddUpdImgColl(long revision, String img_file, String img_preview) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                onlineCollectionDao_abstract.updateImage(revision, img_file, img_preview);
-            }
-        }).start();
+    public void OnlineLibrary_AddUpdImgColl(Context ctx, long revision, String img_file, String img_preview) {
+        new Thread(() -> onlineCollectionDao_abstract.updateImage(ctx, revision, img_file, img_preview)).start();
     }
 
     /**Получение списка Наборов*/
@@ -311,11 +264,6 @@ public class DashboardViewModel extends AndroidViewModel {
 
     /**Проигрывание аудиозаписи*/
     public void OnlineLibrary_PlayAudio(MyMediaPlayer myMediaPlayer, int id) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                myMediaPlayer.playURL(onlineAudiofileDao.getNonLiveById(id).audiofile);
-            }
-        }).start();
+        new Thread(() -> myMediaPlayer.playURL(onlineAudiofileDao.getNonLiveById(id).audiofile)).start();
     }
 }
