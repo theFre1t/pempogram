@@ -61,7 +61,7 @@ public class OnlineLibrary extends AppCompatActivity {
 
     private Handler h;
 
-    private List<Room_DB.Online_Collection> oldListColl, listColl;
+    private List<Tables.Online_CollectionView> oldListColl, listColl;
 
     private RecyclerView rvOnlineLibrary;
     private Toolbar tbOnlineLibrary;
@@ -112,12 +112,13 @@ public class OnlineLibrary extends AppCompatActivity {
                 public boolean onQueryTextChange(String newText) {
                     h.sendEmptyMessage(DATA_DOWNLOAD);
                     //Получаем данные
-                    dashboardViewModel.OnlineLibrary_GetDataColl(newText).observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
+                    dashboardViewModel.OnlineLibrary_GetDataColl(newText).observe(OnlineLibrary.this, new Observer<List<Tables.Online_CollectionView>>() {
                         @Override
-                        public void onChanged(List<Room_DB.Online_Collection> list) {
+                        public void onChanged(List<Tables.Online_CollectionView> list) {
                             if (listColl != null) {
                                 oldListColl = listColl; //Запоминаем старые данные
                             }
+
                             listColl = list;
                             //Отправляем сообщение о наличие данных
                             h.sendEmptyMessage(DATA_TRUE);
@@ -153,11 +154,10 @@ public class OnlineLibrary extends AppCompatActivity {
 
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
-
         //Получаем данные
-        dashboardViewModel.OnlineLibrary_GetDataColl().observe(OnlineLibrary.this, new Observer<List<Room_DB.Online_Collection>>() {
+        dashboardViewModel.OnlineLibrary_GetDataColl().observe(OnlineLibrary.this, new Observer<List<Tables.Online_CollectionView>>() {
             @Override
-            public void onChanged(List<Room_DB.Online_Collection> list) {
+            public void onChanged(List<Tables.Online_CollectionView> list) {
                 if (listColl != null) {
                     oldListColl = listColl; //Запоминаем старые данные
                 }
@@ -198,7 +198,7 @@ public class OnlineLibrary extends AppCompatActivity {
                                     String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
                                     String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
 
-                                    dashboardViewModel.OnlineLibrary_AddUpdImgColl(getApplication(), coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
+                                    dashboardViewModel.OnlineLibrary_AddUpdImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
                                 }
                                 else if(item_media_type.equals("audio")) {
                                     long item_revision = item_obj.getLong("revision"); //Получаем revision
@@ -206,7 +206,7 @@ public class OnlineLibrary extends AppCompatActivity {
                                     String[] item_name = item_fullname[0].split("\\|",2);
                                     String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
 
-                                    dashboardViewModel.OnlineLibrary_AddUpdAudiofile(item_revision, item_name[0], item_name[1], item_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
+                                    dashboardViewModel.OnlineLibrary_AddUpdAudiofile(item_revision, item_name[0], item_name[1], item_fullname[1], item_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
                                 }
                             }
                         }
@@ -286,9 +286,11 @@ public class OnlineLibrary extends AppCompatActivity {
                 if(olAdapter == null){
                     olAdapter = new OnlineLibraryAdapter(this, listColl);
                     olAdapter.setItemClickListener(onItemClickListener);
+                    olAdapter.setAddItemClickListener(onAddItemClickListener);
                     rvOnlineLibrary.setLayoutManager(new LinearLayoutManager(OnlineLibrary.this));
                     rvOnlineLibrary.setAdapter(olAdapter);
                 }else {
+                    Log.d(TAG, "setData: oldListColl = " + oldListColl + " " + listColl);
                     DiffUtilCallback DiffUtilCallback = new DiffUtilCallback(oldListColl, listColl);
                     DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
                     olAdapter.swipeData(listColl);
@@ -301,10 +303,10 @@ public class OnlineLibrary extends AppCompatActivity {
     //Обновляем RecyclerView
     public static class DiffUtilCallback extends DiffUtil.Callback{
 
-        List<Room_DB.Online_Collection> oldList;
-        List<Room_DB.Online_Collection> newList;
+        List<Tables.Online_CollectionView> oldList;
+        List<Tables.Online_CollectionView> newList;
 
-        DiffUtilCallback(List<Room_DB.Online_Collection> oldList, List<Room_DB.Online_Collection> newList){
+        DiffUtilCallback(List<Tables.Online_CollectionView> oldList, List<Tables.Online_CollectionView> newList){
             this.oldList = oldList;
             this.newList = newList;
         }
@@ -321,23 +323,25 @@ public class OnlineLibrary extends AppCompatActivity {
 
         @Override
         public boolean areItemsTheSame(int oldItemPosition, int newItemPosition) {
-            long newRevision = newList.get(newItemPosition).revision_collection;
-            long oldRevision = oldList.get(oldItemPosition).revision_collection;
+            long newRevision = newList.get(newItemPosition).Online_Collection.revision_collection;
+            long oldRevision = oldList.get(oldItemPosition).Online_Collection.revision_collection;
             return newRevision == oldRevision;
         }
 
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
-            String newName = newList.get(newItemPosition).name_collection;
-            String oldName = oldList.get(oldItemPosition).name_collection;
-            String newAuthor = newList.get(newItemPosition).author_collection;
-            String oldAuthor = oldList.get(oldItemPosition).author_collection;
-            String newImage = newList.get(newItemPosition).img_file_preview_collection;
-            String oldImage = oldList.get(oldItemPosition).img_file_preview_collection;
-            if(newImage == null && newImage.equals(oldImage)){
-                return oldName.equals(newName) && oldAuthor.equals(newAuthor);
+            boolean newAdd = newList.get(newItemPosition).collectionWithCollection != null;
+            boolean oldAdd = oldList.get(newItemPosition).collectionWithCollection != null;
+            String newName = newList.get(newItemPosition).Online_Collection.name_collection;
+            String oldName = oldList.get(oldItemPosition).Online_Collection.name_collection;
+            String newAuthor = newList.get(newItemPosition).Online_Collection.author_collection;
+            String oldAuthor = oldList.get(oldItemPosition).Online_Collection.author_collection;
+            String newImage = newList.get(newItemPosition).Online_Collection.img_file_preview_collection;
+            String oldImage = oldList.get(oldItemPosition).Online_Collection.img_file_preview_collection;
+            if(newImage == null && newImage == oldImage){
+                return oldName.equals(newName) && oldAuthor.equals(newAuthor) && newAdd == oldAdd;
             }
-            return oldName.equals(newName) && oldAuthor.equals(newAuthor) && newImage.equals(oldImage);
+            return oldName.equals(newName) && oldAuthor.equals(newAuthor) && newImage.equals(oldImage) && newAdd == oldAdd;
         }
     }
 
@@ -346,6 +350,14 @@ public class OnlineLibrary extends AppCompatActivity {
         public void onClick(View v) {
             dashboardViewModel.OnlineLibrary_SelectCollById(v.getId());
             new bsOnlineLibrary().show(getSupportFragmentManager().beginTransaction(), "showSetSound");
+        }
+    };
+
+    private final View.OnClickListener onAddItemClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            dashboardViewModel.OnlineLibrary_SelectCollById(v.getId());
+            dashboardViewModel.addNewCollFromOnline();
         }
     };
 

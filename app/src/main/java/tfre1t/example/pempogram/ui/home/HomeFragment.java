@@ -33,7 +33,7 @@ import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
 import tfre1t.example.pempogram.adapter.FavoriteAudioAdater;
-import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
+import tfre1t.example.pempogram.TrashcanClasses.GetHeightClass;
 import tfre1t.example.pempogram.fragment.dashboard.Dashboard_Collection_Fragment;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
@@ -85,7 +85,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         adHomeBanner = v.findViewById(R.id.adHomeBanner);
 
         View vStatusBar = v.findViewById(R.id.vStatusBar);
-        vStatusBar.getLayoutParams().height = new StatusBarHeight().getStatusBarHeight(getActivity());
+        vStatusBar.getLayoutParams().height = new GetHeightClass().getStatusBarHeight(getActivity());
     }
 
     private void adMod() {

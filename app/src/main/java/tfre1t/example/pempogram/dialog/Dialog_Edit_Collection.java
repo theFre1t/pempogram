@@ -22,7 +22,6 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
-import java.util.Objects;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
@@ -141,7 +140,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
                             e.printStackTrace();
                         }
                         imager = new Imager();
-                        nameImg = imager.saveImage(ctx, bitmap);
+                        nameImg = imager.saveBitmapImage(ctx, bitmap);
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

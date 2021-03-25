@@ -45,7 +45,7 @@ public class Imager {
     /**
      * Сохраняем картинку
      */
-    public String saveImage(Context context, Bitmap bitmap) {
+    public String saveBitmapImage(Context context, Bitmap bitmap) {
         ctx = context;
         Imager.bitmap = bitmap;
 
@@ -73,9 +73,29 @@ public class Imager {
     }
 
     /**
-     * Сохраняем кэш картинку
+     * Сохраняем URL картинку
      */
-    public String saveCacheImage(Context context, String URLpath, String oldFileName) {
+    public String saveURLImage(Context context, String URLpath) {
+        this.ctx = context;
+
+        try {
+            URL inpS = new URL(URLpath);
+            bitmap = BitmapFactory.decodeStream(inpS.openConnection().getInputStream());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        String filename = writeFileIMG(ADD);
+
+        onSaverImage(filename);
+        while (thread.isAlive()) ;
+        return filename;
+    }
+
+    /**
+     * Сохраняем URL кэш картинку
+     */
+    public String saveURLCacheImage(Context context, String URLpath, String oldFileName) {
         this.ctx = context;
         this.oldName = oldFileName;
 
@@ -95,8 +115,6 @@ public class Imager {
         }
 
         String filename = writeFileIMG(CACHE);
-
-        Log.d(TAG, "saveCacheImage: filename: " + filename);
 
         if (filename != oldFileName) {
             onSaverImage(filename);

@@ -1,15 +1,14 @@
 package tfre1t.example.pempogram.BottomSheet.DialogFragment;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
@@ -22,31 +21,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
-import com.squareup.picasso.Picasso;
 
-import org.apache.commons.io.FileUtils;
-
-import java.io.IOException;
-import java.io.InputStream;
 import java.lang.ref.WeakReference;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.List;
 
 import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.SaveFile.Imager;
-import tfre1t.example.pempogram.adapter.OnlineLibraryAdapter;
+import tfre1t.example.pempogram.TrashcanClasses.GetHeightClass;
 import tfre1t.example.pempogram.adapter.OnlineLibrary_SetSoundAdapter;
-import tfre1t.example.pempogram.adapter.SetSoundAdapter;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
-import tfre1t.example.pempogram.ui.dashboard.OnlineLibrary;
 
-public class bsOnlineLibrary extends BottomSheetDialogFragment {
+public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.OnClickListener {
     private static final String TAG = "myLog";
 
     private static int CURRENT_DATA; //Текущее состояние данных
@@ -68,6 +57,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
     private TextView tvCollection, tvAuthor, tvEmpty;
     private ProgressBar pbLoader;
     private RecyclerView rvSetSound;
+    private ImageView imgBtnAddStatus;
 
     @Nullable
     @Override
@@ -89,15 +79,23 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
         tvEmpty = v.findViewById(R.id.tvEmpty);
         pbLoader = v.findViewById(R.id.pbLoader);
         rvSetSound = v.findViewById(R.id.rvSetSound);
+        imgBtnAddStatus = v.findViewById(R.id.imgBtnAddStatus);
+
+        imgBtnAddStatus.setOnClickListener(this);
     }
 
     private void loadPresenColl() {
-        dashboardViewModel.OnlineLibrary_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Online_Collection>() {
+        dashboardViewModel.OnlineLibrary_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
             @Override
-            public void onChanged(Room_DB.Online_Collection online_collection) {
-                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.img_file_preview_collection));
-                tvCollection.setText(online_collection.name_collection);
-                tvAuthor.setText(online_collection.author_collection);
+            public void onChanged(Tables.Online_CollectionView online_collection) {
+                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection));
+                tvCollection.setText(online_collection.Online_Collection.name_collection);
+                tvAuthor.setText(online_collection.Online_Collection.author_collection);
+                if(online_collection.collectionWithCollection != null){
+                    imgBtnAddStatus.setEnabled(false);
+                    imgBtnAddStatus.setImageResource(R.drawable.baseline_playlist_add_check_24);
+                    imgBtnAddStatus.setColorFilter(ctx.getResources().getColor(android.R.color.holo_green_dark), PorterDuff.Mode.SRC_ATOP);
+                }
             }
         });
     }
@@ -122,6 +120,19 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment {
                 }
             }
         });
+    }
+
+    @Override
+    public void onClick(View v) {
+        int button = v.getId();
+        if (button == R.id.imgBtnAddStatus) {
+            imgBtnAddStatus.setEnabled(false);
+            dashboardViewModel.addNewCollFromOnline();
+            /*if () {
+                imgBtnAddStatus.setImageResource(R.drawable.baseline_playlist_add_check_24);
+                imgBtnAddStatus.setColorFilter(ctx.getResources().getColor(android.R.color.holo_green_dark), PorterDuff.Mode.SRC_ATOP);
+            }*/
+        }
     }
 
     static class MyHandler extends Handler {

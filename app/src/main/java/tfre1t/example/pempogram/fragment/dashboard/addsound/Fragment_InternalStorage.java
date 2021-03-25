@@ -88,7 +88,7 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
             String nameSound = etNameSound.getText().toString();
             String executorSound = etExecutorSound.getText().toString();
             if (fillingCheck(nameSound, executorSound, selectedAudio)) {
-                String audiofile = new SaverAudio().saveAudio(v.getContext(), selectedAudio);
+                String audiofile = new SaverAudio().saveFileAudio(v.getContext(), selectedAudio);
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, audiofile);
 
                 if(mInterstitialAd.isLoaded()){

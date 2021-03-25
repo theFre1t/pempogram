@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:minHeight="700dp">
+    android:minHeight="1000dp">
 
     <View
         android:id="@+id/divider"

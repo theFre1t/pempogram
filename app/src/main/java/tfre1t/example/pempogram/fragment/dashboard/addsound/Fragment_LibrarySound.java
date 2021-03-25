@@ -31,7 +31,6 @@ import java.util.List;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Tables;
 import tfre1t.example.pempogram.adapter.LibrarySoundAdapter;
-import tfre1t.example.pempogram.fragment.dashboard.Dashboard_SetSoundsCollection_Fragment;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_LibrarySound extends Fragment implements View.OnClickListener {
@@ -107,7 +106,7 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
                 }
             }
         });
-        dashboardViewModel.getAudiofilesByIdColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
+        dashboardViewModel.getAudiofilesByIdCollList().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
             @Override
             public void onChanged(List<Tables.AudiofileFull> list) {
                 listSelectedAudiofiles = list;

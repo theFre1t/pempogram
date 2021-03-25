@@ -34,14 +34,14 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
+import java.util.Objects;
 
-import tfre1t.example.pempogram.BottomSheet.DialogFragment.bsOnlineLibrary;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.dialog.Dialog_Add_Collection;
 import tfre1t.example.pempogram.adapter.CollectionAdater;
 import tfre1t.example.pempogram.preferences.Preferenceser;
-import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
+import tfre1t.example.pempogram.TrashcanClasses.GetHeightClass;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Collection_Fragment extends Fragment implements View.OnClickListener /*onStartDragListener*/ {
@@ -79,7 +79,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel = new ViewModelProvider(getActivity()).get(DashboardViewModel.class);
+        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
         v = inflater.inflate(R.layout.fragment_dashboard_collectionlist, null);
         ctx = v.getContext();
         type_ListCollection = (pref = new Preferenceser(ctx)).loadTypeViewCollection();
@@ -107,9 +107,9 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     }
 
     private void setToolbar() {
-        new StatusBarHeight().setPadding(getActivity(), tbColl);
+        new GetHeightClass().setPadding(requireActivity(), tbColl);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
-        activity.setSupportActionBar(tbColl);
+        Objects.requireNonNull(activity).setSupportActionBar(tbColl);
         ActionBar actionBar = activity.getSupportActionBar();
         setHasOptionsMenu(true);
         if (actionBar != null) {
@@ -121,13 +121,13 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
         inflater.inflate(R.menu.toolbar_collection_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.app_bar_search);
-        SearchManager searchManager = (SearchManager) getActivity().getSystemService(Context.SEARCH_SERVICE);
+        SearchManager searchManager = (SearchManager) requireActivity().getSystemService(Context.SEARCH_SERVICE);
 
         if (searchItem != null) {
             searchView = (SearchView) searchItem.getActionView();
         }
         if (searchView != null) {
-            searchView.setSearchableInfo(searchManager.getSearchableInfo(getActivity().getComponentName()));
+            searchView.setSearchableInfo(searchManager.getSearchableInfo(requireActivity().getComponentName()));
 
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
@@ -176,7 +176,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.getDataColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
+        dashboardViewModel.getDataCollList().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
             @Override
             public void onChanged(List<Room_DB.Collection> list) {
                 if (listColl != null) {
@@ -337,7 +337,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
             Intent intent = new Intent("android.intent.action.ONLINE_LIBRARY");
             startActivity(intent);
         } else if (id == R.id.floatBtnAddColl) {
-            fragTrans = getActivity().getSupportFragmentManager().beginTransaction();
+            fragTrans = requireActivity().getSupportFragmentManager().beginTransaction();
             Dialog_Add_Collection dialog_AC = new Dialog_Add_Collection(ctx);
             dialog_AC.show(fragTrans, "addColl");
         }

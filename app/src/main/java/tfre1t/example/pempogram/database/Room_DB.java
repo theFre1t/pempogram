@@ -1,10 +1,9 @@
 package tfre1t.example.pempogram.database;
 
 import android.content.Context;
-import android.media.Image;
-import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.room.ColumnInfo;
 import androidx.room.Dao;
 import androidx.room.Database;
@@ -24,6 +23,7 @@ import java.util.List;
 import java.util.Objects;
 
 import tfre1t.example.pempogram.SaveFile.Imager;
+import tfre1t.example.pempogram.SaveFile.SaverAudio;
 
 import static androidx.room.ForeignKey.CASCADE;
 import static androidx.room.ForeignKey.SET_NULL;
@@ -43,6 +43,12 @@ public class Room_DB {
         public String author_collection;
 
         public String img_collection;
+
+        public Collection(String name_collection, String author_collection, String img_collection){
+            this.name_collection = name_collection;
+            this.author_collection = author_collection;
+            this.img_collection = img_collection;
+        }
     }
 
     @Entity(foreignKeys = {@ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = CASCADE),
@@ -57,6 +63,11 @@ public class Room_DB {
 
         @ColumnInfo(index = true)
         public int _id_audiofile;
+
+        public Collection_with_Audiofile(int _id_collection, int _id_audiofile){
+            this._id_collection = _id_collection;
+            this._id_audiofile = _id_audiofile;
+        }
     }
 
     @Entity(foreignKeys = @ForeignKey(entity = Collection.class, parentColumns = "id_collection", childColumns = "_id_collection", onDelete = SET_NULL),
@@ -73,6 +84,23 @@ public class Room_DB {
 
         @ColumnInfo(index = true)
         public int _id_collection;
+
+        public Audiofile() {
+        }
+
+        @Ignore
+        public Audiofile(String name_audiofile, String executor_audiofile, String audiofile, int _id_collection){
+            this.name_audiofile = name_audiofile;
+            this.executor_audiofile = executor_audiofile;
+            this.audiofile = audiofile;
+            this._id_collection = _id_collection;
+        }
+
+        @Ignore
+        public Audiofile(int id_audiofile, String name_audiofile) {
+            this.id_audiofile = id_audiofile;
+            this.name_audiofile = name_audiofile;
+        }
     }
 
     @Entity
@@ -118,6 +146,23 @@ public class Room_DB {
         public String url_img_file_collection;
 
         public String img_file_preview_collection;
+
+        public Online_Collection(){}
+
+        @Ignore
+        public Online_Collection(long revision_collection,
+                                 String name_collection,
+                                 String author_collection,
+                                 String public_url_collection,
+                                 String url_img_file_collection,
+                                 String img_file_preview_collection) {
+            this.revision_collection = revision_collection;
+            this.name_collection = name_collection;
+            this.author_collection = author_collection;
+            this.public_url_collection = public_url_collection;
+            this.url_img_file_collection = url_img_file_collection;
+            this.img_file_preview_collection = img_file_preview_collection;
+        }
     }
 
     @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "id_online_collection", childColumns = "_id_online_collection", onDelete = CASCADE),
@@ -132,6 +177,11 @@ public class Room_DB {
 
         @ColumnInfo(index = true)
         public int _id_collection;
+
+        public Online_Collection_with_Collection(int _id_online_collection, int _id_collection){
+            this._id_online_collection = _id_online_collection;
+            this._id_collection = _id_collection;
+        }
     }
 
     @Entity(foreignKeys = {@ForeignKey(entity = Online_Collection.class, parentColumns = "revision_collection", childColumns = "_revision_collection", onDelete = CASCADE)},
@@ -146,6 +196,8 @@ public class Room_DB {
         public String name_audiofile;
 
         public String author_audiofile;
+
+        public String mimeType;
 
         public String audiofile;
 
@@ -165,6 +217,11 @@ public class Room_DB {
 
         @ColumnInfo(index = true)
         public int _id_audiofile;
+
+        public Online_Audiofile_with_Audiofile(int _id_online_audiofile, int _id_audiofile){
+            this._id_online_audiofile = _id_online_audiofile;
+            this._id_audiofile = _id_audiofile;
+        }
     }
 
     /*@Entity
@@ -329,14 +386,29 @@ public class Room_DB {
 
     @Dao
     public interface Online_CollectionDao{
-        @Query("Select * From Online_Collection")
-        LiveData<List<Online_Collection>> getAll();
+        @Query("Select * From online_collection")
+        List<Online_Collection> getAll();
 
-        @Query("Select * From Online_Collection Where id_online_collection = :id")
-        LiveData<Online_Collection> getById(int id);
+        @Query("Select * From online_collection")
+        LiveData<List<Online_Collection>> getAllLive();
 
-        @Query("Select * From Online_Collection Where name_collection LIKE :text OR author_collection LIKE :text")
-        LiveData<List<Online_Collection>> searchOnlineCollection(String text);
+        @Query("Select * From Online_CollectionView")
+        List<Tables.Online_CollectionView> getAllWichAdd();
+
+        @Query("Select * From Online_CollectionView")
+        LiveData<List<Tables.Online_CollectionView>> getAllWichAddLive();
+
+        @Query("Select * From Online_CollectionView Where id_online_collection = :id")
+        Tables.Online_CollectionView getById(int id);
+
+        @Query("Select * From Online_CollectionView Where id_online_collection = :id")
+        LiveData<Tables.Online_CollectionView> getByIdLive(int id);
+
+        @Query("Select * From Online_CollectionView Where name_collection LIKE :text OR author_collection LIKE :text")
+        List<Tables.Online_CollectionView> searchOnlineCollection(String text);
+
+        @Query("Select * From Online_CollectionView Where name_collection LIKE :text OR author_collection LIKE :text")
+        LiveData<List<Tables.Online_CollectionView>> searchOnlineCollectionLive(String text);
 
         @Insert
         void insert(Online_Collection online_collection);
@@ -349,17 +421,43 @@ public class Room_DB {
     }
 
     @Dao
+    public interface Online_Collection_with_CollectionDao{
+        @Query("Select * From Online_Collection_with_Collection")
+        List<Online_Collection_with_Collection> getAll();
+
+        @Query("Select * From Online_Collection_with_Collection")
+        LiveData<List<Online_Collection_with_Collection>> getAllLive();
+
+        @Query("Select * From Online_Collection_with_Collection Where _id_online_collection = :id_online_collection")
+        Online_Collection_with_Collection getByIdOnlColl(int id_online_collection);
+
+        @Insert
+        void insert(Online_Collection_with_Collection with_collection);
+
+        @Update
+        void update(Online_Collection_with_Collection with_collection);
+
+        @Delete
+        void delete(Online_Collection_with_Collection with_collection);
+    }
+
+    @Dao
     public interface Online_AudiofileDao{
         @Query("Select * From Online_Audiofile")
-        LiveData<List<Online_Audiofile>> getAll();
+        LiveData<List<Online_Audiofile>> getAllLive();
 
         @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
-        LiveData<Online_Audiofile> getById(int id);
+        LiveData<Online_Audiofile> getByIdLive(int id);
 
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
                 " Where Col.id_online_collection = :id")
-        LiveData<List<Room_DB.Online_Audiofile>> getAllByIdCollection(int id);
+        List<Room_DB.Online_Audiofile> getAllByIdCollection(int id);
+
+        @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
+                " on Au._revision_collection = Col.revision_collection" +
+                " Where Col.id_online_collection = :id")
+        LiveData<List<Room_DB.Online_Audiofile>> getAllByIdCollectionLive(int id);
 
         @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
         Room_DB.Online_Audiofile getNonLiveById(int id);
@@ -375,6 +473,21 @@ public class Room_DB {
     }
 
     @Dao
+    public interface Online_Audiofile_with_AudiofileDao{
+        @Query("Select * From Online_Audiofile_with_Audiofile")
+        LiveData<List<Online_Audiofile_with_Audiofile>> getAll();
+
+        @Insert
+        void insert(Online_Audiofile_with_Audiofile with_audiofile);
+
+        @Update
+        void update(Online_Audiofile_with_Audiofile with_audiofile);
+
+        @Delete
+        void delete(Online_Audiofile_with_Audiofile with_audiofile);
+    }
+
+    @Dao
     public static abstract class CollectionDao_abstract{
         @Insert
         protected abstract void insertCollection(Collection collection);
@@ -385,6 +498,20 @@ public class Room_DB {
                 collection.img_collection = "default.png";
             }
             insertCollection(collection);
+        }
+
+        @Query("Select last_insert_rowid()")
+        protected abstract int getInsertCollection();
+
+        @Transaction
+        public int insertOnlineCollection(Context ctx, Online_Collection online_collection){
+            Collection collection = new Collection(online_collection.name_collection, online_collection.author_collection, null);
+            collection.img_collection = new Imager().saveURLImage(ctx, online_collection.url_img_file_collection);
+            if(collection.img_collection == null){
+                collection.img_collection = "default.png";
+            }
+            insertCollection(collection); //Добавляем онлайн набор в локальные наборы
+            return getInsertCollection();
         }
 
         @Query("Select audiofile From audiofile Where _id_collection = :id")
@@ -423,11 +550,24 @@ public class Room_DB {
 
         @Transaction
         public void insert(Audiofile aud){
-            Collection_with_Audiofile collection_with_audiofile = new Collection_with_Audiofile();
             insertAudiofile(aud);
-            collection_with_audiofile._id_audiofile = getInsertAudiofile();
-            collection_with_audiofile._id_collection = aud._id_collection;
+
+            Collection_with_Audiofile collection_with_audiofile = new Collection_with_Audiofile(aud._id_collection, getInsertAudiofile());
             insertCollection_left_in(collection_with_audiofile);
+        }
+
+        @Transaction
+        public int insertOnlineAudiofile(Context ctx, Online_Audiofile onlineAudiofile, int idCollection){
+            //Добавляем аудиофайл
+            Audiofile audiofile = new Audiofile(onlineAudiofile.name_audiofile, onlineAudiofile.author_audiofile, null, idCollection);
+            audiofile.audiofile = new SaverAudio().saveUrlAudio(ctx, onlineAudiofile.audiofile, onlineAudiofile.mimeType);
+            insertAudiofile(audiofile);
+            int idAudiofile = getInsertAudiofile();
+
+            //Делаем связь локального аудиофайла и набора
+            Collection_with_Audiofile collection_with_audiofile = new Collection_with_Audiofile(idCollection, idAudiofile);
+            insertCollection_left_in(collection_with_audiofile);
+            return idAudiofile;
         }
 
         @Delete
@@ -474,7 +614,7 @@ public class Room_DB {
             Online_Collection onlineCollection = getByRevision(revision);
             if(onlineCollection != null){
                 onlineCollection.url_img_file_collection = img_file;
-                onlineCollection.img_file_preview_collection = new Imager().saveCacheImage(ctx, img_preview, onlineCollection.img_file_preview_collection);
+                onlineCollection.img_file_preview_collection = new Imager().saveURLCacheImage(ctx, img_preview, onlineCollection.img_file_preview_collection);
                 updateCollection(onlineCollection);
             }
         }
@@ -515,7 +655,7 @@ public class Room_DB {
         protected abstract void updateAudio(Online_Audiofile online_audiofile);
 
         @Transaction
-        public void insUpd(long rev_id, String name, String author, String file_url, long coll_rev) {
+        public void insUpd(long rev_id, String name, String author, String mimeType, String file_url, long coll_rev) {
             //Получаем запись по revision
             Online_Audiofile online_audiofile = getByRevision(rev_id);
             //Проверяем на наличие записи
@@ -525,6 +665,7 @@ public class Room_DB {
                 online_audiofile.revision_audiofile = rev_id;
                 online_audiofile.name_audiofile = name;
                 online_audiofile.author_audiofile = author;
+                online_audiofile.mimeType = mimeType;
                 online_audiofile.audiofile = file_url;
                 online_audiofile._revision_collection = coll_rev;
                 insertAudio(online_audiofile);
@@ -565,19 +706,23 @@ public class Room_DB {
         }*/
     }
 
-    @Database(entities = {Collection.class, Audiofile.class, Categories.class, FavoriteAudio.class, Collection_with_Audiofile.class, Categories_with_Collection.class,
-                          Online_Collection.class, Online_Collection_with_Collection.class, Online_Audiofile.class, Online_Audiofile_with_Audiofile.class}, version = 1)
+    @Database(entities = {Collection.class, Audiofile.class, /*Categories.class,*/ FavoriteAudio.class, Collection_with_Audiofile.class, /*Categories_with_Collection.class,*/
+                          Online_Collection.class, Online_Collection_with_Collection.class, Online_Audiofile.class, Online_Audiofile_with_Audiofile.class},
+              views = {Tables.Online_CollectionView.class}, version = 1)
     public abstract static class AppDatabase extends RoomDatabase{
         public abstract CollectionDao collectionDao();
         public abstract CollectionDao_abstract collectionDaoAbstr();
         public abstract AudiofileDao audiofileDao();
         public abstract AudiofileDao_abstract audiofileDaoAbstr();
-        public abstract CategoriesDao categoriesDao();
+        //public abstract CategoriesDao categoriesDao();
         public abstract FavoriteAudioDao favoriteAudioDao();
         public abstract Collection_with_AudiofileDao collectionWithAudiofileDao();
-        public abstract Categories_with_CollectionDao categoriesWithCollectionDao();
+        //public abstract Categories_with_CollectionDao categoriesWithCollectionDao();
+
         public abstract Online_CollectionDao onlineCollectionDao();
+        public abstract Online_Collection_with_CollectionDao onlineCollectionWithCollectionDao();
         public abstract Online_AudiofileDao onlineAudiofileDao();
+        public abstract Online_Audiofile_with_AudiofileDao onlineAudiofileWithAudiofileDao();
         public abstract Online_CollectionDao_abstract onlineCollectionDaoAbstr();
         public abstract Online_AudiofileDao_abstract onlineAudiofileDaoAbstr();
     }

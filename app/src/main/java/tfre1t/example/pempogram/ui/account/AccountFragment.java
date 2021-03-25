@@ -14,7 +14,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.TrashcanClasses.StatusBarHeight;
+import tfre1t.example.pempogram.TrashcanClasses.GetHeightClass;
 
 public class AccountFragment extends Fragment implements View.OnClickListener {
 
@@ -38,7 +38,7 @@ public class AccountFragment extends Fragment implements View.OnClickListener {
         v.findViewById(R.id.cardV_VK).setOnClickListener(this);
 
         View vStatusBar = v.findViewById(R.id.vStatusBar);
-        vStatusBar.getLayoutParams().height = new StatusBarHeight().getStatusBarHeight(getActivity());
+        vStatusBar.getLayoutParams().height = new GetHeightClass().getStatusBarHeight(getActivity());
     }
 
     @Override

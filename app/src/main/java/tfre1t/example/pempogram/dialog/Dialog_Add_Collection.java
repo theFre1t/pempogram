@@ -122,7 +122,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
                             e.printStackTrace();
                         }
                         imager = new Imager();
-                        nameImg = imager.saveImage(ctx, bitmap);
+                        nameImg = imager.saveBitmapImage(ctx, bitmap);
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {

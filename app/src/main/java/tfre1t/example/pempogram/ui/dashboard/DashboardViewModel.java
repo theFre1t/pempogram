@@ -1,12 +1,14 @@
 package tfre1t.example.pempogram.ui.dashboard;
 
 import android.app.Application;
-import android.content.Context;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
@@ -29,15 +31,18 @@ public class DashboardViewModel extends AndroidViewModel {
     private static Room_DB.Online_CollectionDao onlineCollectionDao;
     private static Room_DB.Online_AudiofileDao onlineAudiofileDao;
     private static Room_DB.Online_CollectionDao_abstract onlineCollectionDao_abstract;
+    private static Room_DB.Online_Collection_with_CollectionDao onlineCollectionWithCollectionDao;
     private static Room_DB.Online_AudiofileDao_abstract onlineAudiofileDao_abstract;
+    private static Room_DB.Online_Audiofile_with_AudiofileDao onlineAudiofileWithAudiofileDao;
 
     private LiveData<Room_DB.Collection> dataCollById;
-    private LiveData<List<Room_DB.Collection>> dataColl;
-    private LiveData<List<Tables.AudiofileFull>> audiofilesByIdColl;
+    private LiveData<List<Room_DB.Collection>> dataCollList;
+    private LiveData<List<Tables.AudiofileFull>> audiofilesByIdCollList;
     private LiveData<Tables.AudiofileWithImg> dataAudiofileById;
-    private LiveData<List<Tables.AudiofileWithImg>> dataAudiofiles;
-    private LiveData<List<Room_DB.Online_Collection>> dataOnlineColl;
-    private LiveData<List<Room_DB.Online_Audiofile>> onlineAudiofilesByIdColl;
+    private LiveData<List<Tables.AudiofileWithImg>> dataAudiofilesList;
+    private LiveData<List<Tables.Online_CollectionView>> dataOnlineCollList;
+    private LiveData<Tables.Online_CollectionView> dataOnlineColl;
+    private LiveData<List<Room_DB.Online_Audiofile>> onlineAudiofilesByIdCollList;
 
     private int collectionId;
     private int audiofileId;
@@ -63,7 +68,9 @@ public class DashboardViewModel extends AndroidViewModel {
                     onlineCollectionDao = rdb.onlineCollectionDao();
                     onlineAudiofileDao = rdb.onlineAudiofileDao();
                     onlineCollectionDao_abstract = rdb.onlineCollectionDaoAbstr();
+                    onlineCollectionWithCollectionDao = rdb.onlineCollectionWithCollectionDao();
                     onlineAudiofileDao_abstract = rdb.onlineAudiofileDaoAbstr();
+                    onlineAudiofileWithAudiofileDao = rdb.onlineAudiofileWithAudiofileDao();
                 }
             }).start();
         }
@@ -71,14 +78,15 @@ public class DashboardViewModel extends AndroidViewModel {
 
     //Dashboard_Collection_Fragment//==================================================================
     /**Получение списка Наборов*/
-    public LiveData<List<Room_DB.Collection>> getDataColl(){
-        dataColl = collectionDao.getAll();
-        return dataColl;
+    public LiveData<List<Room_DB.Collection>> getDataCollList(){
+        dataCollList = collectionDao.getAll();
+        return dataCollList;
     }
 
     /**Получение списка Наборов по букве/слову/предложению???*/
     public LiveData<List<Room_DB.Collection>> getDataColl(String searchText){
-        return collectionDao.searchCollection("%"+searchText+"%");
+        dataCollList = collectionDao.searchCollection("%"+searchText+"%");
+        return dataCollList;
     }
 
     /**<p>Запрос на получение данных о конкретном Наборе</p>
@@ -90,10 +98,7 @@ public class DashboardViewModel extends AndroidViewModel {
     ////////////////////////////////////=Dialog_Add_Collection=/////////////////////////////////////
     /**Добавление нового Набора*/
     public void addNewColl(String nameColl, String authorColl, String imgName){
-        Room_DB.Collection collection = new Room_DB.Collection();
-        collection.name_collection = nameColl;
-        collection.author_collection = authorColl;
-        collection.img_collection = imgName;
+        Room_DB.Collection collection = new Room_DB.Collection(nameColl, authorColl, imgName);
         new Thread(() -> collectionDao_abstract.insert(collection)).start();
     }
 
@@ -106,8 +111,8 @@ public class DashboardViewModel extends AndroidViewModel {
 
     /**Получение списка аудиозаписей выбранного Набора*/
     public LiveData<List<Tables.AudiofileFull>> getAudiofilesSelectedColl(){
-        audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
-        return audiofilesByIdColl;
+        audiofilesByIdCollList = audiofileDao.getAllByIdCollection(collectionId);
+        return audiofilesByIdCollList;
     }
 
     /**<p>Запрос на получение данных о конкретной аудиозаписи</p>
@@ -159,10 +164,8 @@ public class DashboardViewModel extends AndroidViewModel {
     /**Удаление аудиозаписи*/
     public void deleteAudiofile(){
         new Thread(() -> {
-            Room_DB.Audiofile audiofile = new Room_DB.Audiofile();
             Tables.AudiofileWithImg audiofileWithImg = audiofileDao.getNonLiveById(audiofileId);
-            audiofile.id_audiofile = audiofileWithImg.id_audiofile;
-            audiofile.name_audiofile = audiofileWithImg.name_audiofile;
+            Room_DB.Audiofile audiofile = new Room_DB.Audiofile(audiofileWithImg.id_audiofile, audiofileWithImg.name_audiofile);
             audiofileDao_abstract.delete(getApplication(), audiofile);
         }).start();
     }
@@ -177,14 +180,14 @@ public class DashboardViewModel extends AndroidViewModel {
     ////////////////////////////////////=Fragment_LibrarySound=/////////////////////////////////////
     /**Получем все аудиозаписи*/
     public LiveData<List<Tables.AudiofileWithImg>> getAllAudiofiles(){
-        dataAudiofiles = audiofileDao.getAll();
-        return dataAudiofiles;
+        dataAudiofilesList = audiofileDao.getAll();
+        return dataAudiofilesList;
     }
 
     /**Получаем аудиозаписи привязанные к Набору*/
-    public LiveData<List<Tables.AudiofileFull>> getAudiofilesByIdColl(){
-        audiofilesByIdColl = audiofileDao.getAllByIdCollection(collectionId);
-        return audiofilesByIdColl;
+    public LiveData<List<Tables.AudiofileFull>> getAudiofilesByIdCollList(){
+        audiofilesByIdCollList = audiofileDao.getAllByIdCollection(collectionId);
+        return audiofilesByIdCollList;
     }
 
     /**Передаем ArrayList для Добавления/Удаления привязки аудиозаписей с Набором*/
@@ -192,9 +195,7 @@ public class DashboardViewModel extends AndroidViewModel {
         new Thread(() -> {
             for (LibrarySoundAdapter.Check check: checkList.values()) {
 
-                Room_DB.Collection_with_Audiofile collection_with_audiofile = new Room_DB.Collection_with_Audiofile();
-                collection_with_audiofile._id_audiofile = check.id;
-                collection_with_audiofile._id_collection = collectionId;
+                Room_DB.Collection_with_Audiofile collection_with_audiofile = new Room_DB.Collection_with_Audiofile(collectionId, check.id);
 
                 if(check.check){
                     collectionWithAudiofileDao.insert(collection_with_audiofile);
@@ -209,11 +210,7 @@ public class DashboardViewModel extends AndroidViewModel {
     ///////////////////////////////////=Fragment_InternalStorage=///////////////////////////////////
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
     public void addNewAudiofile(String nameSound, String executorSound, String audiofile){
-        Room_DB.Audiofile audio = new Room_DB.Audiofile();
-        audio.name_audiofile = nameSound;
-        audio.executor_audiofile = executorSound;
-        audio.audiofile = audiofile;
-        audio._id_collection = collectionId;
+        Room_DB.Audiofile audio = new Room_DB.Audiofile(nameSound, executorSound, audiofile, collectionId);
         new Thread(() -> audiofileDao_abstract.insert(audio)).start();
     }
 
@@ -224,24 +221,45 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     /**Добавляем аудиозапись(с автопривязкой к Набору)*/
-    public void OnlineLibrary_AddUpdAudiofile(long rev_id, String name, String author, String file_url, long coll_rev){
-        new Thread(() -> onlineAudiofileDao_abstract.insUpd(rev_id,name,author,file_url,coll_rev)).start();
+    public void OnlineLibrary_AddUpdAudiofile(long rev_id, String name, String author, String mimeType, String file_url, long coll_rev){
+        new Thread(() -> onlineAudiofileDao_abstract.insUpd(rev_id,name,author,mimeType,file_url,coll_rev)).start();
     }
 
     /**Добавление изображения Набора*/
-    public void OnlineLibrary_AddUpdImgColl(Context ctx, long revision, String img_file, String img_preview) {
-        new Thread(() -> onlineCollectionDao_abstract.updateImage(ctx, revision, img_file, img_preview)).start();
+    public void OnlineLibrary_AddUpdImgColl(long revision, String img_file, String img_preview) {
+        new Thread(() -> onlineCollectionDao_abstract.updateImage(getApplication(), revision, img_file, img_preview)).start();
     }
 
     /**Получение списка Наборов*/
-    public LiveData<List<Room_DB.Online_Collection>> OnlineLibrary_GetDataColl(){
-        dataOnlineColl = onlineCollectionDao.getAll();
-        return dataOnlineColl;
+    public LiveData<List<Tables.Online_CollectionView>> OnlineLibrary_GetDataColl() {
+        dataOnlineCollList = onlineCollectionDao.getAllWichAddLive();
+        return dataOnlineCollList;
     }
 
     /**Получение списка Наборов по букве/слову/предложению???*/
-    public LiveData<List<Room_DB.Online_Collection>> OnlineLibrary_GetDataColl(String searchText){
-        return onlineCollectionDao.searchOnlineCollection("%"+searchText+"%");
+    public LiveData<List<Tables.Online_CollectionView>> OnlineLibrary_GetDataColl(String searchText) {
+        dataOnlineCollList = onlineCollectionDao.searchOnlineCollectionLive("%" + searchText + "%");
+        return dataOnlineCollList;
+    }
+
+    /**Добавление нового Набора из Онлайн библиотеки*/
+    public void addNewCollFromOnline() {
+        new Thread(() -> {
+            Tables.Online_CollectionView onlineCollection = onlineCollectionDao.getById(online_collectionId);
+
+            if (onlineCollection != null) {
+                int idCollection = collectionDao_abstract.insertOnlineCollection(getApplication(), onlineCollection.Online_Collection);
+                onlineCollectionWithCollectionDao.insert(new Room_DB.Online_Collection_with_Collection(onlineCollection.Online_Collection.id_online_collection, idCollection)); //Создаем связь между онлайн набором и локальным набором
+
+                List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection(onlineCollection.Online_Collection.id_online_collection);
+                if (!onlineAudiofileList.isEmpty()) {
+                    for (Room_DB.Online_Audiofile onlineAudiofile : onlineAudiofileList) {
+                        int idAudiofile = audiofileDao_abstract.insertOnlineAudiofile(getApplication(), onlineAudiofile, idCollection);
+                        onlineAudiofileWithAudiofileDao.insert(new Room_DB.Online_Audiofile_with_Audiofile(onlineAudiofile.id_online_audiofile, idAudiofile));
+                    }
+                }
+            }
+        }).start();
     }
 
     /**<p>Запрос на получение данных о конкретном Наборе</p>
@@ -251,18 +269,20 @@ public class DashboardViewModel extends AndroidViewModel {
     }
 
     ///////////////////////////////////////=bsOnlineLibrary=////////////////////////////////////////
-    /**Получение данных о конкретном Наборе*/
-    public LiveData<Room_DB.Online_Collection> OnlineLibrary_GetDataSelectedColl(){
-        return onlineCollectionDao.getById(online_collectionId);
+
+    /**Получение данных о конкретном Онлайн Наборе*/
+    public LiveData<Tables.Online_CollectionView> OnlineLibrary_GetDataSelectedColl() {
+        dataOnlineColl = onlineCollectionDao.getByIdLive(online_collectionId);
+        return dataOnlineColl;
     }
 
-    /**Получение списка аудиозаписей выбранного Набора*/
+    /**Получение списка аудиозаписей выбранного Онлайн Набора*/
     public LiveData<List<Room_DB.Online_Audiofile>> OnlineLibrary_GetAudiofilesSelectedColl(){
-        onlineAudiofilesByIdColl = onlineAudiofileDao.getAllByIdCollection(online_collectionId);
-        return onlineAudiofilesByIdColl;
+        onlineAudiofilesByIdCollList = onlineAudiofileDao.getAllByIdCollectionLive(online_collectionId);
+        return onlineAudiofilesByIdCollList;
     }
 
-    /**Проигрывание аудиозаписи*/
+    /**Проигрывание Онлайн аудиозаписи*/
     public void OnlineLibrary_PlayAudio(MyMediaPlayer myMediaPlayer, int id) {
         new Thread(() -> myMediaPlayer.playURL(onlineAudiofileDao.getNonLiveById(id).audiofile)).start();
     }
