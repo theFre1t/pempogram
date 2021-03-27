@@ -20,7 +20,7 @@
     <fragment
         android:id="@+id/navigation_search"
         android:name="tfre1t.example.pempogram.ui.search.SearchFragment"
-        android:label="@string/title_search"
+        android:label="@string/title_online_search"
         tools:layout="@layout/fragment_search" />
 
     <fragment

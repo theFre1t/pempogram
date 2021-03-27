@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,13 +30,12 @@ import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.SaveFile.Imager;
-import tfre1t.example.pempogram.TrashcanClasses.GetHeightClass;
-import tfre1t.example.pempogram.adapter.OnlineLibrary_SetSoundAdapter;
+import tfre1t.example.pempogram.adapter.Search_SetSoundAdapter;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
-import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
+import tfre1t.example.pempogram.ui.search.SearchViewModel;
 
-public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.OnClickListener {
+public class bsSearch extends BottomSheetDialogFragment implements View.OnClickListener {
     private static final String TAG = "myLog";
 
     private static int CURRENT_DATA; //Текущее состояние данных
@@ -44,8 +44,8 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private MyMediaPlayer myMediaPlayer;
-    private DashboardViewModel dashboardViewModel;
-    private OnlineLibrary_SetSoundAdapter ssAdapter;
+    private SearchViewModel searchViewModel;
+    private Search_SetSoundAdapter ssAdapter;
 
     private Handler h;
     private View v;
@@ -62,8 +62,8 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        dashboardViewModel = new ViewModelProvider(requireActivity()).get(DashboardViewModel.class);
-        v = inflater.inflate(R.layout.bs_dialog_onlinelibrary_setsound, null);
+        searchViewModel = new ViewModelProvider(requireActivity()).get(SearchViewModel.class);
+        v = inflater.inflate(R.layout.bs_dialog_search_setsound, null);
         ctx = v.getContext();
 
         findViewById();
@@ -85,7 +85,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
     }
 
     private void loadPresenColl() {
-        dashboardViewModel.OnlineLibrary_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
+        searchViewModel.Online_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
             @Override
             public void onChanged(Tables.Online_CollectionView online_collection) {
                 imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection));
@@ -105,7 +105,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
         h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
-        dashboardViewModel.OnlineLibrary_GetAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Online_Audiofile>>() {
+        searchViewModel.Online_GetAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Online_Audiofile>>() {
             @Override
             public void onChanged(List<Room_DB.Online_Audiofile> list) {
                 if (listAudio != null) {
@@ -127,19 +127,15 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
         int button = v.getId();
         if (button == R.id.imgBtnAddStatus) {
             imgBtnAddStatus.setEnabled(false);
-            dashboardViewModel.addNewCollFromOnline();
-            /*if () {
-                imgBtnAddStatus.setImageResource(R.drawable.baseline_playlist_add_check_24);
-                imgBtnAddStatus.setColorFilter(ctx.getResources().getColor(android.R.color.holo_green_dark), PorterDuff.Mode.SRC_ATOP);
-            }*/
+            searchViewModel.addNewCollFromOnline();
         }
     }
 
     static class MyHandler extends Handler {
-        WeakReference<bsOnlineLibrary> wr;
-        bsOnlineLibrary newCurrClass;
+        WeakReference<bsSearch> wr;
+        bsSearch newCurrClass;
 
-        public MyHandler(bsOnlineLibrary currClass) {
+        public MyHandler(bsSearch currClass) {
             wr = new WeakReference<>(currClass);
         }
 
@@ -166,7 +162,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
                 break;
             case DATA_TRUE:
                 if(ssAdapter == null) {
-                    ssAdapter = new OnlineLibrary_SetSoundAdapter(ctx, listAudio);
+                    ssAdapter = new Search_SetSoundAdapter(ctx, listAudio);
                     ssAdapter.setItemClickListener(onItemClickListener);
                     rvSetSound.setLayoutManager(new LinearLayoutManager(ctx));
                     rvSetSound.setAdapter(ssAdapter);
@@ -225,7 +221,7 @@ public class bsOnlineLibrary extends BottomSheetDialogFragment implements View.O
             if (myMediaPlayer == null) {
                 myMediaPlayer = new MyMediaPlayer();
             }
-            dashboardViewModel.OnlineLibrary_PlayAudio(myMediaPlayer ,v.getId());
+            searchViewModel.OnlineLibrary_PlayAudio(myMediaPlayer ,v.getId());
         }
     };
 

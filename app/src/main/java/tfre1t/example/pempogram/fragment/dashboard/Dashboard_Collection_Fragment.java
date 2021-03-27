@@ -69,10 +69,8 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     private Toolbar tbColl;
     private ProgressBar pbLoader;
     private RecyclerView rcVColl;
-    private RecyclerView.LayoutManager lm;
-    private RecyclerView.LayoutManager lmOld;
+    private RecyclerView.LayoutManager lmOld, lm;
     private ImageButton btnListCard, btnListClassic, btnListGrid;
-    private Button btnOnlineLibrary;
     private TextView tvEmpty;
     private SearchView searchView;
     private SearchView.OnQueryTextListener queryTextListener;
@@ -93,7 +91,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         btnListCard = v.findViewById(R.id.btnlistCard);
         btnListClassic = v.findViewById(R.id.btnlistClassic);
         btnListGrid = v.findViewById(R.id.btnlistGrid);
-        //btnOnlineLibrary = v.findViewById(R.id.btnOnlineLibrary);
         rcVColl = v.findViewById(R.id.rcViewColl);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
@@ -102,7 +99,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         btnListCard.setOnClickListener(this);
         btnListClassic.setOnClickListener(this);
         btnListGrid.setOnClickListener(this);
-        v.findViewById(R.id.btnOnlineLibrary).setOnClickListener(this);
         v.findViewById(R.id.floatBtnAddColl).setOnClickListener(this);
     }
 
@@ -333,9 +329,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
                 type_ListCollection = 2;
                 setData();
             }
-        } else if (id == R.id.btnOnlineLibrary) {
-            Intent intent = new Intent("android.intent.action.ONLINE_LIBRARY");
-            startActivity(intent);
         } else if (id == R.id.floatBtnAddColl) {
             fragTrans = requireActivity().getSupportFragmentManager().beginTransaction();
             Dialog_Add_Collection dialog_AC = new Dialog_Add_Collection(ctx);

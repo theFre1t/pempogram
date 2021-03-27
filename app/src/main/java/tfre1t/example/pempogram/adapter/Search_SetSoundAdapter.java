@@ -4,7 +4,6 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -12,13 +11,10 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
 
-import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.SaveFile.Imager;
 import tfre1t.example.pempogram.database.Room_DB;
-import tfre1t.example.pempogram.database.Tables;
 
-public class OnlineLibrary_SetSoundAdapter extends RecyclerView.Adapter<OnlineLibrary_SetSoundAdapter.SetSoundHolder> {
+public class Search_SetSoundAdapter extends RecyclerView.Adapter<Search_SetSoundAdapter.SetSoundHolder> {
 
     private View.OnClickListener onItemClickListener;
 
@@ -44,21 +40,21 @@ public class OnlineLibrary_SetSoundAdapter extends RecyclerView.Adapter<OnlineLi
         }
     }
 
-    public OnlineLibrary_SetSoundAdapter(Context context, List<Room_DB.Online_Audiofile> list) {
+    public Search_SetSoundAdapter(Context context, List<Room_DB.Online_Audiofile> list) {
         ctx = context;
         listAudiofiles = list;
-        layout = R.layout.card_dashboard_online_setsounds_collection_classiclist;
+        layout = R.layout.card_search_setsounds_collection_classiclist;
     }
 
     @NonNull
     @Override
-    public OnlineLibrary_SetSoundAdapter.SetSoundHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public Search_SetSoundAdapter.SetSoundHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(ctx).inflate(layout, parent, false);
-        return new OnlineLibrary_SetSoundAdapter.SetSoundHolder(view);
+        return new Search_SetSoundAdapter.SetSoundHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull OnlineLibrary_SetSoundAdapter.SetSoundHolder holder, int position) {
+    public void onBindViewHolder(@NonNull Search_SetSoundAdapter.SetSoundHolder holder, int position) {
         Room_DB.Online_Audiofile audiofile = listAudiofiles.get(position);
         holder.itemView.setId(audiofile.id_online_audiofile);
         holder.tvAudiofile.setText(audiofile.name_audiofile);

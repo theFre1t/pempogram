@@ -4,7 +4,7 @@
     <string name="title_activity_main">Paizogram</string>
     <string name="title_home">Главная</string>
     <string name="title_dashboard">Коллекция</string>
-    <string name="title_search">Поиск</string>
+    <string name="title_online_search">Онлайн поиск</string>
     <string name="title_account">Аккаунт</string>
     <string name="title_select_favaudio">Выберите фразу</string>
     <string name="title_сategories">Категории</string>
@@ -49,6 +49,4 @@
     <string name="view_text_account">Здесь будет ваша учетная запись!</string>
     <string name="view_text_title_vk">Сообщество Вконтакте</string>
     <string name="view_text_message_vk">Здесь вы можете оставлять заявки на добавление своих наборов</string>
-    <string name="view_btn_online_library">Онлайн библиотека</string>
-    <string name="title_online_library">Онлайн библиотека</string>
 </resources>

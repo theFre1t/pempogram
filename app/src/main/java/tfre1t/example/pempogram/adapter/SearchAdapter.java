@@ -1,7 +1,6 @@
 package tfre1t.example.pempogram.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,17 +10,14 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.squareup.picasso.Picasso;
-
 import java.util.List;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.SaveFile.Imager;
-import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
 
-public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdapter.OnlineLibraryHolder> {
+public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.OnlineLibraryHolder> {
     private static final String TAG = "myLog";
 
     private View.OnClickListener onItemClickListener;
@@ -59,21 +55,21 @@ public class OnlineLibraryAdapter extends RecyclerView.Adapter<OnlineLibraryAdap
         }
     }
 
-    public OnlineLibraryAdapter(Context context, List<Tables.Online_CollectionView> listColl) {
+    public SearchAdapter(Context context, List<Tables.Online_CollectionView> listColl) {
         ctx = context;
         this.list = listColl;
-        layout = R.layout.card_dashboard_online_collection_classiclist;
+        layout = R.layout.card_search_collection_classiclist;
     }
 
     @NonNull
     @Override
-    public OnlineLibraryAdapter.OnlineLibraryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public SearchAdapter.OnlineLibraryHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(ctx).inflate(layout, parent, false);
-        return new OnlineLibraryAdapter.OnlineLibraryHolder(view);
+        return new SearchAdapter.OnlineLibraryHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull OnlineLibraryAdapter.OnlineLibraryHolder holder, int position) {
+    public void onBindViewHolder(@NonNull SearchAdapter.OnlineLibraryHolder holder, int position) {
         Tables.Online_CollectionView collection = list.get(position);
         holder.itemView.setId(collection.Online_Collection.id_online_collection);
         holder.imgCollection.setImageBitmap(new Imager().setImageView(ctx, collection.Online_Collection.img_file_preview_collection));
