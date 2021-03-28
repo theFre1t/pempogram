@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,10 +18,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.SaveFile.SaverAudio;
@@ -30,6 +30,7 @@ import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 import static android.app.Activity.RESULT_OK;
 
 public class Fragment_InternalStorage extends Fragment implements View.OnClickListener{
+    private static final String TAG = "myLog";
 
     private static final int RQS_OPEN_AUDIO = 2;
 
@@ -67,13 +68,21 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
     }
 
     private void adMod() {
-        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                Log.d(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
         });
-        mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -91,8 +100,10 @@ public class Fragment_InternalStorage extends Fragment implements View.OnClickLi
                 String audiofile = new SaverAudio().saveFileAudio(v.getContext(), selectedAudio);
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, audiofile);
 
-                if(mInterstitialAd.isLoaded()){
-                    mInterstitialAd.show();
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(requireActivity());
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
                 }
 
                 Toast.makeText(v.getContext(), R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();

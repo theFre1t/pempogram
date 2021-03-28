@@ -159,7 +159,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/tvQC" />
 
             <com.google.android.gms.ads.AdView
-                xmlns:ads="http://schemas.android.com/apk/res-auto"
                 android:id="@+id/adHomeBanner"
                 android:layout_width="320dp"
                 android:layout_height="50dp"
@@ -168,8 +167,8 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginEnd="8dp"
                 android:layout_marginBottom="8dp"
-                ads:adSize="BANNER"
-                ads:adUnitId="@string/homebanner_ad_unit_id"
+                app:adSize="BANNER"
+                app:adUnitId="@string/ad_unit_id_Banner_Test"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"

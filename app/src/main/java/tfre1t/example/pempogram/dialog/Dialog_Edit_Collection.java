@@ -83,7 +83,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
         dashboardViewModel.getDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Collection>() {
             @Override
             public void onChanged(Room_DB.Collection collection) {
-                dialogRmvImgCollection.setImageBitmap(oldBitmap = new Imager().setImageView(ctx, oldNameImg = collection.img_collection));
+                dialogRmvImgCollection.setImageBitmap(oldBitmap = new Imager().setImageView(ctx, oldNameImg = collection.img_collection, false));
                 dialogEtNameCollection.setText(collection.name_collection);
                 dialogEtAuthorCollection.setText(collection.author_collection);
             }
@@ -144,7 +144,7 @@ public class Dialog_Edit_Collection extends DialogFragment implements View.OnCli
                         requireActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg));
+                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg, false));
                             }
                         });
                     }

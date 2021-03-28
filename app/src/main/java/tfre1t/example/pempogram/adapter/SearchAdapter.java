@@ -72,7 +72,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.OnlineLibr
     public void onBindViewHolder(@NonNull SearchAdapter.OnlineLibraryHolder holder, int position) {
         Tables.Online_CollectionView collection = list.get(position);
         holder.itemView.setId(collection.Online_Collection.id_online_collection);
-        holder.imgCollection.setImageBitmap(new Imager().setImageView(ctx, collection.Online_Collection.img_file_preview_collection));
+        holder.imgCollection.setImageBitmap(new Imager().setImageView(ctx, collection.Online_Collection.img_file_preview_collection, true));
         holder.tvCollection.setText(collection.Online_Collection.name_collection);
         holder.tvAuthor.setText(collection.Online_Collection.author_collection);
         if(collection.collectionWithCollection != null){

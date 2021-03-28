@@ -89,9 +89,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void adMod() {
-        //test: ca-app-pub-3940256099942544/6300978111
-        //мой: ca-app-pub-0973407020138517/1231381531
-
         MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
             @Override
             public void onInitializationComplete(InitializationStatus initializationStatus) {

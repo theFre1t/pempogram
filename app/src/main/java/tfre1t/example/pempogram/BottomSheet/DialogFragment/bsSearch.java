@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -21,6 +22,10 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.bottomsheet.BottomSheetDialogFragment;
 
 import java.lang.ref.WeakReference;
@@ -42,9 +47,12 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
     private static final int DATA_NONE = 0; // Данных нет
     private static final int DATA_TRUE = 1; // Данные есть
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int COLLECTION_DOWNLOADING = 10; // Набор загружается
+    private static final int COLLECTION_DOWNLOADED = 11; // Набор загружен
 
     private MyMediaPlayer myMediaPlayer;
     private SearchViewModel searchViewModel;
+    private InterstitialAd mInterstitialAd;
     private Search_SetSoundAdapter ssAdapter;
 
     private Handler h;
@@ -69,6 +77,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         findViewById();
         loadPresenColl();
         loadData();
+        adMod();
         return v;
     }
 
@@ -84,11 +93,29 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         imgBtnAddStatus.setOnClickListener(this);
     }
 
+    private void adMod() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                Log.d(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
+        });
+    }
+
     private void loadPresenColl() {
         searchViewModel.Online_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
             @Override
             public void onChanged(Tables.Online_CollectionView online_collection) {
-                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection));
+                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection, true));
                 tvCollection.setText(online_collection.Online_Collection.name_collection);
                 tvAuthor.setText(online_collection.Online_Collection.author_collection);
                 if(online_collection.collectionWithCollection != null){
@@ -122,15 +149,6 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         });
     }
 
-    @Override
-    public void onClick(View v) {
-        int button = v.getId();
-        if (button == R.id.imgBtnAddStatus) {
-            imgBtnAddStatus.setEnabled(false);
-            searchViewModel.addNewCollFromOnline();
-        }
-    }
-
     static class MyHandler extends Handler {
         WeakReference<bsSearch> wr;
         bsSearch newCurrClass;
@@ -151,16 +169,29 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
     }
 
     private void setData(){
-        pbLoader.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
+            case COLLECTION_DOWNLOADING:
+                //Реклама
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(requireActivity());
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
+                }
+                break;
+            case COLLECTION_DOWNLOADED:
+                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                break;
             case DATA_DOWNLOAD:
+                tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
             case DATA_NONE:
+                pbLoader.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
+                pbLoader.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 if(ssAdapter == null) {
                     ssAdapter = new Search_SetSoundAdapter(ctx, listAudio);
                     ssAdapter.setItemClickListener(onItemClickListener);
@@ -214,6 +245,25 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        int button = v.getId();
+        if (button == R.id.imgBtnAddStatus) {
+            imgBtnAddStatus.setEnabled(false);
+            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean status) {
+                    if(status){
+                        h.sendEmptyMessage(COLLECTION_DOWNLOADED);
+                    }
+                    else {
+                        h.sendEmptyMessage(COLLECTION_DOWNLOADING);
+                    }
+                }
+            });
+        }
+    }
+
     private View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -224,6 +274,8 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
             searchViewModel.OnlineLibrary_PlayAudio(myMediaPlayer ,v.getId());
         }
     };
+
+
 
     @Override
     public void onDestroy() {

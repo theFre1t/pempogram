@@ -1,9 +1,13 @@
 <resources>
-    <string name="homebanner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_unit_id_Banner_Test" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_unit_id_Interstitial_Test" translatable="false">ca-app-pub-3940256099942544/1033173712</string>>
+    <string name="ad_unit_id_Home_Banner" translatable="false">ca-app-pub-0973407020138517/1231381531</string>
+    <string name="ad_unit_id_Collection_Interstitial" translatable="false">ca-app-pub-0973407020138517/1465161735</string>>
+    <string name="ad_unit_id_Search_Interstitial" translatable="false">ca-app-pub-0973407020138517/6821425964</string>>
 
     /Название приложения
-    <string name="app_name">Paizogram</string>
-    <string name="title_activity_main">Paizogram</string>
+    <string name="app_name" translatable="false">Paizogram</string>
+    <string name="title_activity_main" translatable="false">Paizogram</string>
 
     //(Fragment) Домашняя страница
     <string name="title_home">Home</string>

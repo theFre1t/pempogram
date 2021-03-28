@@ -93,7 +93,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
             if (fillingCheck(NameColl, AuthorColl)) {
                 dashboardViewModel.addNewColl(NameColl, AuthorColl, nameImg);
                 isSave = true;
-                Toast.makeText(v.getContext(), R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
                 dismiss();
             }
         } else if (id == R.id.dialogBtnCancel) {
@@ -126,7 +126,7 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
                         getActivity().runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg));
+                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg, false));
                             }
                         });
                     }

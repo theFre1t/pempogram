@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -27,6 +28,11 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -56,9 +62,12 @@ public class SearchFragment extends Fragment {
     private static final int DATA_NONE = 0; // Данных нет
     private static final int DATA_TRUE = 1; // Данные есть
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int COLLECTION_DOWNLOADING = 10; // Набор загружается
+    private static final int COLLECTION_DOWNLOADED = 11; // Набор загружен
 
     private SearchViewModel searchViewModel;
     private SearchAdapter olAdapter;
+    private InterstitialAd mInterstitialAd;
 
     private Handler h;
     private View v;
@@ -82,6 +91,7 @@ public class SearchFragment extends Fragment {
         findViewById();
         setToolbar();
         loadData();
+        //adMod();
         return v;
     }
 
@@ -90,6 +100,24 @@ public class SearchFragment extends Fragment {
         rvOnlineLibrary = v.findViewById(R.id.rvOnlineLibrary);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
+    }
+
+    private void adMod() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
+            @Override
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                Log.d(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
+        });
     }
 
     private void setToolbar() {
@@ -213,6 +241,7 @@ public class SearchFragment extends Fragment {
                         }
                     }
                 } catch (JSONException e) {
+                    Log.d(TAG, "updateLibrary: " + e.getMessage());
                     e.printStackTrace();
                 }
             }
@@ -249,6 +278,7 @@ public class SearchFragment extends Fragment {
                 Log.d(TAG, "OnlineLibrary: ERROR " + Objects.requireNonNull(connection).getResponseCode());
             }
         } catch (IOException | JSONException e) {
+            Log.d(TAG, "getJsonData: " + e.getMessage());
             e.printStackTrace();
         }
         return null;
@@ -274,16 +304,29 @@ public class SearchFragment extends Fragment {
     }
 
     private void setData(){
-        pbLoader.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
+            case COLLECTION_DOWNLOADING:
+                //Реклама
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(requireActivity());
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
+                }
+                break;
+            case COLLECTION_DOWNLOADED:
+                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                break;
             case DATA_DOWNLOAD:
+                tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
             case DATA_NONE:
+                pbLoader.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
+                pbLoader.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 if(olAdapter == null){
                     olAdapter = new SearchAdapter(ctx, listColl);
                     olAdapter.setItemClickListener(onItemClickListener);
@@ -357,7 +400,17 @@ public class SearchFragment extends Fragment {
         @Override
         public void onClick(View v) {
             searchViewModel.OnlineLibrary_SelectCollById(v.getId());
-            searchViewModel.addNewCollFromOnline();
+            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                @Override
+                public void onChanged(Boolean status) {
+                    if(status){
+                        h.sendEmptyMessage(COLLECTION_DOWNLOADED);
+                    }
+                    else {
+                        h.sendEmptyMessage(COLLECTION_DOWNLOADING);
+                    }
+                }
+            });
         }
     };
 

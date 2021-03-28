@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -20,10 +21,12 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -80,13 +83,21 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
     }
 
     private void adMod() {
-        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                Log.d(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
         });
-        mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     //Получение и установка данных
@@ -159,8 +170,11 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         if (id == R.id.btnAdd) {
             dashboardViewModel.editCollection(lsAdapter.getSounds());
 
-            if(mInterstitialAd.isLoaded()){
-                mInterstitialAd.show();
+            //Реклама
+            if (mInterstitialAd != null) {
+                mInterstitialAd.show(requireActivity());
+            } else {
+                Log.d(TAG, "The interstitial ad wasn't ready yet.");
             }
 
             Toast.makeText(ctx, R.string.message_saved, Toast.LENGTH_SHORT).show();

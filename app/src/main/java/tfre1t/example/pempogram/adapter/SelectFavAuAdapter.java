@@ -61,7 +61,7 @@ public class SelectFavAuAdapter extends RecyclerView.Adapter<SelectFavAuAdapter.
     public void onBindViewHolder(@NonNull SelectFavAuAdapter.SelectFavAuHolder holder, int position) {
         Tables.AudiofileWithImg audiofile = list.get(position);
         holder.itemView.setId(audiofile.id_audiofile);
-        holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
+        holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection, false));
         holder.tvAudiofile.setText(audiofile.name_audiofile);
         holder.tvAuthor.setText(audiofile.executor_audiofile);
     }

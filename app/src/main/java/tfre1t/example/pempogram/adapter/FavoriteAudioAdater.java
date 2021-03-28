@@ -68,7 +68,7 @@ public class FavoriteAudioAdater extends RecyclerView.Adapter<FavoriteAudioAdate
             Tables.AudiofileWithImg audiofile =  list.get(position);
             holder.itemView.setId(audiofile.id_audiofile);
             holder.tvNameAudio.setText(audiofile.name_audiofile);
-            holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
+            holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection, false));
         }
     }
 

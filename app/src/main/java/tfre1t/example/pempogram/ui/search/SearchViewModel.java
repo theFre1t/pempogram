@@ -2,14 +2,17 @@ package tfre1t.example.pempogram.ui.search;
 
 import android.app.Application;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 
 import java.util.List;
 
 import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
+import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.App;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
@@ -88,7 +91,10 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     /**Добавление нового Набора из Онлайн библиотеки*/
-    public void addNewCollFromOnline() {
+    public LiveData<Boolean> addNewCollFromOnline() {
+        MutableLiveData<Boolean> status = new MutableLiveData<>();
+        status.setValue(false);
+
         new Thread(() -> {
             Tables.Online_CollectionView onlineCollection = onlineCollectionDao.getById(online_collectionId);
 
@@ -103,8 +109,10 @@ public class SearchViewModel extends AndroidViewModel {
                         onlineAudiofileWithAudiofileDao.insert(new Room_DB.Online_Audiofile_with_Audiofile(onlineAudiofile.id_online_audiofile, idAudiofile));
                     }
                 }
+                status.postValue(true);
             }
         }).start();
+        return status;
     }
 
     /**<p>Запрос на получение данных о конкретном Наборе</p>
@@ -118,7 +126,6 @@ public class SearchViewModel extends AndroidViewModel {
     /**Получение данных о конкретном Онлайн Наборе*/
     public LiveData<Tables.Online_CollectionView> Online_GetDataSelectedColl() {
         dataOnlineColl = onlineCollectionDao.getByIdLive(online_collectionId);
-        Log.d(TAG, "Online_GetDataSelectedColl: online_collectionId " + online_collectionId);
         return dataOnlineColl;
     }
 

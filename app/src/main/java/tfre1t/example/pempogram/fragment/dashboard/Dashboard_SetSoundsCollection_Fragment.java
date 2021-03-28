@@ -134,7 +134,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         dashboardViewModel.getDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Room_DB.Collection>() {
             @Override
             public void onChanged(Room_DB.Collection collection) {
-                imgVCollectionBack.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection));
+                imgVCollectionBack.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection, true));
                 tvNameColl.setText(collection.name_collection);
                 tvAuthorColl.setText(collection.author_collection);
             }

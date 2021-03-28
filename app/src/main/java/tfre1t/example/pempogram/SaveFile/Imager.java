@@ -5,26 +5,16 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import androidx.fragment.app.FragmentActivity;
-import androidx.lifecycle.Observer;
-
-import java.io.BufferedWriter;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.sql.Date;
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-import tfre1t.example.pempogram.CustomViewers.RoundedImageView;
 import tfre1t.example.pempogram.R;
-import tfre1t.example.pempogram.database.Room_DB;
 
 import static android.content.Context.MODE_PRIVATE;
 
@@ -51,7 +41,7 @@ public class Imager {
 
         String filename = writeFileIMG(ADD);
 
-        onSaverImage(filename);
+        onSaverImage(filename, ADD);
         while (thread.isAlive()) ;
         return filename;
     }
@@ -67,7 +57,7 @@ public class Imager {
 
         String filename = writeFileIMG(EDIT);
 
-        onSaverImage(filename);
+        onSaverImage(filename, EDIT);
         while (thread.isAlive()) ;
         return filename;
     }
@@ -87,7 +77,7 @@ public class Imager {
 
         String filename = writeFileIMG(ADD);
 
-        onSaverImage(filename);
+        onSaverImage(filename, ADD);
         while (thread.isAlive()) ;
         return filename;
     }
@@ -117,7 +107,7 @@ public class Imager {
         String filename = writeFileIMG(CACHE);
 
         if (filename != oldFileName) {
-            onSaverImage(filename);
+            onSaverImage(filename, CACHE);
             while (thread.isAlive()) ;
         }
         return filename;
@@ -147,15 +137,29 @@ public class Imager {
         return filename;
     }
 
-    private void onSaverImage(String filename) {
+    private void onSaverImage(String filename, int act) {
         thread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
-                    bitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
-                    fOut.flush();
-                    fOut.close();
+                        FileOutputStream fOut = ctx.openFileOutput(filename, MODE_PRIVATE);
+                        int x, y, Width, Height;
+                        if (bitmap.getWidth() > bitmap.getHeight()){
+                            x = (bitmap.getWidth() - bitmap.getHeight()) / 2;
+                            y = 0;
+                            Width = bitmap.getHeight();
+                            Height = bitmap.getHeight();
+                        }
+                        else {
+                            x = 0;
+                            y = (bitmap.getHeight() - bitmap.getWidth()) / 2;
+                            Width = bitmap.getWidth();
+                            Height = bitmap.getWidth();
+                        }
+                        Bitmap savebitmap = Bitmap.createBitmap(bitmap, x, y , Width, Height);
+                        savebitmap.compress(Bitmap.CompressFormat.JPEG, 85, fOut);
+                        fOut.flush();
+                        fOut.close();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -164,12 +168,29 @@ public class Imager {
         thread.start();
     }
 
-    public Bitmap setImageView(Context ctx, String name) {
+    public Bitmap setImageView(Context ctx, String name, boolean fullsize) {
         bitmap = BitmapFactory.decodeResource(ctx.getResources(), R.drawable.default_img);
         if (name != null) {
             try {
                 FileInputStream fis = ctx.openFileInput(name);
                 bitmap = BitmapFactory.decodeStream(fis);
+
+                int Width, Height;
+                if(fullsize) {
+                    Width = Math.min(bitmap.getHeight(), bitmap.getWidth());
+                    Height = Math.min(bitmap.getHeight(), bitmap.getWidth());
+                }
+                else {
+                    if (bitmap.getWidth() > bitmap.getHeight()){
+                        Width = Math.min(bitmap.getHeight(), 256);
+                        Height = Math.min(bitmap.getHeight(), 256);
+                    }
+                    else {
+                        Width = Math.min(bitmap.getWidth(), 256);
+                        Height = Math.min(bitmap.getWidth(), 256);
+                    }
+                }
+                bitmap = Bitmap.createScaledBitmap(bitmap, Width, Height, false);
                 fis.close();
             } catch (IOException e) {
                 e.printStackTrace();

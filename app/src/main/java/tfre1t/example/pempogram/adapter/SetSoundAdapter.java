@@ -71,7 +71,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
     public void onBindViewHolder(@NonNull SetSoundAdapter.SetSoundHolder holder, int position) {
         Tables.AudiofileFull audiofile = listAudiofiles.get(position);
         holder.itemView.setId(audiofile.id_audiofile);
-        holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection));
+        holder.imgAudiofile.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection, false));
         holder.tvAudiofile.setText(audiofile.name_audiofile);
         holder.tvAuthor.setText(audiofile.executor_audiofile);
         holder.imgBtnPupupMenu.setId(audiofile.id_audiofile);

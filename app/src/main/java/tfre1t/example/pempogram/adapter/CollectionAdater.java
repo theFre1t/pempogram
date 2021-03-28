@@ -82,7 +82,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
         holder.itemView.setId(collection.id_collection);
         holder.tvColl.setText(collection.name_collection);
         holder.tvAuthor.setText(collection.author_collection);
-        holder.imgv.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection));
+        holder.imgv.setImageBitmap(new Imager().setImageView(ctx, collection.img_collection, false));
         /*holder.imgHandle.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {

@@ -5,6 +5,7 @@ import android.graphics.PorterDuff;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,10 +23,12 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.InterstitialAd;
+import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.MobileAds;
 import com.google.android.gms.ads.initialization.InitializationStatus;
 import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import java.io.File;
 
@@ -36,6 +39,7 @@ import tfre1t.example.pempogram.TrashcanClasses.FillingCheck;
 import tfre1t.example.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Fragment_RecordSound extends Fragment implements View.OnClickListener, SeekBar.OnSeekBarChangeListener, Chronometer.OnChronometerTickListener {
+    private static final String TAG = "myLog";
     private static final String ZERO_TIME = "00:00";
 
     private static final int START_RECORD = 1;
@@ -103,13 +107,21 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
     }
 
     private void adMod() {
-        MobileAds.initialize(ctx, new OnInitializationCompleteListener() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
             @Override
-            public void onInitializationComplete(InitializationStatus initializationStatus) {}
+            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                super.onAdLoaded(interstitialAd);
+                mInterstitialAd = interstitialAd;
+            }
+
+            @Override
+            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                super.onAdFailedToLoad(loadAdError);
+                Log.d(TAG, loadAdError.getMessage());
+                mInterstitialAd = null;
+            }
         });
-        mInterstitialAd = new InterstitialAd(ctx);
-        mInterstitialAd.setAdUnitId("ca-app-pub-3940256099942544/1033173712");
-        mInterstitialAd.loadAd(new AdRequest.Builder().build());
     }
 
     @Override
@@ -148,8 +160,11 @@ public class Fragment_RecordSound extends Fragment implements View.OnClickListen
                 dashboardViewModel.addNewAudiofile(nameSound, executorSound, recordAudio.getName());
                 isSave = true;
 
-                if(mInterstitialAd.isLoaded()){
-                    mInterstitialAd.show();
+                //Реклама
+                if (mInterstitialAd != null) {
+                    mInterstitialAd.show(requireActivity());
+                } else {
+                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
                 }
 
                 Toast.makeText(ctx, R.string.message_phrase_loaded, Toast.LENGTH_SHORT).show();
