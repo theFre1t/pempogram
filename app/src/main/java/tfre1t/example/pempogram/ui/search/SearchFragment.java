@@ -43,7 +43,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -91,7 +93,7 @@ public class SearchFragment extends Fragment {
         findViewById();
         setToolbar();
         loadData();
-        //adMod();
+        adMod();
         return v;
     }
 
@@ -104,7 +106,7 @@ public class SearchFragment extends Fragment {
 
     private void adMod() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Search_Interstitial), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
@@ -206,6 +208,8 @@ public class SearchFragment extends Fragment {
             @Override
             public void run() {
                 try {
+                    List<Long> revision_collList = new ArrayList<>(),
+                            revision_audioList = new ArrayList<>();
                     JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q");
                     for (int i = 0; i < json_arr.length(); i++) {
                         JSONObject obj = json_arr.getJSONObject(i);
@@ -216,7 +220,8 @@ public class SearchFragment extends Fragment {
                             String[] name_author = obj.getString("name").split("\\|",2);
                             long coll_revision = obj.getLong("revision");
 
-                            searchViewModel.Online_AddUpdColl(coll_revision, name_author[0], name_author[1]); //Добавляем/Обновляем в БД набор
+                            searchViewModel.setOnline_Coll(coll_revision, name_author[0], name_author[1]); //Добавляем/Обновляем в БД набор
+                            revision_collList.add(coll_revision);
 
                             JSONArray json_items_arr = getJsonData(public_url);
                             for (int j = 0; j < Objects.requireNonNull(json_items_arr).length(); j++) {
@@ -227,19 +232,21 @@ public class SearchFragment extends Fragment {
                                     String item_img_file = item_obj.getString("file"); //Получаем ссылку на скачивание полной версии
                                     String item_img_preview = item_obj.getString("preview"); //Получаем ссылку на скачивание превью версии
 
-                                    searchViewModel.Online_AddUpdImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
+                                    searchViewModel.setOnline_ImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
                                 }
                                 else if(item_media_type.equals("audio")) {
-                                    long item_revision = item_obj.getLong("revision"); //Получаем revision
-                                    String[] item_fullname = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
-                                    String[] item_name = item_fullname[0].split("\\|",2);
-                                    String item_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
+                                    long audio_revision = item_obj.getLong("revision"); //Получаем revision
+                                    String[] audio_fullname = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
+                                    String[] audio_name = audio_fullname[0].split("\\|",2);
+                                    String audio_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
 
-                                    searchViewModel.Online_AddUpdAudiofile(item_revision, item_name[0], item_name[1], item_fullname[1], item_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
+                                    searchViewModel.setOnline_Audiofile(audio_revision, audio_name[0], audio_name[1], audio_fullname[1], audio_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
+                                    revision_audioList.add(audio_revision);
                                 }
                             }
                         }
                     }
+                    searchViewModel.clearCacheSearchDB(revision_collList, revision_audioList);
                 } catch (JSONException e) {
                     Log.d(TAG, "updateLibrary: " + e.getMessage());
                     e.printStackTrace();

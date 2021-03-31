@@ -1,8 +1,6 @@
 package tfre1t.example.pempogram.ui.search;
 
 import android.app.Application;
-import android.util.Log;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -12,7 +10,6 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 import tfre1t.example.pempogram.MediaPlayer.MyMediaPlayer;
-import tfre1t.example.pempogram.R;
 import tfre1t.example.pempogram.database.App;
 import tfre1t.example.pempogram.database.Room_DB;
 import tfre1t.example.pempogram.database.Tables;
@@ -63,31 +60,37 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     //OnlineLibrary//==================================================================================
-    /**Добавление нового Набора*/
-    public void Online_AddUpdColl(long revision, String name_coll, String author_coll){
-        new Thread(() -> onlineCollectionDao_abstract.insUpd(revision, name_coll, author_coll)).start();
-    }
-
-    /**Добавляем аудиозапись(с автопривязкой к Набору)*/
-    public void Online_AddUpdAudiofile(long rev_id, String name, String author, String mimeType, String file_url, long coll_rev){
-        new Thread(() -> onlineAudiofileDao_abstract.insUpd(rev_id,name,author,mimeType,file_url,coll_rev)).start();
-    }
-
-    /**Добавление изображения Набора*/
-    public void Online_AddUpdImgColl(long revision, String img_file, String img_preview) {
-        new Thread(() -> onlineCollectionDao_abstract.updateImage(getApplication(), revision, img_file, img_preview)).start();
-    }
-
     /**Получение списка Наборов*/
     public LiveData<List<Tables.Online_CollectionView>> Online_GetDataColl() {
+        if(dataOnlineCollList == null) {
+            dataOnlineCollList = new MutableLiveData<>();
+        }
         dataOnlineCollList = onlineCollectionDao.getAllWichAddLive();
         return dataOnlineCollList;
     }
 
     /**Получение списка Наборов по букве/слову/предложению???*/
     public LiveData<List<Tables.Online_CollectionView>> Online_GetDataColl(String searchText) {
+        if(dataOnlineCollList == null) {
+            dataOnlineCollList = new MutableLiveData<>();
+        }
         dataOnlineCollList = onlineCollectionDao.searchOnlineCollectionLive("%" + searchText + "%");
         return dataOnlineCollList;
+    }
+
+    /**Добавление нового Набора*/
+    public void setOnline_Coll(long revision, String name_coll, String author_coll){
+        new Thread(() -> onlineCollectionDao_abstract.insUpd(revision, name_coll, author_coll)).start();
+    }
+
+    /**Добавляем аудиозапись(с автопривязкой к Набору)*/
+    public void setOnline_Audiofile(long rev_id, String name, String author, String mimeType, String file_url, long coll_rev){
+        new Thread(() -> onlineAudiofileDao_abstract.insUpd(rev_id,name,author,mimeType,file_url,coll_rev)).start();
+    }
+
+    /**Добавление изображения Набора*/
+    public void setOnline_ImgColl(long revision, String img_file, String img_preview) {
+        new Thread(() -> onlineCollectionDao_abstract.updateImage(getApplication(), revision, img_file, img_preview)).start();
     }
 
     /**Добавление нового Набора из Онлайн библиотеки*/
@@ -115,6 +118,48 @@ public class SearchViewModel extends AndroidViewModel {
         return status;
     }
 
+    public void clearCacheSearchDB(List<Long> revision_collList, List<Long> revision_audioList) {
+        new Thread(() -> {
+            List<Room_DB.Online_Collection> collList = onlineCollectionDao.getAll();
+            //Проходимся по последнему списку Онлайн Наборов из Базы
+            for (Room_DB.Online_Collection coll : collList) {
+                boolean delete = false; //объявляем беллевуе значение для обозначения - удалять набор или нет
+                //Проходимся по последним полученным revision наборов полученных с Я.Диска
+                for (Long revision_coll : revision_collList) {
+                    //Сравниваем revision из Базы с revision из последних полученных
+                    if(coll.revision_collection == revision_coll){
+                        //Сообщаем что не нужно удалять и переходим к следующему набору
+                        delete = false;
+                        break;
+                    }
+                    delete = true; //Пока не найдем совпадения - Набор идет на удаление
+                }
+                if(delete){
+                    onlineCollectionDao.delete(coll); //Удаляем Набор из базы
+                }
+            }
+
+            List<Room_DB.Online_Audiofile> audioList = onlineAudiofileDao.getAll();
+            //Проходимся по последнему списку Онлайн Аудиозаписей из Базы
+            for (Room_DB.Online_Audiofile audio : audioList) {
+                boolean delete = false; //объявляем беллевуе значение для обозначения - удалять аудио или нет
+                //Проходимся по последним полученным revision аудиозаписей полученных с Я.Диска
+                for (Long revision_audio : revision_audioList) {
+                    //Сравниваем revision из Базы с revision из последних полученных
+                    if(audio.revision_audiofile == revision_audio){
+                        //Сообщаем что не нужно удалять и переходим к следующему набору
+                        delete = false;
+                        break;
+                    }
+                    delete = true; //Пока не найдем совпадения - Набор идет на удаление
+                }
+                if(delete){
+                    onlineAudiofileDao.delete(audio); //Удаляем аудиозапись из базы
+                }
+            }
+        }).start();
+    }
+
     /**<p>Запрос на получение данных о конкретном Наборе</p>
      * <p>Метод для получения данных  {@link #Online_GetDataSelectedColl()}</p>*/
     public void OnlineLibrary_SelectCollById(int id){
@@ -137,6 +182,6 @@ public class SearchViewModel extends AndroidViewModel {
 
     /**Проигрывание Онлайн аудиозаписи*/
     public void OnlineLibrary_PlayAudio(MyMediaPlayer myMediaPlayer, int id) {
-        new Thread(() -> myMediaPlayer.playURL(onlineAudiofileDao.getNonLiveById(id).audiofile)).start();
+        new Thread(() -> myMediaPlayer.playURL(onlineAudiofileDao.getById(id).audiofile)).start();
     }
 }

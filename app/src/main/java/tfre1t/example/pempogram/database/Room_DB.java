@@ -1,6 +1,7 @@
 package tfre1t.example.pempogram.database;
 
 import android.content.Context;
+import android.util.Log;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -444,7 +445,13 @@ public class Room_DB {
     @Dao
     public interface Online_AudiofileDao{
         @Query("Select * From Online_Audiofile")
+        List<Online_Audiofile> getAll();
+
+        @Query("Select * From Online_Audiofile")
         LiveData<List<Online_Audiofile>> getAllLive();
+
+        @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
+        Online_Audiofile getById(int id);
 
         @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
         LiveData<Online_Audiofile> getByIdLive(int id);
@@ -452,15 +459,14 @@ public class Room_DB {
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
                 " Where Col.id_online_collection = :id")
-        List<Room_DB.Online_Audiofile> getAllByIdCollection(int id);
+        List<Online_Audiofile> getAllByIdCollection(int id);
 
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
                 " Where Col.id_online_collection = :id")
-        LiveData<List<Room_DB.Online_Audiofile>> getAllByIdCollectionLive(int id);
+        LiveData<List<Online_Audiofile>> getAllByIdCollectionLive(int id);
 
-        @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
-        Room_DB.Online_Audiofile getNonLiveById(int id);
+
 
         @Insert
         void insert(Online_Audiofile online_audiofile);
@@ -656,25 +662,30 @@ public class Room_DB {
 
         @Transaction
         public void insUpd(long rev_id, String name, String author, String mimeType, String file_url, long coll_rev) {
-            //Получаем запись по revision
-            Online_Audiofile online_audiofile = getByRevision(rev_id);
-            //Проверяем на наличие записи
-            if (Objects.equals(online_audiofile, null)) {
-                //Если записи нет, то добавляем
-                online_audiofile = new Online_Audiofile();
-                online_audiofile.revision_audiofile = rev_id;
-                online_audiofile.name_audiofile = name;
-                online_audiofile.author_audiofile = author;
-                online_audiofile.mimeType = mimeType;
-                online_audiofile.audiofile = file_url;
-                online_audiofile._revision_collection = coll_rev;
-                insertAudio(online_audiofile);
-            } else if (!online_audiofile.name_audiofile.equals(name) || !online_audiofile.author_audiofile.equals(author) || !online_audiofile.audiofile.equals(file_url)) {
-                //Если записи есть, то обновляем
-                online_audiofile.name_audiofile = name;
-                online_audiofile.author_audiofile = author;
-                online_audiofile.audiofile = file_url;
-                updateAudio(online_audiofile);
+            try {
+                //Получаем запись по revision
+                Online_Audiofile online_audiofile = getByRevision(rev_id);
+                //Проверяем на наличие записи
+                if (Objects.equals(online_audiofile, null)) {
+                    //Если записи нет, то добавляем
+                    online_audiofile = new Online_Audiofile();
+                    online_audiofile.revision_audiofile = rev_id;
+                    online_audiofile.name_audiofile = name;
+                    online_audiofile.author_audiofile = author;
+                    online_audiofile.mimeType = mimeType;
+                    online_audiofile.audiofile = file_url;
+                    online_audiofile._revision_collection = coll_rev;
+                    insertAudio(online_audiofile);
+                } else if (!online_audiofile.name_audiofile.equals(name) || !online_audiofile.author_audiofile.equals(author) || !online_audiofile.audiofile.equals(file_url)) {
+                    //Если записи есть, то обновляем
+                    online_audiofile.name_audiofile = name;
+                    online_audiofile.author_audiofile = author;
+                    online_audiofile.audiofile = file_url;
+                    Log.d(TAG, "insUpd: online_audiofile = " + online_audiofile.id_online_audiofile );
+                    updateAudio(online_audiofile);
+                }
+            }catch (Exception ex){
+                Log.d(TAG, "insUpd: " + ex.getMessage());
             }
         }
         /*@Insert

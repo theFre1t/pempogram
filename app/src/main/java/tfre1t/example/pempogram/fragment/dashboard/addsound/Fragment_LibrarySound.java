@@ -84,7 +84,7 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
 
     private void adMod() {
         AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Interstitial_Test), adRequest, new InterstitialAdLoadCallback() {
+        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Collection_Interstitial), adRequest, new InterstitialAdLoadCallback() {
             @Override
             public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
                 super.onAdLoaded(interstitialAd);
