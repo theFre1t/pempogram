@@ -9,7 +9,7 @@
     app:layout_constraintStart_toStartOf="parent"
     app:layout_constraintTop_toTopOf="parent">
 
-        <tfre1t.example.pempogram.CustomViewers.RoundedImageView
+        <com.tfre1t.pempogram.CustomViewers.RoundedImageView
             android:id="@+id/imgCollection"
             android:layout_width="90dp"
             android:layout_height="90dp"

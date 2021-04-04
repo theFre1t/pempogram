@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <tfre1t.example.pempogram.CustomViewers.RoundedImageView
+        <com.tfre1t.pempogram.CustomViewers.RoundedImageView
             android:id="@+id/imgFavAu"
             android:layout_width="120dp"
             android:layout_height="120dp"

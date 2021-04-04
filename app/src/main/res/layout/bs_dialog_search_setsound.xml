@@ -16,7 +16,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <tfre1t.example.pempogram.CustomViewers.RoundedImageView
+    <com.tfre1t.pempogram.CustomViewers.RoundedImageView
         android:id="@+id/imgColl"
         android:layout_width="100dp"
         android:layout_height="100dp"
