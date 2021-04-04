@@ -4,7 +4,7 @@ android {
     compileSdkVersion 30
 
     defaultConfig {
-        applicationId "tfre1t.example.pempogram"
+        applicationId "com.tfre1t.pempogram"
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 1

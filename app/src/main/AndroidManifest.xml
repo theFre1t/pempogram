@@ -3,6 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     package="com.tfre1t.pempogram">
 
+    <uses-permission android:name="RECORD_AUDIO" />
+    <uses-permission android:name="INTERNET" />
+    <uses-permission android:name="WRITE_EXTERNAL_STORAGE" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/launch_logo"
@@ -58,8 +62,5 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-0973407020138517~1794472400" />
     </application>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>
