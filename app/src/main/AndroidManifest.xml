@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="tfre1t.example.pempogram">
+    package="com.tfre1t.pempogram">
+
+    <uses-permission android:name="RECORD_AUDIO" />
+    <uses-permission android:name="INTERNET" />
+    <uses-permission android:name="WRITE_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
@@ -10,10 +14,10 @@
         android:roundIcon="@mipmap/launch_logo_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
-        android:name=".database.App">
+        android:name="com.tfre1t.pempogram.database.App">
 
         <activity
-            android:name=".SplashActivity"
+            android:name="com.tfre1t.pempogram.SplashActivity"
             android:label="@string/title_activity_main"
             android:theme="@style/SplashTheme"
             android:screenOrientation="portrait">
@@ -25,7 +29,7 @@
         </activity>
 
         <activity
-            android:name=".MainActivity"
+            android:name="com.tfre1t.pempogram.MainActivity"
             android:screenOrientation="portrait"
             android:theme="@style/MainActivityTheme">
             <intent-filter>
@@ -34,7 +38,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.home.SelectFavoriteAudio"
+        <activity android:name="com.tfre1t.pempogram.ui.home.SelectFavoriteAudio"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.favoriteaudio.selectaudio" />
@@ -42,15 +46,7 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".ui.dashboard.OnlineLibrary"
-            android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.ONLINE_LIBRARY" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
-        <activity android:name=".fragment.dashboard.addsound.Dashboard_Add_Sound"
+        <activity android:name="com.tfre1t.pempogram.fragment.dashboard.addsound.Dashboard_Add_Sound"
             android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.setsound.addsound" />
@@ -66,8 +62,5 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-0973407020138517~1794472400" />
     </application>
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
 
 </manifest>

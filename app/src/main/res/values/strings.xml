@@ -1,9 +1,16 @@
 <resources>
-    <string name="homebanner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
+    -------------==\\Test//==-------------
+    <!--<string name="ad_unit_id_Home_Banner" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="ad_unit_id_Collection_Interstitial" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="ad_unit_id_Search_Interstitial" translatable="false">ca-app-pub-3940256099942544/1033173712</string>-->
+    -------------==\\Work//==-------------
+    <string name="ad_unit_id_Home_Banner" translatable="false">ca-app-pub-0973407020138517/1231381531</string>
+    <string name="ad_unit_id_Collection_Interstitial" translatable="false">ca-app-pub-0973407020138517/1465161735</string>
+    <string name="ad_unit_id_Search_Interstitial" translatable="false">ca-app-pub-0973407020138517/6821425964</string>
 
     /Название приложения
-    <string name="app_name">Paizogram</string>
-    <string name="title_activity_main">Paizogram</string>
+    <string name="app_name" translatable="false">Paizogram</string>
+    <string name="title_activity_main" translatable="false">Paizogram</string>
 
     //(Fragment) Домашняя страница
     <string name="title_home">Home</string>
@@ -14,16 +21,12 @@
     <string name="title_select_favaudio">Select a phrase</string>
 
     //(Fragment) Страница поиска
-    <string name="title_search">Search</string>
+    <string name="title_online_search">Online Search</string>
 
     //(Fragment) Страница  Категорий/Наборов/Аудиозапией
     <string name="title_dashboard">Dashboard</string>
     <string name="title_сategories">Categories</string>
     <string name="title_sets">Sets</string>
-    <string name="view_btn_online_library">Online library</string>
-
-    --(Activity) Добавление новой аудиозаписи(фразы)
-    <string name="title_online_library">Online library</string>
 
     --(Dialog) Добавление нового набора
     <string name="dialog_title_adding_set">Add a set</string>

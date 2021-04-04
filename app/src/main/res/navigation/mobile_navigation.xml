@@ -7,25 +7,25 @@
 
     <fragment
         android:id="@+id/navigation_home"
-        android:name="tfre1t.example.pempogram.ui.home.HomeFragment"
+        android:name="com.tfre1t.pempogram.ui.home.HomeFragment"
         android:label="@string/title_home"
         tools:layout="@layout/fragment_home" />
 
     <fragment
         android:id="@+id/navigation_dashboard"
-        android:name="tfre1t.example.pempogram.ui.dashboard.DashboardFragment"
+        android:name="com.tfre1t.pempogram.ui.dashboard.DashboardFragment"
         android:label="@string/title_dashboard"
         tools:layout="@layout/fragment_dashboard" />
 
     <fragment
         android:id="@+id/navigation_search"
-        android:name="tfre1t.example.pempogram.ui.search.SearchFragment"
-        android:label="@string/title_search"
+        android:name="com.tfre1t.pempogram.ui.search.SearchFragment"
+        android:label="@string/title_online_search"
         tools:layout="@layout/fragment_search" />
 
     <fragment
         android:id="@+id/navigation_account"
-        android:name="tfre1t.example.pempogram.ui.account.AccountFragment"
+        android:name="com.tfre1t.pempogram.ui.account.AccountFragment"
         android:label="@string/title_account"
         tools:layout="@layout/fragment_account" />
 </navigation>

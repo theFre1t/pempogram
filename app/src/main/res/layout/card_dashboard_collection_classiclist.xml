@@ -21,7 +21,7 @@
             app:srcCompat="@drawable/baseline_reorder_24"
             app:tint="@color/colorTextSecondary" />
 
-        <tfre1t.example.pempogram.CustomViewers.RoundedImageView
+        <com.tfre1t.pempogram.CustomViewers.RoundedImageView
             android:id="@+id/imgCollection"
             android:layout_width="90dp"
             android:layout_height="90dp"
