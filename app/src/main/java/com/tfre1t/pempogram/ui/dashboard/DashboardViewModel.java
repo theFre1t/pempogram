@@ -59,13 +59,13 @@ public class DashboardViewModel extends AndroidViewModel {
     //Dashboard_Collection_Fragment//==================================================================
     /**Получение списка Наборов*/
     public LiveData<List<Room_DB.Collection>> getDataCollList(){
-        dataCollList = collectionDao.getAll();
+        dataCollList = collectionDao.getAllLive();
         return dataCollList;
     }
 
     /**Получение списка Наборов по букве/слову/предложению???*/
     public LiveData<List<Room_DB.Collection>> getDataColl(String searchText){
-        dataCollList = collectionDao.searchCollection("%"+searchText+"%");
+        dataCollList = collectionDao.searchCollectionLive("%"+searchText+"%");
         return dataCollList;
     }
 
@@ -85,7 +85,7 @@ public class DashboardViewModel extends AndroidViewModel {
     //Dashboard_SetSoundsCollection_Fragment//=========================================================
     /**Получение данных о конкретном Наборе*/
     public LiveData<Room_DB.Collection> getDataSelectedColl(){
-        dataCollById = collectionDao.getById(collectionId);
+        dataCollById = collectionDao.getByIdLive(collectionId);
         return dataCollById;
     }
 

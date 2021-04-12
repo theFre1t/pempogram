@@ -63,8 +63,6 @@ public class SearchFragment extends Fragment {
     private static final int DATA_NONE = 0; // Данных нет
     private static final int DATA_TRUE = 1; // Данные есть
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
-    private static final int COLLECTION_DOWNLOADING = 10; // Набор загружается
-    private static final int COLLECTION_DOWNLOADED = 11; // Набор загружен
 
     private SearchViewModel searchViewModel;
     private SearchAdapter olAdapter;
@@ -92,7 +90,6 @@ public class SearchFragment extends Fragment {
         findViewById();
         setToolbar();
         loadData();
-        adMod();
         return v;
     }
 
@@ -101,24 +98,6 @@ public class SearchFragment extends Fragment {
         rvOnlineLibrary = v.findViewById(R.id.rvOnlineLibrary);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
-    }
-
-    private void adMod() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Search_Interstitial), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                Log.d(TAG, loadAdError.getMessage());
-                mInterstitialAd = null;
-            }
-        });
     }
 
     private void setToolbar() {
@@ -193,11 +172,7 @@ public class SearchFragment extends Fragment {
                 }
                 listColl = list;
                 //Отправляем сообщение о наличие данных
-                if (listColl.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
+                h.sendEmptyMessage(DATA_TRUE);
             }
         });
     }
@@ -311,24 +286,9 @@ public class SearchFragment extends Fragment {
 
     private void setData(){
         switch (CURRENT_DATA) {
-            case COLLECTION_DOWNLOADING:
-                //Реклама
-                if (mInterstitialAd != null) {
-                    mInterstitialAd.show(requireActivity());
-                } else {
-                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
-                }
-                break;
-            case COLLECTION_DOWNLOADED:
-                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
-                break;
             case DATA_DOWNLOAD:
                 tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
-                break;
-            case DATA_NONE:
-                pbLoader.setVisibility(View.GONE);
-                tvEmpty.setVisibility(View.VISIBLE);
                 break;
             case DATA_TRUE:
                 pbLoader.setVisibility(View.GONE);
@@ -336,14 +296,17 @@ public class SearchFragment extends Fragment {
                 if(olAdapter == null){
                     olAdapter = new SearchAdapter(ctx, listColl);
                     olAdapter.setItemClickListener(onItemClickListener);
-                    olAdapter.setAddItemClickListener(onAddItemClickListener);
                     rvOnlineLibrary.setLayoutManager(new LinearLayoutManager(ctx));
                     rvOnlineLibrary.setAdapter(olAdapter);
                 }else {
                     SearchFragment.DiffUtilCallback DiffUtilCallback = new SearchFragment.DiffUtilCallback(oldListColl, listColl);
-                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
+                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback, true);
                     olAdapter.swipeData(listColl);
                     diffResult.dispatchUpdatesTo(olAdapter);
+                }
+
+                if(listColl.size() == 0){
+                    tvEmpty.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -399,24 +362,6 @@ public class SearchFragment extends Fragment {
         public void onClick(View v) {
             searchViewModel.OnlineLibrary_SelectCollById(v.getId());
             new bsSearch().show(requireActivity().getSupportFragmentManager().beginTransaction(), "showSetSound");
-        }
-    };
-
-    private final View.OnClickListener onAddItemClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            searchViewModel.OnlineLibrary_SelectCollById(v.getId());
-            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean status) {
-                    if(status){
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADED);
-                    }
-                    else {
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADING);
-                    }
-                }
-            });
         }
     };
 

@@ -1,6 +1,7 @@
 package com.tfre1t.pempogram.ui.search;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
@@ -94,68 +95,85 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     /**Добавление нового Набора из Онлайн библиотеки*/
-    public LiveData<Boolean> addNewCollFromOnline() {
-        MutableLiveData<Boolean> status = new MutableLiveData<>();
-        status.setValue(false);
+    public LiveData<Integer> addNewCollFromOnline() {
+        MutableLiveData<Integer> status = new MutableLiveData<>();
+        status.setValue(10);
 
         new Thread(() -> {
             Tables.Online_CollectionView onlineCollection = onlineCollectionDao.getById(online_collectionId);
-
             if (onlineCollection != null) {
-                int idCollection = collectionDao_abstract.insertOnlineCollection(getApplication(), onlineCollection.Online_Collection);
-                onlineCollectionWithCollectionDao.insert(new Room_DB.Online_Collection_with_Collection(onlineCollection.Online_Collection.id_online_collection, idCollection)); //Создаем связь между онлайн набором и локальным набором
 
-                List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection(onlineCollection.Online_Collection.id_online_collection);
-                if (!onlineAudiofileList.isEmpty()) {
-                    for (Room_DB.Online_Audiofile onlineAudiofile : onlineAudiofileList) {
-                        int idAudiofile = audiofileDao_abstract.insertOnlineAudiofile(getApplication(), onlineAudiofile, idCollection);
-                        onlineAudiofileWithAudiofileDao.insert(new Room_DB.Online_Audiofile_with_Audiofile(onlineAudiofile.id_online_audiofile, idAudiofile));
+                Room_DB.Online_Collection_with_Collection onlColl_w_Coll = onlineCollectionWithCollectionDao.getById_OnlColl(onlineCollection.Online_Collection.id_online_collection);
+                if(onlColl_w_Coll == null){
+
+                    int idCollection = collectionDao_abstract.insertOnlineCollection(getApplication(), onlineCollection.Online_Collection);
+                    onlineCollectionWithCollectionDao.insert(new Room_DB.Online_Collection_with_Collection(onlineCollection.Online_Collection.id_online_collection, idCollection)); //Создаем связь между онлайн набором и локальным набором
+
+                    List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection(onlineCollection.Online_Collection.id_online_collection);
+                    if (!onlineAudiofileList.isEmpty()) {
+                        for (Room_DB.Online_Audiofile onlineAudiofile : onlineAudiofileList) {
+                            int idAudiofile = audiofileDao_abstract.insertOnlineAudiofile(getApplication(), onlineAudiofile, idCollection);
+                            onlineAudiofileWithAudiofileDao.insert(new Room_DB.Online_Audiofile_with_Audiofile(onlineAudiofile.id_online_audiofile, idAudiofile));
+                        }
                     }
+                    status.postValue(11);
                 }
-                status.postValue(true);
+                else {
+                    status.postValue(12);
+                }
+            }
+            else {
+                status.postValue(12);
             }
         }).start();
         return status;
     }
 
+    /**Очистка БД от лишних записей*/
     public void clearCacheSearchDB(List<Long> revision_collList, List<Long> revision_audioList) {
         new Thread(() -> {
-            List<Room_DB.Online_Collection> collList = onlineCollectionDao.getAll();
-            //Проходимся по последнему списку Онлайн Наборов из Базы
-            for (Room_DB.Online_Collection coll : collList) {
-                boolean delete = false; //объявляем беллевуе значение для обозначения - удалять набор или нет
-                //Проходимся по последним полученным revision наборов полученных с Я.Диска
-                for (Long revision_coll : revision_collList) {
-                    //Сравниваем revision из Базы с revision из последних полученных
-                    if(coll.revision_collection == revision_coll){
-                        //Сообщаем что не нужно удалять и переходим к следующему набору
-                        delete = false;
-                        break;
+            if(revision_collList.size() != 0) {
+                //Получаем список ранее загруженных Наборов
+                List<Room_DB.Online_Collection> collList = onlineCollectionDao.getAll();
+                //Проходимся по последнему списку Онлайн Наборов из Базы
+                for (Room_DB.Online_Collection coll : collList) {
+                    boolean delete = false; //объявляем беллевуе значение для обозначения - удалять набор или нет
+                    //Проходимся по последним полученным revision наборов полученных с Я.Диска
+                    for (Long revision_coll : revision_collList) {
+                        //Сравниваем revision из Базы с revision из последних полученных
+                        if (coll.revision_collection == revision_coll) {
+                            //Сообщаем что не нужно удалять и переходим к следующему набору
+                            delete = false;
+                            break;
+                        }
+                        delete = true; //Пока не найдем совпадения - Набор идет на удаление
                     }
-                    delete = true; //Пока не найдем совпадения - Набор идет на удаление
+                    if (delete) {
+                        onlineCollectionDao.delete(coll); //Удаляем Набор из базы
+                    }
                 }
-                if(delete){
-                    onlineCollectionDao.delete(coll); //Удаляем Набор из базы
+
+                List<Room_DB.Online_Audiofile> audioList = onlineAudiofileDao.getAll();
+                //Проходимся по последнему списку Онлайн Аудиозаписей из Базы
+                for (Room_DB.Online_Audiofile audio : audioList) {
+                    boolean delete = false; //объявляем беллевуе значение для обозначения - удалять аудио или нет
+                    //Проходимся по последним полученным revision аудиозаписей полученных с Я.Диска
+                    for (Long revision_audio : revision_audioList) {
+                        //Сравниваем revision из Базы с revision из последних полученных
+                        if (audio.revision_audiofile == revision_audio) {
+                            //Сообщаем что не нужно удалять и переходим к следующему набору
+                            delete = false;
+                            break;
+                        }
+                        delete = true; //Пока не найдем совпадения - Набор идет на удаление
+                    }
+                    if (delete) {
+                        onlineAudiofileDao.delete(audio); //Удаляем аудиозапись из базы
+                    }
                 }
             }
-
-            List<Room_DB.Online_Audiofile> audioList = onlineAudiofileDao.getAll();
-            //Проходимся по последнему списку Онлайн Аудиозаписей из Базы
-            for (Room_DB.Online_Audiofile audio : audioList) {
-                boolean delete = false; //объявляем беллевуе значение для обозначения - удалять аудио или нет
-                //Проходимся по последним полученным revision аудиозаписей полученных с Я.Диска
-                for (Long revision_audio : revision_audioList) {
-                    //Сравниваем revision из Базы с revision из последних полученных
-                    if(audio.revision_audiofile == revision_audio){
-                        //Сообщаем что не нужно удалять и переходим к следующему набору
-                        delete = false;
-                        break;
-                    }
-                    delete = true; //Пока не найдем совпадения - Набор идет на удаление
-                }
-                if(delete){
-                    onlineAudiofileDao.delete(audio); //Удаляем аудиозапись из базы
-                }
+            else {
+                onlineCollectionDao.deleteAll();
             }
         }).start();
     }

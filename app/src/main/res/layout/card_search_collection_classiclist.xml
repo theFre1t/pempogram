@@ -26,12 +26,10 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="16dp"
-            android:layout_marginEnd="16dp"
             android:text="@string/view_text_name"
             android:textAppearance="@style/TextStylePrimary"
             android:textSize="18sp"
             app:layout_constraintBottom_toTopOf="@+id/tvAuthor"
-            app:layout_constraintEnd_toStartOf="@+id/imgBtnAddStatus"
             app:layout_constraintStart_toEndOf="@+id/imgCollection"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintVertical_bias="0.35" />
@@ -48,18 +46,5 @@
             app:layout_constraintStart_toStartOf="@+id/tvCollection"
             app:layout_constraintTop_toBottomOf="@+id/tvCollection"
             app:layout_constraintVertical_bias="0.25" />
-
-        <ImageView
-            android:id="@+id/imgBtnAddStatus"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:layout_marginTop="8dp"
-            android:layout_marginEnd="16dp"
-            android:layout_marginBottom="8dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/baseline_add_24"
-            app:tint="@color/colorSecondary" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

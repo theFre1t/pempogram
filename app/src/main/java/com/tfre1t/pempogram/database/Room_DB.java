@@ -253,13 +253,13 @@ public class Room_DB {
     @Dao
     public interface CollectionDao{
         @Query("Select * From collection")
-        LiveData<List<Collection>> getAll();
+        LiveData<List<Collection>> getAllLive();
 
         @Query("Select * From collection Where name_collection LIKE :text OR author_collection LIKE :text")
-        LiveData<List<Collection>> searchCollection(String text);
+        LiveData<List<Collection>> searchCollectionLive(String text);
 
         @Query("Select * From collection Where id_collection = :id")
-        LiveData<Collection> getById(int id);
+        LiveData<Collection> getByIdLive(int id);
 
         @Update
         void update(Collection collection);
@@ -418,6 +418,9 @@ public class Room_DB {
 
         @Delete
         void delete(Online_Collection online_collection);
+
+        @Query("DELETE FROM online_collection")
+        void deleteAll();
     }
 
     @Dao
@@ -429,7 +432,7 @@ public class Room_DB {
         LiveData<List<Online_Collection_with_Collection>> getAllLive();
 
         @Query("Select * From Online_Collection_with_Collection Where _id_online_collection = :id_online_collection")
-        Online_Collection_with_Collection getByIdOnlColl(int id_online_collection);
+        Online_Collection_with_Collection getById_OnlColl(int id_online_collection);
 
         @Insert
         void insert(Online_Collection_with_Collection with_collection);
@@ -680,7 +683,6 @@ public class Room_DB {
                     online_audiofile.name_audiofile = name;
                     online_audiofile.author_audiofile = author;
                     online_audiofile.audiofile = file_url;
-                    Log.d(TAG, "insUpd: online_audiofile = " + online_audiofile.id_online_audiofile );
                     updateAudio(online_audiofile);
                 }
             }catch (Exception ex){

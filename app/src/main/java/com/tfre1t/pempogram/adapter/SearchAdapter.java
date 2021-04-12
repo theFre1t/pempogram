@@ -26,12 +26,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.OnlineLibr
         onItemClickListener = clickListener;
     }
 
-    private View.OnClickListener onAddItemClickListener;
-
-    public void setAddItemClickListener(View.OnClickListener clickListener) {
-        onAddItemClickListener = clickListener;
-    }
-
     private final Context ctx;
     private List<Tables.Online_CollectionView> list;
 
@@ -40,18 +34,15 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.OnlineLibr
     class OnlineLibraryHolder extends RecyclerView.ViewHolder {
         private final RoundedImageView imgCollection;
         private final TextView tvCollection, tvAuthor;
-        private final ImageView imgBtnAddStatus;
 
         public OnlineLibraryHolder(@NonNull View itemView) {
             super(itemView);
             imgCollection = itemView.findViewById(R.id.imgCollection);
             tvCollection = itemView.findViewById(R.id.tvCollection);
             tvAuthor = itemView.findViewById(R.id.tvAuthor);
-            imgBtnAddStatus = itemView.findViewById(R.id.imgBtnAddStatus);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);
-            imgBtnAddStatus.setOnClickListener(onAddItemClickListener);
         }
     }
 
@@ -75,10 +66,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.OnlineLibr
         holder.imgCollection.setImageBitmap(new Imager().setImageView(ctx, collection.Online_Collection.img_file_preview_collection, true));
         holder.tvCollection.setText(collection.Online_Collection.name_collection);
         holder.tvAuthor.setText(collection.Online_Collection.author_collection);
-        if(collection.collectionWithCollection != null){
-            holder.imgBtnAddStatus.setVisibility(View.GONE);
-        }
-        holder.imgBtnAddStatus.setId(collection.Online_Collection.id_online_collection);
     }
 
     @Override
