@@ -141,11 +141,13 @@ public class Room_DB {
 
         public String author_collection;
 
-        public String public_url_collection;
+        public String url_collection;
 
-        public String url_img_file_collection;
+        public String url_full_img_collection;
 
-        public String img_file_preview_collection;
+        public String name_preview_img_collection;
+
+        public int hash_preview_img_collection;
 
         public Online_Collection(){}
 
@@ -155,13 +157,15 @@ public class Room_DB {
                                  String author_collection,
                                  String public_url_collection,
                                  String url_img_file_collection,
-                                 String img_file_preview_collection) {
+                                 String img_file_preview_collection,
+                                 int hash_preview_img_collection) {
             this.revision_collection = revision_collection;
             this.name_collection = name_collection;
             this.author_collection = author_collection;
-            this.public_url_collection = public_url_collection;
-            this.url_img_file_collection = url_img_file_collection;
-            this.img_file_preview_collection = img_file_preview_collection;
+            this.url_collection = public_url_collection;
+            this.url_full_img_collection = url_img_file_collection;
+            this.name_preview_img_collection = img_file_preview_collection;
+            this.hash_preview_img_collection = hash_preview_img_collection;
         }
     }
 
@@ -253,13 +257,13 @@ public class Room_DB {
     @Dao
     public interface CollectionDao{
         @Query("Select * From collection")
-        LiveData<List<Collection>> getAll();
+        LiveData<List<Collection>> getAllLive();
 
         @Query("Select * From collection Where name_collection LIKE :text OR author_collection LIKE :text")
-        LiveData<List<Collection>> searchCollection(String text);
+        LiveData<List<Collection>> searchCollectionLive(String text);
 
         @Query("Select * From collection Where id_collection = :id")
-        LiveData<Collection> getById(int id);
+        LiveData<Collection> getByIdLive(int id);
 
         @Update
         void update(Collection collection);
@@ -418,6 +422,9 @@ public class Room_DB {
 
         @Delete
         void delete(Online_Collection online_collection);
+
+        @Query("DELETE FROM online_collection")
+        void deleteAll();
     }
 
     @Dao
@@ -429,7 +436,7 @@ public class Room_DB {
         LiveData<List<Online_Collection_with_Collection>> getAllLive();
 
         @Query("Select * From Online_Collection_with_Collection Where _id_online_collection = :id_online_collection")
-        Online_Collection_with_Collection getByIdOnlColl(int id_online_collection);
+        Online_Collection_with_Collection getById_OnlColl(int id_online_collection);
 
         @Insert
         void insert(Online_Collection_with_Collection with_collection);
@@ -511,7 +518,7 @@ public class Room_DB {
         @Transaction
         public int insertOnlineCollection(Context ctx, Online_Collection online_collection){
             Collection collection = new Collection(online_collection.name_collection, online_collection.author_collection, null);
-            collection.img_collection = new Imager().saveURLImage(ctx, online_collection.url_img_file_collection);
+            collection.img_collection = new Imager().saveURLImage(ctx, online_collection.url_full_img_collection);
             if(collection.img_collection == null){
                 collection.img_collection = "default.png";
             }
@@ -618,9 +625,15 @@ public class Room_DB {
         public void updateImage(Context ctx, long revision, String img_file, String img_preview){
             Online_Collection onlineCollection = getByRevision(revision);
             if(onlineCollection != null){
-                onlineCollection.url_img_file_collection = img_file;
-                onlineCollection.img_file_preview_collection = new Imager().saveURLCacheImage(ctx, img_preview, onlineCollection.img_file_preview_collection);
-                updateCollection(onlineCollection);
+
+                int hashBitmap = new Imager().getHashBitmap(img_preview);
+                if(onlineCollection.hash_preview_img_collection != hashBitmap){
+                    onlineCollection.url_full_img_collection = img_file;
+                    onlineCollection.hash_preview_img_collection = hashBitmap;
+                    onlineCollection.name_preview_img_collection = new Imager().saveURLCacheImage(ctx, revision, img_preview, onlineCollection.name_preview_img_collection);
+                    Log.d(TAG, "updateImage: = " + onlineCollection.name_preview_img_collection);
+                    updateCollection(onlineCollection);
+                }
             }
         }
 
@@ -680,7 +693,6 @@ public class Room_DB {
                     online_audiofile.name_audiofile = name;
                     online_audiofile.author_audiofile = author;
                     online_audiofile.audiofile = file_url;
-                    Log.d(TAG, "insUpd: online_audiofile = " + online_audiofile.id_online_audiofile );
                     updateAudio(online_audiofile);
                 }
             }catch (Exception ex){
