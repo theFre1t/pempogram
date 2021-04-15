@@ -38,8 +38,8 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
 
     private static int CURRENT_DATA; //Текущее состояние данных
     private static final int DATA_NONE = 0; // Данных нет
-    private static final int DATA_TRUE = 1; // Данные есть
-    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int GET_DATA_TRUE = 1; // Данные есть
+    private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private DashboardViewModel dashboardViewModel;
     private LibrarySoundAdapter lsAdapter;
@@ -100,18 +100,14 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
     //Получение и установка данных
     private void loadData() {
         h = new MyHandler(this);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
+        h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         dashboardViewModel.getAllAudiofiles().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileWithImg>>() {
             @Override
             public void onChanged(List<Tables.AudiofileWithImg> list) {
                 listAudiofiles = list;
                 //Отправляем сообщение о наличие данных
-                if (listAudiofiles == null) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
+                h.sendEmptyMessage(GET_DATA_TRUE);
             }
         });
         dashboardViewModel.getAudiofilesByIdCollList().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
@@ -142,20 +138,22 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
     }
 
     private void setData(){
-        pbLoader.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
-            case DATA_DOWNLOAD:
+            case GET_DATA_DOWNLOAD:
+                tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
-            case DATA_NONE:
-                tvEmpty.setVisibility(View.VISIBLE);
-                break;
-            case DATA_TRUE:
+            case GET_DATA_TRUE:
+                pbLoader.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 if(lsAdapter == null) {
                     lsAdapter = new LibrarySoundAdapter(ctx, listAudiofiles, listSelectedAudiofiles);
                     rvLibSound.setLayoutManager(new LinearLayoutManager(ctx));
                     rvLibSound.setAdapter(lsAdapter);
+                }
+
+                if(listAudiofiles.size() == 0){
+                    tvEmpty.setVisibility(View.VISIBLE);
                 }
                 break;
         }

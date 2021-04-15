@@ -116,7 +116,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         searchViewModel.Online_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
             @Override
             public void onChanged(Tables.Online_CollectionView online_collection) {
-                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection, true));
+                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.name_preview_img_collection, true));
                 tvCollection.setText(online_collection.Online_Collection.name_collection);
                 tvAuthor.setText(online_collection.Online_Collection.author_collection);
                 if(online_collection.collectionWithCollection != null){

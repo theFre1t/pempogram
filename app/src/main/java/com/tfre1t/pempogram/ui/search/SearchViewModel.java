@@ -173,7 +173,7 @@ public class SearchViewModel extends AndroidViewModel {
                 }
             }
             else {
-                onlineCollectionDao.deleteAll();
+                onlineCollectionDao.deleteAll(); //Удаляем все наборы из базы
             }
         }).start();
     }

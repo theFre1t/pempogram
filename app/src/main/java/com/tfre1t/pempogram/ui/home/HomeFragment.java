@@ -40,8 +40,8 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     private static int CURRENT_DATA; //Текущее состояние данных
     private static final int DATA_NONE = 0; // Данных нет
-    private static final int DATA_TRUE = 1; // Данные есть
-    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int GET_DATA_TRUE = 1; // Данные есть
+    private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private int FAVAU_CURRENT = 0; //Текущее состояние
     private static final int FAVAU_DEFAULT = 0; // Состояние воиспроизведения
@@ -99,7 +99,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     //Получение и установка данных
     private void loadData() {
         h = new MyHandler(this);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
+        h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         homeViewModel.getDataFavAu().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileWithImg>>() {
             @Override
@@ -109,11 +109,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                 }
                 listFavAu = list;
                 //Отправляем сообщение о наличие данных
-                if (listFavAu == null) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
+                h.sendEmptyMessage(GET_DATA_TRUE);
             }
         });
     }
@@ -138,16 +134,14 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void setData(){
-        pbLoader.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
-            case DATA_DOWNLOAD:
+            case GET_DATA_DOWNLOAD:
+                tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
-            case DATA_NONE:
-                tvEmpty.setVisibility(View.VISIBLE);
-                break;
-            case DATA_TRUE:
+            case GET_DATA_TRUE:
+                pbLoader.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 if(favAuAdapter == null){
                     favAuAdapter = new FavoriteAudioAdater(ctx, listFavAu);
                     favAuAdapter.setItemClickListener(onItemClickListener);

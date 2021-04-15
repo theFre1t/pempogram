@@ -141,11 +141,13 @@ public class Room_DB {
 
         public String author_collection;
 
-        public String public_url_collection;
+        public String url_collection;
 
-        public String url_img_file_collection;
+        public String url_full_img_collection;
 
-        public String img_file_preview_collection;
+        public String name_preview_img_collection;
+
+        public int hash_preview_img_collection;
 
         public Online_Collection(){}
 
@@ -155,13 +157,15 @@ public class Room_DB {
                                  String author_collection,
                                  String public_url_collection,
                                  String url_img_file_collection,
-                                 String img_file_preview_collection) {
+                                 String img_file_preview_collection,
+                                 int hash_preview_img_collection) {
             this.revision_collection = revision_collection;
             this.name_collection = name_collection;
             this.author_collection = author_collection;
-            this.public_url_collection = public_url_collection;
-            this.url_img_file_collection = url_img_file_collection;
-            this.img_file_preview_collection = img_file_preview_collection;
+            this.url_collection = public_url_collection;
+            this.url_full_img_collection = url_img_file_collection;
+            this.name_preview_img_collection = img_file_preview_collection;
+            this.hash_preview_img_collection = hash_preview_img_collection;
         }
     }
 
@@ -514,7 +518,7 @@ public class Room_DB {
         @Transaction
         public int insertOnlineCollection(Context ctx, Online_Collection online_collection){
             Collection collection = new Collection(online_collection.name_collection, online_collection.author_collection, null);
-            collection.img_collection = new Imager().saveURLImage(ctx, online_collection.url_img_file_collection);
+            collection.img_collection = new Imager().saveURLImage(ctx, online_collection.url_full_img_collection);
             if(collection.img_collection == null){
                 collection.img_collection = "default.png";
             }
@@ -621,9 +625,15 @@ public class Room_DB {
         public void updateImage(Context ctx, long revision, String img_file, String img_preview){
             Online_Collection onlineCollection = getByRevision(revision);
             if(onlineCollection != null){
-                onlineCollection.url_img_file_collection = img_file;
-                onlineCollection.img_file_preview_collection = new Imager().saveURLCacheImage(ctx, img_preview, onlineCollection.img_file_preview_collection);
-                updateCollection(onlineCollection);
+
+                int hashBitmap = new Imager().getHashBitmap(img_preview);
+                if(onlineCollection.hash_preview_img_collection != hashBitmap){
+                    onlineCollection.url_full_img_collection = img_file;
+                    onlineCollection.hash_preview_img_collection = hashBitmap;
+                    onlineCollection.name_preview_img_collection = new Imager().saveURLCacheImage(ctx, revision, img_preview, onlineCollection.name_preview_img_collection);
+                    Log.d(TAG, "updateImage: = " + onlineCollection.name_preview_img_collection);
+                    updateCollection(onlineCollection);
+                }
             }
         }
 
