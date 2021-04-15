@@ -15,7 +15,6 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -29,10 +28,7 @@ import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
 import com.google.android.gms.ads.interstitial.InterstitialAd;
-import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -61,14 +57,11 @@ public class SearchFragment extends Fragment {
 
     private static int CURRENT_DATA; //Текущее состояние данных
     private static final int DATA_NONE = 0; // Данных нет
-    private static final int DATA_TRUE = 1; // Данные есть
-    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
-    private static final int COLLECTION_DOWNLOADING = 10; // Набор загружается
-    private static final int COLLECTION_DOWNLOADED = 11; // Набор загружен
+    private static final int GET_DATA_TRUE = 1; // Данные есть
+    private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private SearchViewModel searchViewModel;
     private SearchAdapter olAdapter;
-    private InterstitialAd mInterstitialAd;
 
     private Handler h;
     private View v;
@@ -92,7 +85,6 @@ public class SearchFragment extends Fragment {
         findViewById();
         setToolbar();
         loadData();
-        adMod();
         return v;
     }
 
@@ -101,24 +93,6 @@ public class SearchFragment extends Fragment {
         rvOnlineLibrary = v.findViewById(R.id.rvOnlineLibrary);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
-    }
-
-    private void adMod() {
-        AdRequest adRequest = new AdRequest.Builder().build();
-        InterstitialAd.load(ctx, v.getResources().getString(R.string.ad_unit_id_Search_Interstitial), adRequest, new InterstitialAdLoadCallback() {
-            @Override
-            public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
-                super.onAdLoaded(interstitialAd);
-                mInterstitialAd = interstitialAd;
-            }
-
-            @Override
-            public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
-                super.onAdFailedToLoad(loadAdError);
-                Log.d(TAG, loadAdError.getMessage());
-                mInterstitialAd = null;
-            }
-        });
     }
 
     private void setToolbar() {
@@ -146,7 +120,7 @@ public class SearchFragment extends Fragment {
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    h.sendEmptyMessage(DATA_DOWNLOAD);
+                    h.sendEmptyMessage(GET_DATA_DOWNLOAD);
                     //Получаем данные
                     searchViewModel.Online_GetDataColl(newText).observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
                         @Override
@@ -157,7 +131,7 @@ public class SearchFragment extends Fragment {
 
                             listColl = list;
                             //Отправляем сообщение о наличие данных
-                            h.sendEmptyMessage(DATA_TRUE);
+                            h.sendEmptyMessage(GET_DATA_TRUE);
                         }
                     });
                     return true;
@@ -183,7 +157,7 @@ public class SearchFragment extends Fragment {
         updateLibrary();
 
         h = new MyHandler(this);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
+        h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         searchViewModel.Online_GetDataColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
             @Override
@@ -193,11 +167,7 @@ public class SearchFragment extends Fragment {
                 }
                 listColl = list;
                 //Отправляем сообщение о наличие данных
-                if (listColl.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
+                h.sendEmptyMessage(GET_DATA_TRUE);
             }
         });
     }
@@ -215,11 +185,24 @@ public class SearchFragment extends Fragment {
                         String type = obj.getString("type");
 
                         if(type.equals("dir")){
+                            String name = null;
+                            String author = null;
+
                             String public_url = obj.getString("public_url");
-                            String[] name_author = obj.getString("name").split("\\|",2);
+                            String fullname = obj.getString("name");
+
+                            if (fullname.contains("|")){
+                                String[] name_author = fullname.split("\\|",2);
+                                name = name_author[0];
+                                author = name_author[1];
+                            }else {
+                                name = fullname;
+                                author = "noname";
+                            }
+
                             long coll_revision = obj.getLong("revision");
 
-                            searchViewModel.setOnline_Coll(coll_revision, name_author[0], name_author[1]); //Добавляем/Обновляем в БД набор
+                            searchViewModel.setOnline_Coll(coll_revision, name, author); //Добавляем/Обновляем в БД набор
                             revision_collList.add(coll_revision);
 
                             JSONArray json_items_arr = getJsonData(public_url);
@@ -234,12 +217,23 @@ public class SearchFragment extends Fragment {
                                     searchViewModel.setOnline_ImgColl(coll_revision, item_img_file, item_img_preview); //Добавляем/Обновляем в БД изображение для набора
                                 }
                                 else if(item_media_type.equals("audio")) {
+                                    String audio_name = null;
+                                    String audio_author = null;
                                     long audio_revision = item_obj.getLong("revision"); //Получаем revision
-                                    String[] audio_fullname = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
-                                    String[] audio_name = audio_fullname[0].split("\\|",2);
+                                    String[] audiofile = item_obj.getString("name").split("\\.", 2); //Получаем имя аудио и разбиваем его на имя и формат
+
+                                    if (audiofile[0].contains("|")){
+                                        String[] audio_fullname = audiofile[0].split("\\|",2);
+                                        audio_name = audio_fullname[0];
+                                        audio_author = audio_fullname[1];
+                                    }else {
+                                        audio_name = audiofile[0];
+                                        audio_author = "noname";
+                                    }
+
                                     String audio_file_url = item_obj.getString("file"); //Получаем ссылку на скачивание
 
-                                    searchViewModel.setOnline_Audiofile(audio_revision, audio_name[0], audio_name[1], audio_fullname[1], audio_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
+                                    searchViewModel.setOnline_Audiofile(audio_revision, audio_name, audio_author, audiofile[1], audio_file_url, coll_revision); //Добавляем/Обновляем в БД аудио
                                     revision_audioList.add(audio_revision);
                                 }
                             }
@@ -311,39 +305,27 @@ public class SearchFragment extends Fragment {
 
     private void setData(){
         switch (CURRENT_DATA) {
-            case COLLECTION_DOWNLOADING:
-                //Реклама
-                if (mInterstitialAd != null) {
-                    mInterstitialAd.show(requireActivity());
-                } else {
-                    Log.d(TAG, "The interstitial ad wasn't ready yet.");
-                }
-                break;
-            case COLLECTION_DOWNLOADED:
-                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
-                break;
-            case DATA_DOWNLOAD:
+            case GET_DATA_DOWNLOAD:
                 tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
-            case DATA_NONE:
-                pbLoader.setVisibility(View.GONE);
-                tvEmpty.setVisibility(View.VISIBLE);
-                break;
-            case DATA_TRUE:
+            case GET_DATA_TRUE:
                 pbLoader.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.GONE);
                 if(olAdapter == null){
                     olAdapter = new SearchAdapter(ctx, listColl);
                     olAdapter.setItemClickListener(onItemClickListener);
-                    olAdapter.setAddItemClickListener(onAddItemClickListener);
                     rvOnlineLibrary.setLayoutManager(new LinearLayoutManager(ctx));
                     rvOnlineLibrary.setAdapter(olAdapter);
                 }else {
                     SearchFragment.DiffUtilCallback DiffUtilCallback = new SearchFragment.DiffUtilCallback(oldListColl, listColl);
-                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
+                    DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback, true);
                     olAdapter.swipeData(listColl);
                     diffResult.dispatchUpdatesTo(olAdapter);
+                }
+
+                if(listColl.size() == 0){
+                    tvEmpty.setVisibility(View.VISIBLE);
                 }
                 break;
         }
@@ -380,13 +362,13 @@ public class SearchFragment extends Fragment {
         @Override
         public boolean areContentsTheSame(int oldItemPosition, int newItemPosition) {
             boolean newAdd = newList.get(newItemPosition).collectionWithCollection != null;
-            boolean oldAdd = oldList.get(newItemPosition).collectionWithCollection != null;
+            boolean oldAdd = oldList.get(oldItemPosition).collectionWithCollection != null;
             String newName = newList.get(newItemPosition).Online_Collection.name_collection;
             String oldName = oldList.get(oldItemPosition).Online_Collection.name_collection;
             String newAuthor = newList.get(newItemPosition).Online_Collection.author_collection;
             String oldAuthor = oldList.get(oldItemPosition).Online_Collection.author_collection;
-            String newImage = newList.get(newItemPosition).Online_Collection.img_file_preview_collection;
-            String oldImage = oldList.get(oldItemPosition).Online_Collection.img_file_preview_collection;
+            String newImage = newList.get(newItemPosition).Online_Collection.name_preview_img_collection;
+            String oldImage = oldList.get(oldItemPosition).Online_Collection.name_preview_img_collection;
             if(newImage == null && newImage == oldImage){
                 return oldName.equals(newName) && oldAuthor.equals(newAuthor) && newAdd == oldAdd;
             }
@@ -399,24 +381,6 @@ public class SearchFragment extends Fragment {
         public void onClick(View v) {
             searchViewModel.OnlineLibrary_SelectCollById(v.getId());
             new bsSearch().show(requireActivity().getSupportFragmentManager().beginTransaction(), "showSetSound");
-        }
-    };
-
-    private final View.OnClickListener onAddItemClickListener = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            searchViewModel.OnlineLibrary_SelectCollById(v.getId());
-            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
-                @Override
-                public void onChanged(Boolean status) {
-                    if(status){
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADED);
-                    }
-                    else {
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADING);
-                    }
-                }
-            });
         }
     };
 

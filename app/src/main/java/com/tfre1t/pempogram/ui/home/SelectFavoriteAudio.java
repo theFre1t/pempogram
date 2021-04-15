@@ -36,8 +36,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     private static int CURRENT_DATA; //Текущее состояние данных
     private static final int DATA_NONE = 0; // Данных нет
-    private static final int DATA_TRUE = 1; // Данные есть
-    private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int GET_DATA_TRUE = 1; // Данные есть
+    private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
 
     private HomeViewModel homeViewModel;
     private SelectFavAuAdapter scAdapter;
@@ -93,7 +93,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    h.sendEmptyMessage(DATA_DOWNLOAD);
+                    h.sendEmptyMessage(GET_DATA_DOWNLOAD);
                     //Получаем данные
                     homeViewModel.getDataSelAu(newText).observe(SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {
                         @Override
@@ -103,7 +103,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
                             }
                             listSelAu = list;
                             //Отправляем сообщение о наличие данных
-                            h.sendEmptyMessage(DATA_TRUE);
+                            h.sendEmptyMessage(GET_DATA_TRUE);
                         }
                     });
                     return true;
@@ -133,7 +133,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     //Получение и установка данных
     private void loadData() {
         Log.d(TAG, "setData: rvSelectFavAu "+ rvSelectFavAu);
-        h.sendEmptyMessage(DATA_DOWNLOAD);
+        h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         homeViewModel.getDataSelAu().observe(SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {
             @Override
@@ -143,11 +143,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
                 }
                 listSelAu = list;
                 //Отправляем сообщение о наличие данных
-                if (listSelAu.size() == 0) {
-                    h.sendEmptyMessage(DATA_NONE);
-                } else {
-                    h.sendEmptyMessage(DATA_TRUE);
-                }
+                h.sendEmptyMessage(GET_DATA_TRUE);
             }
         });
     }
@@ -172,16 +168,14 @@ public class SelectFavoriteAudio extends AppCompatActivity {
     }
 
     private void setData(){
-        pbLoader.setVisibility(View.GONE);
-        tvEmpty.setVisibility(View.GONE);
         switch (CURRENT_DATA) {
-            case DATA_DOWNLOAD:
+            case GET_DATA_DOWNLOAD:
+                tvEmpty.setVisibility(View.GONE);
                 pbLoader.setVisibility(View.VISIBLE);
                 break;
-            case DATA_NONE:
-                tvEmpty.setVisibility(View.VISIBLE);
-                break;
-            case DATA_TRUE:
+            case GET_DATA_TRUE:
+                pbLoader.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 if(scAdapter == null){
                     scAdapter = new SelectFavAuAdapter(SelectFavoriteAudio.this, listSelAu);
                     scAdapter.setItemClickListener(onItemClickListener);
@@ -192,6 +186,10 @@ public class SelectFavoriteAudio extends AppCompatActivity {
                     DiffUtil.DiffResult diffResult = DiffUtil.calculateDiff(DiffUtilCallback);
                     scAdapter.swipeData(listSelAu);
                     diffResult.dispatchUpdatesTo(scAdapter);
+                }
+
+                if(listSelAu.size() == 0){
+                    tvEmpty.setVisibility(View.VISIBLE);
                 }
                 break;
         }

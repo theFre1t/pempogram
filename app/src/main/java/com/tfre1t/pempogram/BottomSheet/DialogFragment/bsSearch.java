@@ -49,6 +49,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
     private static final int DATA_DOWNLOAD = 2; // Данные в загрузке
     private static final int COLLECTION_DOWNLOADING = 10; // Набор загружается
     private static final int COLLECTION_DOWNLOADED = 11; // Набор загружен
+    private static final int COLLECTION_FAIL_DOWNLOADED = 12; // Набор загружен
 
     private MyMediaPlayer myMediaPlayer;
     private SearchViewModel searchViewModel;
@@ -115,7 +116,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         searchViewModel.Online_GetDataSelectedColl().observe(getViewLifecycleOwner(), new Observer<Tables.Online_CollectionView>() {
             @Override
             public void onChanged(Tables.Online_CollectionView online_collection) {
-                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.img_file_preview_collection, true));
+                imgColl.setImageBitmap(new Imager().setImageView(ctx, online_collection.Online_Collection.name_preview_img_collection, true));
                 tvCollection.setText(online_collection.Online_Collection.name_collection);
                 tvAuthor.setText(online_collection.Online_Collection.author_collection);
                 if(online_collection.collectionWithCollection != null){
@@ -180,6 +181,8 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
                 break;
             case COLLECTION_DOWNLOADED:
                 Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                break;
+            case COLLECTION_FAIL_DOWNLOADED:
                 break;
             case DATA_DOWNLOAD:
                 tvEmpty.setVisibility(View.GONE);
@@ -250,14 +253,12 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         int button = v.getId();
         if (button == R.id.imgBtnAddStatus) {
             imgBtnAddStatus.setEnabled(false);
-            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Integer>() {
                 @Override
-                public void onChanged(Boolean status) {
-                    if(status){
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADED);
-                    }
-                    else {
-                        h.sendEmptyMessage(COLLECTION_DOWNLOADING);
+                public void onChanged(Integer status) {
+                    h.sendEmptyMessage(status);
+                    if(status == COLLECTION_FAIL_DOWNLOADED){
+                        imgBtnAddStatus.setEnabled(true);
                     }
                 }
             });

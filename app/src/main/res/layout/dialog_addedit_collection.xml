@@ -3,11 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     style="@style/BackgroundStyle"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:background="@color/colorPrimary"
     android:clickable="false"
-    android:minWidth="360dp"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintEnd_toEndOf="parent"
     app:layout_constraintStart_toStartOf="parent"
@@ -26,6 +25,8 @@
         android:textSize="18sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/dialogBtnAdd"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toEndOf="@+id/dialogRmvImgCollection"
         app:layout_constraintTop_toBottomOf="@+id/dialogRmvImgCollection" />
 
     <Button
@@ -49,6 +50,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
+        android:autofillHints=""
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
         android:hint="@string/view_text_name"
@@ -60,13 +62,13 @@
         app:layout_constraintBottom_toTopOf="@id/dialogEtAuthorCollection"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/dialogRmvImgCollection"
-        app:layout_constraintTop_toTopOf="@+id/dialogRmvImgCollection"
-        android:autofillHints="" />
+        app:layout_constraintTop_toTopOf="@+id/dialogRmvImgCollection" />
 
     <EditText
         android:id="@+id/dialogEtAuthorCollection"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:autofillHints=""
         android:backgroundTint="@color/colorTextPrimary"
         android:ems="10"
         android:hint="@string/view_text_author"
@@ -78,8 +80,7 @@
         app:layout_constraintBottom_toBottomOf="@+id/dialogRmvImgCollection"
         app:layout_constraintEnd_toEndOf="@+id/dialogEtNameCollection"
         app:layout_constraintStart_toStartOf="@id/dialogEtNameCollection"
-        app:layout_constraintTop_toBottomOf="@id/dialogEtNameCollection"
-        android:autofillHints="" />
+        app:layout_constraintTop_toBottomOf="@id/dialogEtNameCollection" />
 
     <TextView
         android:id="@+id/dialogTvTitle"
@@ -107,6 +108,7 @@
         android:foregroundTint="#A6FFFFFF"
         app:layout_constraintStart_toStartOf="@+id/dialogTvTitle"
         app:layout_constraintTop_toBottomOf="@+id/dialogTvTitle"
+        app:srcCompat="@drawable/baseline_add_a_photo_24"
         tools:srcCompat="@tools:sample/avatars" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
