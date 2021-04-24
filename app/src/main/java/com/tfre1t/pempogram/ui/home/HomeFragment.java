@@ -85,6 +85,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
         View vStatusBar = v.findViewById(R.id.vStatusBar);
         vStatusBar.getLayoutParams().height = new GetHeightClass().getStatusBarHeight(getActivity());
+        h = new MyHandler(this);
     }
 
     private void adMod() {
@@ -98,7 +99,6 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
 
     //Получение и установка данных
     private void loadData() {
-        h = new MyHandler(this);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         homeViewModel.getDataFavAu().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileWithImg>>() {
@@ -276,14 +276,13 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
     }
 
     private void Cleaner(){
-        if (h != null)
-            h.removeCallbacksAndMessages(null);
+        if (h != null) h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
             myMediaPlayer = null;
         }
-        rcVFavAu.setAdapter(null);
-        favAuAdapter = null;
+        if(rcVFavAu != null) rcVFavAu.setAdapter(null);
+        if(favAuAdapter != null) favAuAdapter = null;
         oldListFavAu = null;
         listFavAu = null;
     }

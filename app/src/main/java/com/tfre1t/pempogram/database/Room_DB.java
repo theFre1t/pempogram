@@ -631,7 +631,6 @@ public class Room_DB {
                     onlineCollection.url_full_img_collection = img_file;
                     onlineCollection.hash_preview_img_collection = hashBitmap;
                     onlineCollection.name_preview_img_collection = new Imager().saveURLCacheImage(ctx, revision, img_preview, onlineCollection.name_preview_img_collection);
-                    Log.d(TAG, "updateImage: = " + onlineCollection.name_preview_img_collection);
                     updateCollection(onlineCollection);
                 }
             }
