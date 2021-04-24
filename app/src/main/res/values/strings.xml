@@ -84,6 +84,7 @@
     <string name="view_text_executor">Executor</string>
     <string name="view_text_author">Author</string>
     <string name="view_text_upload_file">Upload file</string>
+    <string name="view_text_no_internet_connection">No internet connection available</string>
 
     <string name="view_btn_choose">Choose</string>
     <string name="view_btn_save">Save</string>
@@ -92,4 +93,5 @@
     <string name="view_btn_delete">Delete</string>
     <string name="view_btn_search">Search</string>
     <string name="view_btn_positioning">Positioning</string>
+    <string name="view_btn_repeat">Repeat</string>
 </resources>

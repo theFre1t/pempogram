@@ -124,6 +124,6 @@ public class Dashboard_Add_Sound extends AppCompatActivity {
     }
 
     private void Cleaner(){
-        vPagerAddSound.setAdapter(null);
+        if(vPagerAddSound != null) vPagerAddSound.setAdapter(null);
     }
 }

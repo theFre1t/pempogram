@@ -58,7 +58,7 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select_favoriteaudio);
         homeViewModel = new ViewModelProvider(this).get(HomeViewModel.class);
-        h = new MyHandler(this);
+
         findViewById();
         setToolbar();
         loadData();
@@ -69,6 +69,8 @@ public class SelectFavoriteAudio extends AppCompatActivity {
         rvSelectFavAu = findViewById(R.id.rvSelectFavAu);
         pbLoader = findViewById(R.id.pbLoader);
         tvEmpty = findViewById(R.id.tvEmpty);
+
+        h = new MyHandler(this);
     }
 
     private void setToolbar() {
@@ -132,7 +134,6 @@ public class SelectFavoriteAudio extends AppCompatActivity {
 
     //Получение и установка данных
     private void loadData() {
-        Log.d(TAG, "setData: rvSelectFavAu "+ rvSelectFavAu);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         homeViewModel.getDataSelAu().observe(SelectFavoriteAudio.this, new Observer<List<Tables.AudiofileWithImg>>() {

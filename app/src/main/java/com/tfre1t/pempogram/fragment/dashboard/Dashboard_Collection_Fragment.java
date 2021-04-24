@@ -98,6 +98,8 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         btnListClassic.setOnClickListener(this);
         btnListGrid.setOnClickListener(this);
         v.findViewById(R.id.floatBtnAddColl).setOnClickListener(this);
+
+        h = new MyHandler(this);
     }
 
     private void setToolbar() {
@@ -167,7 +169,6 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
 
     //Получение и установка данных
     private void loadData() {
-        h = new MyHandler(this);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         dashboardViewModel.getDataCollList().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Collection>>() {
@@ -363,11 +364,10 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
         super.onDestroy();
     }
 
-    private void Cleaner(){
-        if (h != null)
-            h.removeCallbacksAndMessages(null);
-        rcVColl.setAdapter(null);
-        cAdapter = null;
+    private void Cleaner() {
+        if (h != null) h.removeCallbacksAndMessages(null);
+        if (rcVColl != null) rcVColl.setAdapter(null);
+        if (cAdapter != null) cAdapter = null;
         oldListColl = null;
         listColl = null;
     }
