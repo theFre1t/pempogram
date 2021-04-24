@@ -12,6 +12,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -21,14 +22,13 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.constraintlayout.widget.Group;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
-import com.google.android.gms.ads.interstitial.InterstitialAd;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -52,11 +52,11 @@ import com.tfre1t.pempogram.TrashcanClasses.GetHeightClass;
 import com.tfre1t.pempogram.adapter.SearchAdapter;
 import com.tfre1t.pempogram.database.Tables;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "myLog";
 
-    private static int CURRENT_DATA; //Текущее состояние данных
-    private static final int DATA_NONE = 0; // Данных нет
+    private static int CURRENT_STATUS; //Текущее состояние данных
+    private static final int INTERNET_NONE = 10; // Данных нет
     private static final int GET_DATA_TRUE = 1; // Данные есть
     private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
 
@@ -73,6 +73,8 @@ public class SearchFragment extends Fragment {
     private Toolbar tbOnlineLibrary;
     private ProgressBar pbLoader;
     private TextView tvEmpty;
+    private Button btnRepeat;
+    private Group groupNetwork;
     private SearchView searchView;
     private SearchView.OnQueryTextListener queryTextListener;
 
@@ -93,6 +95,11 @@ public class SearchFragment extends Fragment {
         rvOnlineLibrary = v.findViewById(R.id.rvOnlineLibrary);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
+        btnRepeat = v.findViewById(R.id.btnRepeat);
+        btnRepeat.setOnClickListener(this);
+        groupNetwork = v.findViewById(R.id.groupNetwork);
+
+        h = new MyHandler(this);
     }
 
     private void setToolbar() {
@@ -154,22 +161,36 @@ public class SearchFragment extends Fragment {
 
     //Получение и установка данных
     private void loadData() {
-        updateLibrary();
-
-        h = new MyHandler(this);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
-        //Получаем данные
-        searchViewModel.Online_GetDataColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
-            @Override
-            public void onChanged(List<Tables.Online_CollectionView> list) {
-                if (listColl != null) {
-                    oldListColl = listColl; //Запоминаем старые данные
+        if(isOnline()) {
+            updateLibrary();
+            //Получаем данные
+            searchViewModel.Online_GetDataColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
+                @Override
+                public void onChanged(List<Tables.Online_CollectionView> list) {
+                    if (listColl != null) {
+                        oldListColl = listColl; //Запоминаем старые данные
+                    }
+                    listColl = list;
+                    //Отправляем сообщение о наличие данных
+                    h.sendEmptyMessage(GET_DATA_TRUE);
                 }
-                listColl = list;
-                //Отправляем сообщение о наличие данных
-                h.sendEmptyMessage(GET_DATA_TRUE);
-            }
-        });
+            });
+        }
+        else {
+            h.sendEmptyMessage(INTERNET_NONE);
+        }
+    }
+
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        }
+        catch (IOException | InterruptedException e) { e.printStackTrace(); }
+        return false;
     }
 
     private void updateLibrary() {
@@ -297,20 +318,27 @@ public class SearchFragment extends Fragment {
             super.handleMessage(msg);
             newCurrClass = wr.get();
             if(newCurrClass != null){
-                CURRENT_DATA = msg.what;
+                CURRENT_STATUS = msg.what;
                 newCurrClass.setData();
             }
         }
     }
 
     private void setData(){
-        switch (CURRENT_DATA) {
-            case GET_DATA_DOWNLOAD:
+        switch (CURRENT_STATUS) {
+            case INTERNET_NONE:
+                pbLoader.setVisibility(View.GONE);
+                groupNetwork.setVisibility(View.VISIBLE);
                 tvEmpty.setVisibility(View.GONE);
+                break;
+            case GET_DATA_DOWNLOAD:
                 pbLoader.setVisibility(View.VISIBLE);
+                groupNetwork.setVisibility(View.GONE);
+                tvEmpty.setVisibility(View.GONE);
                 break;
             case GET_DATA_TRUE:
                 pbLoader.setVisibility(View.GONE);
+                groupNetwork.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.GONE);
                 if(olAdapter == null){
                     olAdapter = new SearchAdapter(ctx, listColl);
@@ -376,6 +404,14 @@ public class SearchFragment extends Fragment {
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == R.id.btnRepeat){
+            loadData();
+        }
+    }
+
     private final View.OnClickListener onItemClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -391,10 +427,9 @@ public class SearchFragment extends Fragment {
     }
 
     private void Cleaner() {
-        if (h != null)
-            h.removeCallbacksAndMessages(null);
-        rvOnlineLibrary.setAdapter(null);
-        olAdapter = null;
+        if (h != null) h.removeCallbacksAndMessages(null);
+        if (rvOnlineLibrary != null) rvOnlineLibrary.setAdapter(null);
+        if (olAdapter != null) olAdapter = null;
         oldListColl = null;
         listColl = null;
     }

@@ -77,6 +77,8 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
         v.findViewById(R.id.btnAdd).setOnClickListener(this);
         pbLoader = v.findViewById(R.id.pbLoader);
         tvEmpty = v.findViewById(R.id.tvEmpty);
+
+        h = new MyHandler(this);
     }
 
     private void adMod() {
@@ -99,7 +101,6 @@ public class Fragment_LibrarySound extends Fragment implements View.OnClickListe
 
     //Получение и установка данных
     private void loadData() {
-        h = new MyHandler(this);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         dashboardViewModel.getAllAudiofiles().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileWithImg>>() {

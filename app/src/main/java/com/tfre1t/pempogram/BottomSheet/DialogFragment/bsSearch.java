@@ -92,6 +92,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         imgBtnAddStatus = v.findViewById(R.id.imgBtnAddStatus);
 
         imgBtnAddStatus.setOnClickListener(this);
+        h = new MyHandler(this);
     }
 
     private void adMod() {
@@ -130,7 +131,6 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
 
     //Получение и установка данных
     private void loadData() {
-        h = new MyHandler(this);
         h.sendEmptyMessage(DATA_DOWNLOAD);
         //Получаем данные
         searchViewModel.Online_GetAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Room_DB.Online_Audiofile>>() {
@@ -285,14 +285,13 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
     }
 
     private void Cleaner() {
-        if (h != null)
-            h.removeCallbacksAndMessages(null);
+        if (h != null) h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null){
             myMediaPlayer.release();
             myMediaPlayer = null;
         }
-        rvSetSound.setAdapter(null);
-        ssAdapter = null;
+        if (rvSetSound != null) rvSetSound.setAdapter(null);
+        if (ssAdapter != null) ssAdapter = null;
         oldListAudio = null;
         listAudio = null;
     }

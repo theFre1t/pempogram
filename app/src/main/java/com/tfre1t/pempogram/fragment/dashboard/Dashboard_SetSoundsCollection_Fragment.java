@@ -88,6 +88,8 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
         pbLoader = v.findViewById(R.id.pbLoader);
         rvSetSounds = v.findViewById(R.id.rvSetSounds);
         tvEmpty = v.findViewById(R.id.tvEmpty);
+
+        h = new MyHandler(this);
     }
 
     private void setToolbar() {
@@ -141,7 +143,6 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
 
     //Получение и установка данных
     private void loadData() {
-        h = new MyHandler(this);
         h.sendEmptyMessage(GET_DATA_DOWNLOAD);
         //Получаем данные
         dashboardViewModel.getAudiofilesSelectedColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.AudiofileFull>>() {
@@ -304,14 +305,13 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
     }
 
     private void Cleaner(){
-        if (h != null)
-            h.removeCallbacksAndMessages(null);
+        if (h != null) h.removeCallbacksAndMessages(null);
         if(myMediaPlayer != null) {
             myMediaPlayer.release();
             myMediaPlayer = null;
         }
-        rvSetSounds.setAdapter(null);
-        ssAdapter = null;
+        if (rvSetSounds != null) rvSetSounds.setAdapter(null);
+        if (ssAdapter != null) ssAdapter = null;
         oldListAudiofiles = null;
         listAudiofiles = null;
         getParentFragmentManager().beginTransaction().remove(this).commitAllowingStateLoss();
