@@ -622,17 +622,17 @@ public class Room_DB {
         }
 
         @Transaction
-        public void updateImage(Context ctx, long revision, String img_file, String img_preview){
+        public void updateImage(Context ctx, long revision, String url_full_img_file, String img_preview) {
             Online_Collection onlineCollection = getByRevision(revision);
-            if(onlineCollection != null){
+            if (onlineCollection != null) {
 
                 int hashBitmap = new Imager().getHashBitmap(img_preview);
-                if(onlineCollection.hash_preview_img_collection != hashBitmap){
-                    onlineCollection.url_full_img_collection = img_file;
+                if (onlineCollection.hash_preview_img_collection != hashBitmap) {
                     onlineCollection.hash_preview_img_collection = hashBitmap;
                     onlineCollection.name_preview_img_collection = new Imager().saveURLCacheImage(ctx, revision, img_preview, onlineCollection.name_preview_img_collection);
-                    updateCollection(onlineCollection);
                 }
+                onlineCollection.url_full_img_collection = url_full_img_file;
+                updateCollection(onlineCollection);
             }
         }
 
