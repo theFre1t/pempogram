@@ -3,6 +3,7 @@ package com.tfre1t.pempogram.SaveFile;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.util.Log;
 
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
@@ -34,9 +35,10 @@ public class Imager {
         ctx = context;
 
         String filename = createName(ADD, bitmap);
-
-        onSaverImage(filename, bitmap, ADD);
-        while (thread.isAlive());
+        if(filename != null) {
+            onSaverImage(filename, bitmap, ADD);
+            while (thread.isAlive()) ;
+        }
         return filename;
     }
 
@@ -47,9 +49,10 @@ public class Imager {
         this.ctx = context;
 
         String filename = createName(EDIT, bitmap, oldName, oldBitmap);
-
-        onSaverImage(filename, bitmap, EDIT);
-        while (thread.isAlive()) ;
+        if(filename != null) {
+            onSaverImage(filename, bitmap, EDIT);
+            while (thread.isAlive()) ;
+        }
         return filename;
     }
 
@@ -68,10 +71,13 @@ public class Imager {
             e.printStackTrace();
         }
 
-        String filename = createName(ADD, bitmap);
+        Log.d(TAG, "saveURLImage: bitmap = " + bitmap + " and URLpath = " + URLpath);
 
-        onSaverImage(filename, bitmap, ADD);
-        while (thread.isAlive()) ;
+        String filename = createName(ADD, bitmap);
+        if(filename != null) {
+            onSaverImage(filename, bitmap, ADD);
+            while (thread.isAlive());
+        }
         return filename;
     }
 
@@ -92,13 +98,16 @@ public class Imager {
 
         //получаем уникальное имя(не всегда получается уникальным)
         String filename = createName(CACHE, bitmap);
-        //делаем имя полностью уникальным
-        filename = "cache_" + revision + "_" + filename;
 
-        //Сравневанием имена старого и нового файла
-        if (!filename.equals(oldFileName)) {
-            onSaverImage(filename, bitmap, CACHE); //сохраняем на устройство
-            while (thread.isAlive()) ; //ждем пока поток закончит
+        if(filename != null) {
+            //делаем имя полностью уникальным
+            filename = "cache_" + revision + "_" + filename;
+
+            //Сравневанием имена старого и нового файла
+            if (!filename.equals(oldFileName)) {
+                onSaverImage(filename, bitmap, CACHE); //сохраняем на устройство
+                while (thread.isAlive()) ; //ждем пока поток закончит
+            }
         }
         return filename;
     }
