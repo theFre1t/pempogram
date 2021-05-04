@@ -1,6 +1,7 @@
 package com.tfre1t.pempogram.adapter;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,7 @@ import com.tfre1t.pempogram.R;
 import com.tfre1t.pempogram.database.Room_DB;
 
 public class Search_SetSoundAdapter extends RecyclerView.Adapter<Search_SetSoundAdapter.SetSoundHolder> {
+    private static final String TAG = "myLog";
 
     private View.OnClickListener onItemClickListener;
 

@@ -56,9 +56,10 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
     private static final String TAG = "myLog";
 
     private static int CURRENT_STATUS; //Текущее состояние данных
-    private static final int INTERNET_NONE = 10; // Данных нет
+    private static final int INTERNET_NONE = 10; // Нет интернета
+    private static final int INTERNET_TRUE = 11; // Интернет есть
     private static final int GET_DATA_TRUE = 1; // Данные есть
-    private static final int GET_DATA_DOWNLOAD = 2; // Данные в загрузке
+    private static final int LOADING = 2; // Данные в загрузке
 
     private SearchViewModel searchViewModel;
     private SearchAdapter olAdapter;
@@ -86,7 +87,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
 
         findViewById();
         setToolbar();
-        loadData();
+        connection();
         return v;
     }
 
@@ -127,7 +128,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
             queryTextListener = new SearchView.OnQueryTextListener() {
                 @Override
                 public boolean onQueryTextChange(String newText) {
-                    h.sendEmptyMessage(GET_DATA_DOWNLOAD);
+                    h.sendEmptyMessage(LOADING);
                     //Получаем данные
                     searchViewModel.Online_GetDataColl(newText).observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
                         @Override
@@ -159,38 +160,33 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
         return super.onOptionsItemSelected(item);
     }
 
-    //Получение и установка данных
-    private void loadData() {
-        h.sendEmptyMessage(GET_DATA_DOWNLOAD);
-        if(isOnline()) {
-            updateLibrary();
-            //Получаем данные
-            searchViewModel.Online_GetDataColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
-                @Override
-                public void onChanged(List<Tables.Online_CollectionView> list) {
-                    if (listColl != null) {
-                        oldListColl = listColl; //Запоминаем старые данные
-                    }
-                    listColl = list;
-                    //Отправляем сообщение о наличие данных
-                    h.sendEmptyMessage(GET_DATA_TRUE);
+    //Проверка наличия соединения и новых данных
+    private void connection(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                h.sendEmptyMessage(LOADING);
+                if (isOnline()) {
+                    updateLibrary();
+                    h.sendEmptyMessage(INTERNET_TRUE);
+                } else {
+                    h.sendEmptyMessage(INTERNET_NONE);
                 }
-            });
-        }
-        else {
-            h.sendEmptyMessage(INTERNET_NONE);
-        }
+            }
+        }).start();
     }
 
+    //Проверка подключения
     public boolean isOnline() {
-        Runtime runtime = Runtime.getRuntime();
+        /*Runtime runtime = Runtime.getRuntime();
         try {
             Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
             int exitValue = ipProcess.waitFor();
             return (exitValue == 0);
         }
         catch (IOException | InterruptedException e) { e.printStackTrace(); }
-        return false;
+        return false;*/
+        return true;
     }
 
     private void updateLibrary() {
@@ -305,6 +301,22 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
         return null;
     }
 
+    //Получение и установка данных
+    private void loadData() {
+        //Получаем данные
+        searchViewModel.Online_GetDataColl().observe(getViewLifecycleOwner(), new Observer<List<Tables.Online_CollectionView>>() {
+            @Override
+            public void onChanged(List<Tables.Online_CollectionView> list) {
+                if (listColl != null) {
+                    oldListColl = listColl; //Запоминаем старые данные
+                }
+                listColl = list;
+                //Отправляем сообщение о наличие данных
+                h.sendEmptyMessage(GET_DATA_TRUE);
+            }
+        });
+    }
+
     static class MyHandler extends Handler {
         WeakReference<SearchFragment> wr;
         SearchFragment newCurrClass;
@@ -326,12 +338,15 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
 
     private void setData(){
         switch (CURRENT_STATUS) {
+            case INTERNET_TRUE:
+                loadData();
+                break;
             case INTERNET_NONE:
                 pbLoader.setVisibility(View.GONE);
                 groupNetwork.setVisibility(View.VISIBLE);
                 tvEmpty.setVisibility(View.GONE);
                 break;
-            case GET_DATA_DOWNLOAD:
+            case LOADING:
                 pbLoader.setVisibility(View.VISIBLE);
                 groupNetwork.setVisibility(View.GONE);
                 tvEmpty.setVisibility(View.GONE);
@@ -408,7 +423,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         int id = v.getId();
         if(id == R.id.btnRepeat){
-            loadData();
+            connection();
         }
     }
 
