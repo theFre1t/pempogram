@@ -95,7 +95,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
 
     @Override
     public void onBindViewHolder(@NonNull LibrarySoundHolder holder, int position) {
-        Tables.AudiofileWithImg audiofile =  list.get(getItemCount()- (position + 1));
+        Tables.AudiofileWithImg audiofile =  list.get(position);
 
         holder.itemView.setId(audiofile.id_audiofile);
         holder.imgv.setImageBitmap(new Imager().setImageView(ctx, audiofile.img_collection, false));
@@ -110,7 +110,7 @@ public class LibrarySoundAdapter extends RecyclerView.Adapter<LibrarySoundAdapte
     private boolean check;
     private boolean checkBoxChecker(int id) {
         check = false;
-        if(listSAudio.size() != 0) {
+        if(!listSAudio.isEmpty()) {
             for (Tables.AudiofileFull audio : listSAudio) {
                 if (check = audio.id_audiofile == id) { break; }
             }

@@ -21,49 +21,34 @@ import static android.os.FileUtils.copy;
 public class SaverAudio {
     private static final String TAG = "myLog";
 
-    private static final int _FILE = 1;
-    private static final int _URL = 2;
-
     private static final int COPY_BYTES = 524288;
 
     private Context ctx;
-    private static Uri savefileaudio;
-    private static String saveurlaudio;
-    private static String mimeType;
 
     public String saveFileAudio(Context context, Uri audio) {
         ctx = context;
-        savefileaudio = audio;
+        String mimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(ctx.getApplicationContext().getContentResolver().getType(audio));
 
-        return writeFileAudio(_FILE);
+        String filename = writeFileAudio(mimeType);
+        onFileSaverAudio(audio ,filename);
+        return filename;
     }
 
     public String saveUrlAudio(Context context, String audio, String mimeType) {
         ctx = context;
-        saveurlaudio = audio;
-        this.mimeType = mimeType;
 
-        return writeFileAudio(_URL);
-    }
-
-    private String writeFileAudio(int type) {
-        if(type != _URL){
-            mimeType = MimeTypeMap.getSingleton().getExtensionFromMimeType(ctx.getApplicationContext().getContentResolver().getType(savefileaudio));
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmssSSS", Locale.ENGLISH);
-        String datetime = sdf.format(new Date(System.currentTimeMillis()));
-        String filename = "Audiofile_" + datetime + "." + mimeType;
-
-        if(type == _FILE) {
-            onFileSaverAudio(filename);
-        }else if(type == _URL){
-            onURLSaverAudio(filename);
-        }
-
+        String filename = writeFileAudio(mimeType);
+        onURLSaverAudio(audio ,filename);
         return filename;
     }
 
-    private void onFileSaverAudio(final String filename) {
+    private String writeFileAudio(String mimeType) {
+        SimpleDateFormat sdf = new SimpleDateFormat("EEEMMMdyyyyHHmmssSSS", Locale.ENGLISH);
+        String datetime = sdf.format(new Date(System.currentTimeMillis()));
+        return "Audiofile_" + datetime + "." + mimeType;
+    }
+
+    private void onFileSaverAudio(Uri savefileaudio, final String filename) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -100,7 +85,7 @@ public class SaverAudio {
         }).start();
     }
 
-    private void onURLSaverAudio(final String filename) {
+    private void onURLSaverAudio(String saveurlaudio,final String filename) {
         new Thread(new Runnable() {
             @Override
             public void run() {

@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -39,7 +40,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
     class SetSoundHolder extends RecyclerView.ViewHolder {
         private final RoundedImageView imgAudiofile;
         private final TextView tvAudiofile, tvAuthor;
-        private final ImageButton imgBtnPupupMenu;
+        private final ImageView imgBtnPupupMenu;
 
         public SetSoundHolder(@NonNull View itemView) {
             super(itemView);

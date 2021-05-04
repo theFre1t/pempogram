@@ -24,27 +24,31 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="8dp"
+        android:layout_marginEnd="48dp"
+        android:singleLine="true"
         android:text="@string/view_text_name"
         android:textAppearance="@style/TextStylePrimary"
         android:textSize="14sp"
         app:layout_constraintBottom_toTopOf="@+id/tvExecutorAudio"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/imgAudiofile"
         app:layout_constraintTop_toTopOf="@+id/imgAudiofile" />
 
     <TextView
         android:id="@+id/tvExecutorAudio"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="@string/view_text_executor"
         android:textAppearance="@style/TextStyleSecondary"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="@+id/imgAudiofile"
+        app:layout_constraintEnd_toEndOf="@+id/tvNameAudio"
         app:layout_constraintStart_toStartOf="@+id/tvNameAudio"
         app:layout_constraintTop_toBottomOf="@+id/tvNameAudio" />
 
     <CheckBox
         android:id="@+id/chbSound"
-        android:layout_width="wrap_content"
+        android:layout_width="32dp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
         android:buttonTint="@color/colorSecondary"

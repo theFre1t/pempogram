@@ -78,7 +78,7 @@ public class CollectionAdater extends RecyclerView.Adapter<CollectionAdater.Coll
 
     @Override
     public void onBindViewHolder(@NonNull CollectionHolder holder, int position) {
-        Room_DB.Collection collection = list.get(getItemCount() - (position + 1));
+        Room_DB.Collection collection = list.get(position);
         holder.itemView.setId(collection.id_collection);
         holder.tvColl.setText(collection.name_collection);
         holder.tvAuthor.setText(collection.author_collection);
