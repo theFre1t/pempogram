@@ -33,7 +33,7 @@ import com.tfre1t.pempogram.R;
 import com.tfre1t.pempogram.database.Tables;
 import com.tfre1t.pempogram.MediaPlayer.MyMediaPlayer;
 import com.tfre1t.pempogram.adapter.FavoriteAudioAdater;
-import com.tfre1t.pempogram.TrashcanClasses.GetHeightClass;
+import com.tfre1t.pempogram.TrashcanClasses.HeightClass;
 
 public class HomeFragment extends Fragment implements View.OnClickListener {
     private static final String TAG = "myLog";
@@ -84,7 +84,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
         adHomeBanner = v.findViewById(R.id.adHomeBanner);
 
         View vStatusBar = v.findViewById(R.id.vStatusBar);
-        vStatusBar.getLayoutParams().height = new GetHeightClass().getStatusBarHeight(getActivity());
+        vStatusBar.getLayoutParams().height = new HeightClass().getStatusBarHeight(getActivity());
         h = new MyHandler(this);
     }
 

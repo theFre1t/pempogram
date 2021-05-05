@@ -109,7 +109,7 @@ public class SearchViewModel extends AndroidViewModel {
                     int idCollection = collectionDao_abstract.insertOnlineCollection(getApplication(), onlineCollection.Online_Collection);
                     onlineCollectionWithCollectionDao.insert(new Room_DB.Online_Collection_with_Collection(onlineCollection.Online_Collection.id_online_collection, idCollection)); //Создаем связь между онлайн набором и локальным набором
 
-                    List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection(onlineCollection.Online_Collection.id_online_collection);
+                    List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection_NonDesc(onlineCollection.Online_Collection.id_online_collection);
                     if (!onlineAudiofileList.isEmpty()) {
                         for (Room_DB.Online_Audiofile onlineAudiofile : onlineAudiofileList) {
                             int idAudiofile = audiofileDao_abstract.insertOnlineAudiofile(getApplication(), onlineAudiofile, idCollection);

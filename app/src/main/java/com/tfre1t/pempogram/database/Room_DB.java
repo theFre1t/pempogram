@@ -494,6 +494,11 @@ public class Room_DB {
 
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
+                " Where Col.id_online_collection = :id")
+        List<Online_Audiofile> getAllByIdCollection_NonDesc(int id);
+
+        @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
+                " on Au._revision_collection = Col.revision_collection" +
                 " Where Col.id_online_collection = :id" +
                 " Order by Au.id_online_audiofile desc")
         LiveData<List<Online_Audiofile>> getAllByIdCollectionLive(int id);

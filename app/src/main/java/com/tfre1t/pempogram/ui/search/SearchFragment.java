@@ -48,7 +48,7 @@ import javax.net.ssl.HttpsURLConnection;
 
 import com.tfre1t.pempogram.BottomSheet.DialogFragment.bsSearch;
 import com.tfre1t.pempogram.R;
-import com.tfre1t.pempogram.TrashcanClasses.GetHeightClass;
+import com.tfre1t.pempogram.TrashcanClasses.HeightClass;
 import com.tfre1t.pempogram.adapter.SearchAdapter;
 import com.tfre1t.pempogram.database.Tables;
 
@@ -104,7 +104,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
     }
 
     private void setToolbar() {
-        new GetHeightClass().setPadding(requireActivity(), tbOnlineLibrary);
+        new HeightClass().setPadding(requireActivity(), tbOnlineLibrary);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         Objects.requireNonNull(activity).setSupportActionBar(tbOnlineLibrary);
         ActionBar actionBar = activity.getSupportActionBar();
@@ -178,15 +178,16 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
 
     //Проверка подключения
     public boolean isOnline() {
-        /*Runtime runtime = Runtime.getRuntime();
+        Runtime runtime = Runtime.getRuntime();
         try {
-            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
-            int exitValue = ipProcess.waitFor();
-            return (exitValue == 0);
+            Process ipProcessOne = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int exitValueOne = ipProcessOne.waitFor();
+            Process ipProcessTwo = runtime.exec("/system/bin/ping -c 1 yandex.ru");
+            int exitValueTwo = ipProcessTwo.waitFor();
+            return (exitValueOne == 0 || exitValueTwo == 0);
         }
         catch (IOException | InterruptedException e) { e.printStackTrace(); }
-        return false;*/
-        return true;
+        return false;
     }
 
     private void updateLibrary() {
@@ -196,7 +197,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
                 try {
                     List<Long> revision_collList = new ArrayList<>(),
                             revision_audioList = new ArrayList<>();
-                    JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q");
+                    JSONArray json_arr = getJsonData("https://yadi.sk/d/VXunsH1ZDcsz0Q", 50);
                     for (int i = 0; i < json_arr.length(); i++) {
                         JSONObject obj = json_arr.getJSONObject(i);
                         String type = obj.getString("type");
@@ -222,7 +223,7 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
                             searchViewModel.setOnline_Coll(coll_revision, name, author); //Добавляем/Обновляем в БД набор
                             revision_collList.add(coll_revision);
 
-                            JSONArray json_items_arr = getJsonData(public_url);
+                            JSONArray json_items_arr = getJsonData(public_url, 41);
                             for (int j = 0; j < Objects.requireNonNull(json_items_arr).length(); j++) {
                                 JSONObject item_obj = json_items_arr.getJSONObject(j);
                                 String item_media_type = item_obj.getString("media_type"); //Получаем тип ресурса
@@ -265,11 +266,12 @@ public class SearchFragment extends Fragment implements View.OnClickListener{
         }).start();
     }
 
-    private JSONArray getJsonData(String public_key) {
+    private JSONArray getJsonData(String public_key, int limit_count) {
         String pathYaDisk = "https://cloud-api.yandex.net/v1/disk/public/resources?public_key=";
+        String limit = "&limit=" + limit_count;
         HttpsURLConnection connection;
         try {
-            connection = (HttpsURLConnection) new URL(pathYaDisk + public_key).openConnection();
+            connection = (HttpsURLConnection) new URL(pathYaDisk + public_key + limit).openConnection();
             connection.setRequestMethod("GET");
             connection.setRequestProperty("Authorization", "OAuth ");
             connection.setRequestProperty("Accept", "application/json");
