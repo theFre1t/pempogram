@@ -39,7 +39,7 @@ import com.tfre1t.pempogram.database.Room_DB;
 import com.tfre1t.pempogram.dialog.Dialog_Add_Collection;
 import com.tfre1t.pempogram.adapter.CollectionAdater;
 import com.tfre1t.pempogram.preferences.Preferenceser;
-import com.tfre1t.pempogram.TrashcanClasses.GetHeightClass;
+import com.tfre1t.pempogram.TrashcanClasses.HeightClass;
 import com.tfre1t.pempogram.ui.dashboard.DashboardViewModel;
 
 public class Dashboard_Collection_Fragment extends Fragment implements View.OnClickListener /*onStartDragListener*/ {
@@ -103,7 +103,7 @@ public class Dashboard_Collection_Fragment extends Fragment implements View.OnCl
     }
 
     private void setToolbar() {
-        new GetHeightClass().setPadding(requireActivity(), tbColl);
+        new HeightClass().setPadding(requireActivity(), tbColl);
         AppCompatActivity activity = (AppCompatActivity) getActivity();
         Objects.requireNonNull(activity).setSupportActionBar(tbColl);
         ActionBar actionBar = activity.getSupportActionBar();

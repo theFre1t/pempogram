@@ -256,13 +256,17 @@ public class Room_DB {
 
     @Dao
     public interface CollectionDao{
-        @Query("Select * From collection")
+        @Query("Select * From collection" +
+                " Order by id_collection desc")
         LiveData<List<Collection>> getAllLive();
 
-        @Query("Select * From collection Where name_collection LIKE :text OR author_collection LIKE :text")
+        @Query("Select * From collection" +
+                " Where name_collection LIKE :text OR author_collection LIKE :text" +
+                " Order by id_collection desc")
         LiveData<List<Collection>> searchCollectionLive(String text);
 
-        @Query("Select * From collection Where id_collection = :id")
+        @Query("Select * From collection" +
+                " Where id_collection = :id")
         LiveData<Collection> getByIdLive(int id);
 
         @Update
@@ -271,14 +275,17 @@ public class Room_DB {
 
     @Dao
     public interface AudiofileDao{
-        @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col on Au._id_collection = Col.id_collection")
+        @Query("Select Au.*, Col.img_collection" +
+                " From audiofile as Au left join collection as Col on Au._id_collection = Col.id_collection" +
+                " Order by Au.id_audiofile desc")
         LiveData<List<Tables.AudiofileWithImg>> getAll();
 
         @Query("Select Au.*, Col.img_collection, Coll_w_Au._id_collection as id_collection_colli From Audiofile as Au left join Collection as Col" +
                 " on Au._id_collection = Col.id_collection" +
                 " left join Collection_with_Audiofile as Coll_w_Au" +
                 " on Au.id_audiofile = Coll_w_Au._id_audiofile" +
-                " Where Coll_w_Au._id_collection = :id")
+                " Where Coll_w_Au._id_collection = :id" +
+                " Order by Au.id_audiofile desc")
         LiveData<List<Tables.AudiofileFull>> getAllByIdCollection(int id);
 
         @Query("Select Au.*, Coll_w_Au._id_collection as id_collection_colli From Audiofile as Au left join Collection_with_Audiofile as Coll_w_Au" +
@@ -322,7 +329,8 @@ public class Room_DB {
                 " on Au._id_collection = Col.id_collection" +
                 " left join FavoriteAudio as Fav" +
                 " on Au.id_audiofile = Fav._id_audiofile" +
-                " Where Fav._id_audiofile is null")
+                " Where Fav._id_audiofile is null" +
+                " Order by id_favau desc")
         LiveData<List<Tables.AudiofileWithImg>> getAllNonFavAu();
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au left join collection as Col" +
@@ -330,13 +338,15 @@ public class Room_DB {
                 " left join FavoriteAudio as Fav" +
                 " on Au.id_audiofile = Fav._id_audiofile" +
                 " Where Fav._id_audiofile is null and" +
-                " (Au.name_audiofile LIKE :text OR Au.executor_audiofile LIKE :text)")
+                " (Au.name_audiofile LIKE :text OR Au.executor_audiofile LIKE :text)" +
+                " Order by id_favau desc")
         LiveData<List<Tables.AudiofileWithImg>> searchAllNonFavAu(String text);
 
         @Query("Select Au.*, Col.img_collection From audiofile as Au inner join collection as Col" +
                 " on Au._id_collection = Col.id_collection" +
                 " inner join FavoriteAudio as Fav" +
-                " on Au.id_audiofile = Fav._id_audiofile")
+                " on Au.id_audiofile = Fav._id_audiofile" +
+                " Order by id_favau desc")
         LiveData<List<Tables.AudiofileWithImg>> getAll();
 
         @Query("Select * From FavoriteAudio Where id_favau = :id")
@@ -354,7 +364,8 @@ public class Room_DB {
 
     @Dao
     public interface Collection_with_AudiofileDao{
-        @Query("Select * From Collection_with_Audiofile")
+        @Query("Select * From Collection_with_Audiofile" +
+                " Order by id desc")
         LiveData<List<Collection_with_Audiofile>> getAll();
 
         @Query("Select * From Collection_with_Audiofile Where _id_collection = :id")
@@ -372,7 +383,8 @@ public class Room_DB {
 
     @Dao
     public interface Categories_with_CollectionDao{
-        @Query("Select * From Categories_with_Collection")
+        @Query("Select * From Categories_with_Collection" +
+                " Order by id desc")
         LiveData<List<Categories_with_Collection>> getAll();
 
         @Query("Select * From Categories_with_Collection Where id = :id")
@@ -390,16 +402,20 @@ public class Room_DB {
 
     @Dao
     public interface Online_CollectionDao{
-        @Query("Select * From online_collection")
+        @Query("Select * From online_collection" +
+                " Order by id_online_collection desc")
         List<Online_Collection> getAll();
 
-        @Query("Select * From online_collection")
+        @Query("Select * From online_collection" +
+                " Order by id_online_collection desc")
         LiveData<List<Online_Collection>> getAllLive();
 
-        @Query("Select * From Online_CollectionView")
+        @Query("Select * From Online_CollectionView" +
+                " Order by id_online_collection desc")
         List<Tables.Online_CollectionView> getAllWichAdd();
 
-        @Query("Select * From Online_CollectionView")
+        @Query("Select * From Online_CollectionView" +
+                " Order by id_online_collection desc")
         LiveData<List<Tables.Online_CollectionView>> getAllWichAddLive();
 
         @Query("Select * From Online_CollectionView Where id_online_collection = :id")
@@ -408,10 +424,14 @@ public class Room_DB {
         @Query("Select * From Online_CollectionView Where id_online_collection = :id")
         LiveData<Tables.Online_CollectionView> getByIdLive(int id);
 
-        @Query("Select * From Online_CollectionView Where name_collection LIKE :text OR author_collection LIKE :text")
+        @Query("Select * From Online_CollectionView" +
+                " Where name_collection LIKE :text OR author_collection LIKE :text" +
+                " Order by id_online_collection desc")
         List<Tables.Online_CollectionView> searchOnlineCollection(String text);
 
-        @Query("Select * From Online_CollectionView Where name_collection LIKE :text OR author_collection LIKE :text")
+        @Query("Select * From Online_CollectionView" +
+                " Where name_collection LIKE :text OR author_collection LIKE :text" +
+                " Order by id_online_collection desc")
         LiveData<List<Tables.Online_CollectionView>> searchOnlineCollectionLive(String text);
 
         @Insert
@@ -429,10 +449,12 @@ public class Room_DB {
 
     @Dao
     public interface Online_Collection_with_CollectionDao{
-        @Query("Select * From Online_Collection_with_Collection")
+        @Query("Select * From Online_Collection_with_Collection" +
+                " Order by id desc")
         List<Online_Collection_with_Collection> getAll();
 
-        @Query("Select * From Online_Collection_with_Collection")
+        @Query("Select * From Online_Collection_with_Collection" +
+                " Order by id desc")
         LiveData<List<Online_Collection_with_Collection>> getAllLive();
 
         @Query("Select * From Online_Collection_with_Collection Where _id_online_collection = :id_online_collection")
@@ -450,10 +472,12 @@ public class Room_DB {
 
     @Dao
     public interface Online_AudiofileDao{
-        @Query("Select * From Online_Audiofile")
+        @Query("Select * From Online_Audiofile" +
+                " Order by id_online_audiofile desc")
         List<Online_Audiofile> getAll();
 
-        @Query("Select * From Online_Audiofile")
+        @Query("Select * From Online_Audiofile"+
+                " Order by id_online_audiofile desc")
         LiveData<List<Online_Audiofile>> getAllLive();
 
         @Query("Select * From Online_Audiofile Where id_online_audiofile = :id")
@@ -464,12 +488,19 @@ public class Room_DB {
 
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
-                " Where Col.id_online_collection = :id")
+                " Where Col.id_online_collection = :id" +
+                " Order by Au.id_online_audiofile desc")
         List<Online_Audiofile> getAllByIdCollection(int id);
 
         @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
                 " on Au._revision_collection = Col.revision_collection" +
                 " Where Col.id_online_collection = :id")
+        List<Online_Audiofile> getAllByIdCollection_NonDesc(int id);
+
+        @Query("Select Au.* From Online_Audiofile as Au left join Online_Collection as Col" +
+                " on Au._revision_collection = Col.revision_collection" +
+                " Where Col.id_online_collection = :id" +
+                " Order by Au.id_online_audiofile desc")
         LiveData<List<Online_Audiofile>> getAllByIdCollectionLive(int id);
 
 
@@ -486,7 +517,8 @@ public class Room_DB {
 
     @Dao
     public interface Online_Audiofile_with_AudiofileDao{
-        @Query("Select * From Online_Audiofile_with_Audiofile")
+        @Query("Select * From Online_Audiofile_with_Audiofile" +
+                " Order by id desc")
         LiveData<List<Online_Audiofile_with_Audiofile>> getAll();
 
         @Insert

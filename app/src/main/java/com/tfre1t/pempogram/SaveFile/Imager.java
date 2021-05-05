@@ -37,7 +37,6 @@ public class Imager {
         String filename = createName(ADD, bitmap);
         if(filename != null) {
             onSaverImage(filename, bitmap, ADD);
-            while (thread.isAlive()) ;
         }
         return filename;
     }
@@ -51,7 +50,6 @@ public class Imager {
         String filename = createName(EDIT, bitmap, oldName, oldBitmap);
         if(filename != null) {
             onSaverImage(filename, bitmap, EDIT);
-            while (thread.isAlive()) ;
         }
         return filename;
     }
@@ -71,12 +69,9 @@ public class Imager {
             e.printStackTrace();
         }
 
-        Log.d(TAG, "saveURLImage: bitmap = " + bitmap + " and URLpath = " + URLpath);
-
         String filename = createName(ADD, bitmap);
         if(filename != null) {
             onSaverImage(filename, bitmap, ADD);
-            while (thread.isAlive());
         }
         return filename;
     }
@@ -106,7 +101,6 @@ public class Imager {
             //Сравневанием имена старого и нового файла
             if (!filename.equals(oldFileName)) {
                 onSaverImage(filename, bitmap, CACHE); //сохраняем на устройство
-                while (thread.isAlive()) ; //ждем пока поток закончит
             }
         }
         return filename;
@@ -164,6 +158,7 @@ public class Imager {
             }
         });
         thread.start();
+        while (thread.isAlive()) ; //ждем пока поток закончит
     }
 
     public Bitmap setImageView(Context ctx, String name, boolean fullsize) {

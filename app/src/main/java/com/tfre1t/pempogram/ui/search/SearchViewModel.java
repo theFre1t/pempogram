@@ -1,9 +1,13 @@
 package com.tfre1t.pempogram.ui.search;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.Context;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
@@ -11,6 +15,7 @@ import androidx.lifecycle.MutableLiveData;
 import java.util.List;
 
 import com.tfre1t.pempogram.MediaPlayer.MyMediaPlayer;
+import com.tfre1t.pempogram.R;
 import com.tfre1t.pempogram.database.App;
 import com.tfre1t.pempogram.database.Room_DB;
 import com.tfre1t.pempogram.database.Tables;
@@ -95,7 +100,7 @@ public class SearchViewModel extends AndroidViewModel {
     }
 
     /**Добавление нового Набора из Онлайн библиотеки*/
-    public LiveData<Integer> addNewCollFromOnline() {
+    public LiveData<Integer> addNewCollFromOnline(Activity activity) {
         MutableLiveData<Integer> status = new MutableLiveData<>();
         status.setValue(10);
 
@@ -109,7 +114,7 @@ public class SearchViewModel extends AndroidViewModel {
                     int idCollection = collectionDao_abstract.insertOnlineCollection(getApplication(), onlineCollection.Online_Collection);
                     onlineCollectionWithCollectionDao.insert(new Room_DB.Online_Collection_with_Collection(onlineCollection.Online_Collection.id_online_collection, idCollection)); //Создаем связь между онлайн набором и локальным набором
 
-                    List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection(onlineCollection.Online_Collection.id_online_collection);
+                    List<Room_DB.Online_Audiofile> onlineAudiofileList = onlineAudiofileDao.getAllByIdCollection_NonDesc(onlineCollection.Online_Collection.id_online_collection);
                     if (!onlineAudiofileList.isEmpty()) {
                         for (Room_DB.Online_Audiofile onlineAudiofile : onlineAudiofileList) {
                             int idAudiofile = audiofileDao_abstract.insertOnlineAudiofile(getApplication(), onlineAudiofile, idCollection);
@@ -117,6 +122,9 @@ public class SearchViewModel extends AndroidViewModel {
                         }
                     }
                     status.postValue(11);
+                    activity.runOnUiThread(()->{
+                        Toast.makeText(activity, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                    });
                 }
                 else {
                     status.postValue(12);

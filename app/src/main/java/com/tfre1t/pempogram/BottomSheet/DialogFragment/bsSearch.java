@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.DiffUtil;
@@ -35,6 +36,7 @@ import com.tfre1t.pempogram.CustomViewers.RoundedImageView;
 import com.tfre1t.pempogram.MediaPlayer.MyMediaPlayer;
 import com.tfre1t.pempogram.R;
 import com.tfre1t.pempogram.SaveFile.Imager;
+import com.tfre1t.pempogram.TrashcanClasses.HeightClass;
 import com.tfre1t.pempogram.adapter.Search_SetSoundAdapter;
 import com.tfre1t.pempogram.database.Room_DB;
 import com.tfre1t.pempogram.database.Tables;
@@ -67,6 +69,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
     private ProgressBar pbLoader;
     private RecyclerView rvSetSound;
     private ImageView imgBtnAddStatus;
+    private ConstraintLayout bsConsLay;
 
     @Nullable
     @Override
@@ -90,6 +93,11 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         pbLoader = v.findViewById(R.id.pbLoader);
         rvSetSound = v.findViewById(R.id.rvSetSound);
         imgBtnAddStatus = v.findViewById(R.id.imgBtnAddStatus);
+        bsConsLay = v.findViewById(R.id.bsConsLay);
+
+        //устанавлиаем высоту Диалога в зависимости от высоты Дисплея
+        ConstraintLayout.LayoutParams LayoParam = new ConstraintLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, HeightClass.getDisplayHeignt_NonStatusBar(requireActivity()));
+        bsConsLay.setLayoutParams(LayoParam);
 
         imgBtnAddStatus.setOnClickListener(this);
         h = new MyHandler(this);
@@ -180,9 +188,10 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
                 }
                 break;
             case COLLECTION_DOWNLOADED:
-                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                //TODO после успешного скачивания, если не Диалог еще открыт
                 break;
             case COLLECTION_FAIL_DOWNLOADED:
+                //TODO если неудалось удачно скачать
                 break;
             case DATA_DOWNLOAD:
                 tvEmpty.setVisibility(View.GONE);
@@ -253,7 +262,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         int button = v.getId();
         if (button == R.id.imgBtnAddStatus) {
             imgBtnAddStatus.setEnabled(false);
-            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            searchViewModel.addNewCollFromOnline(getActivity()).observe(getViewLifecycleOwner(), new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer status) {
                     h.sendEmptyMessage(status);
