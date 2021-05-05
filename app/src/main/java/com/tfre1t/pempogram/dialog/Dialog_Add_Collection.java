@@ -21,6 +21,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import java.io.IOException;
+import java.util.Objects;
 
 import com.tfre1t.pempogram.R;
 import com.tfre1t.pempogram.CustomViewers.RoundedImageView;
@@ -110,34 +111,25 @@ public class Dialog_Add_Collection extends DialogFragment implements View.OnClic
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (requestCode == GALLERY_REQUEST) {
-                    if (resultCode == RESULT_OK) {
-                        Uri selectedImage = data.getData();
-                        try {
-                            bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), selectedImage);
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                        imager = new Imager();
-                        nameImg = imager.saveBitmapImage(ctx, bitmap);
-                        getActivity().runOnUiThread(new Runnable() {
-                            @Override
-                            public void run() {
-                                dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg, false));
-                            }
-                        });
+        new Thread(() -> {
+            if (requestCode == GALLERY_REQUEST) {
+                if (resultCode == RESULT_OK) {
+                    Uri selectedImage = data.getData();
+                    try {
+                        bitmap = MediaStore.Images.Media.getBitmap(ctx.getContentResolver(), selectedImage);
+                    } catch (IOException e) {
+                        e.printStackTrace();
                     }
-                    getActivity().runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            dialogBtnAdd.setEnabled(true);
-                            dialogBtnAdd.getBackground().mutate().setColorFilter(ctx.getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
-                        }
-                    });
+                    imager = new Imager();
+                    nameImg = imager.saveBitmapImage(ctx, bitmap);
+
+                    requireActivity().runOnUiThread(() -> dialogRmvImgCollection.setImageBitmap(imager.setImageView(ctx, nameImg, false)));
                 }
+
+                requireActivity().runOnUiThread(() -> {
+                    dialogBtnAdd.setEnabled(true);
+                    dialogBtnAdd.getBackground().mutate().setColorFilter(ctx.getResources().getColor(R.color.colorSecondary), PorterDuff.Mode.SRC_ATOP);
+                });
             }
         }).start();
     }

@@ -188,9 +188,10 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
                 }
                 break;
             case COLLECTION_DOWNLOADED:
-                Toast.makeText(ctx, R.string.message_set_added, Toast.LENGTH_SHORT).show();
+                //TODO после успешного скачивания, если не Диалог еще открыт
                 break;
             case COLLECTION_FAIL_DOWNLOADED:
+                //TODO если неудалось удачно скачать
                 break;
             case DATA_DOWNLOAD:
                 tvEmpty.setVisibility(View.GONE);
@@ -261,7 +262,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
         int button = v.getId();
         if (button == R.id.imgBtnAddStatus) {
             imgBtnAddStatus.setEnabled(false);
-            searchViewModel.addNewCollFromOnline().observe(getViewLifecycleOwner(), new Observer<Integer>() {
+            searchViewModel.addNewCollFromOnline(getActivity()).observe(getViewLifecycleOwner(), new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer status) {
                     h.sendEmptyMessage(status);
