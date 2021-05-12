@@ -23,6 +23,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.DefaultItemAnimator;
 import androidx.recyclerview.widget.DiffUtil;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -191,6 +192,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
                     ssAdapter.setItemClickListener(onItemClickListener);
                     ssAdapter.setMenuClickListener(onMenuClickListener);
                     rvSetSounds.setLayoutManager(new LinearLayoutManager(ctx));
+                    rvSetSounds.setItemAnimator(new DefaultItemAnimator());
                     rvSetSounds.setAdapter(ssAdapter);
                 }else {
                     AudiofilesDiffUtilCallback AudDiffUtil = new AudiofilesDiffUtilCallback(oldListAudiofiles, listAudiofiles);
