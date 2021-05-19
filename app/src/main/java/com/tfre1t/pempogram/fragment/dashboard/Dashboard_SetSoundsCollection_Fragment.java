@@ -264,6 +264,7 @@ public class Dashboard_SetSoundsCollection_Fragment extends Fragment implements 
             if (myMediaPlayer == null) {
                 myMediaPlayer = new MyMediaPlayer();
             }
+            myMediaPlayer.setActionView(v);
             dashboardViewModel.playAudio(myMediaPlayer ,v.getId());
         }
     };

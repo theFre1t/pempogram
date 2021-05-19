@@ -174,6 +174,7 @@ public class HomeFragment extends Fragment implements View.OnClickListener {
                         if (myMediaPlayer == null) {
                             myMediaPlayer = new MyMediaPlayer();
                         }
+                        myMediaPlayer.setActionView(view);
                         homeViewModel.playFavAu(myMediaPlayer, id);
                     }
                     break;
