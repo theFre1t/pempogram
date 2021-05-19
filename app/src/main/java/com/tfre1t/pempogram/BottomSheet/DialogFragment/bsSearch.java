@@ -1,6 +1,7 @@
 package com.tfre1t.pempogram.BottomSheet.DialogFragment;
 
 import android.content.Context;
+import android.graphics.ColorFilter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.os.Handler;
@@ -281,6 +282,7 @@ public class bsSearch extends BottomSheetDialogFragment implements View.OnClickL
             if (myMediaPlayer == null) {
                 myMediaPlayer = new MyMediaPlayer();
             }
+            myMediaPlayer.setActionView(v);
             searchViewModel.OnlineLibrary_PlayAudio(myMediaPlayer ,v.getId());
         }
     };

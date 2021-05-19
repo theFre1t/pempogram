@@ -5,6 +5,7 @@ import android.media.AudioAttributes;
 import android.media.MediaPlayer;
 import android.media.MediaRecorder;
 import android.os.Build;
+import android.view.View;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -16,8 +17,17 @@ import java.util.Locale;
 public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
 
     //////////////////////Воспроизведение///////////////////////////////////////////////////////////
+
     public boolean mediaPlayerResume = false;
     private static MediaPlayer mediaPlayer;
+    private View actionView;
+
+    public void setActionView(View view){
+        if(actionView != null && actionView != view){
+            deactivatedView(); //Говорим View что он не активен
+        }
+        actionView = view;
+    }
 
     public void play(Context ctx, String audiofile){
         if (mediaPlayerResume) {
@@ -35,11 +45,13 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
             mediaPlayer.setDataSource(fis.getFD());
             mediaPlayer.prepare();
             mediaPlayer.start();
+            activatedView(); //Говорим View что он активен
             mediaPlayerResume = true;
+            mediaPlayer.setOnCompletionListener(this);
         } catch (IOException e) {
             e.printStackTrace();
+            deactivatedView();
         }
-        mediaPlayer.setOnCompletionListener(this);
     }
 
     public void playURL(String audiofile){
@@ -47,6 +59,7 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
             mediaPlayer.release();
         }
         try {
+
             mediaPlayer = new MediaPlayer();
             mediaPlayer.setAudioAttributes(
                     new AudioAttributes.Builder()
@@ -57,16 +70,31 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
             mediaPlayer.setDataSource(audiofile);
             mediaPlayer.prepare();
             mediaPlayer.start();
+            activatedView(); //Говорим View что он активен
             mediaPlayerResume = true;
+            mediaPlayer.setOnCompletionListener(this);
+
         } catch (IOException e) {
             e.printStackTrace();
         }
-        mediaPlayer.setOnCompletionListener(this);
     }
 
     @Override
     public void onCompletion(MediaPlayer mp) {
         mediaPlayerResume = false;
+        deactivatedView(); //Говорим View что он не активен
+    }
+
+    private void deactivatedView(){
+        if(actionView != null && actionView.isActivated()){
+            actionView.setActivated(false);
+        }
+    }
+
+    private void activatedView(){
+        if(actionView != null && !actionView.isActivated()){
+            actionView.setActivated(true);
+        }
     }
 
     public void release() {
@@ -78,6 +106,7 @@ public class MyMediaPlayer implements MediaPlayer.OnCompletionListener {
                 e.printStackTrace();
             }
         }
+        deactivatedView(); //Говорим View что он не активен
     }
 
     //////////////////////Запись////////////////////////////////////////////////////////////////////

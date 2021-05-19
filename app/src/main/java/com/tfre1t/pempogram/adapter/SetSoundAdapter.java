@@ -4,11 +4,11 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.List;
@@ -18,17 +18,22 @@ import com.tfre1t.pempogram.CustomViewers.RoundedImageView;
 import com.tfre1t.pempogram.database.Tables;
 import com.tfre1t.pempogram.SaveFile.Imager;
 
+import org.jetbrains.annotations.NotNull;
+
+import static android.view.View.*;
+import static androidx.recyclerview.widget.RecyclerView.*;
+
 public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSoundHolder> {
 
-    private View.OnClickListener onItemClickListener;
+    private OnClickListener onItemClickListener;
 
-    public void setItemClickListener(View.OnClickListener clickListener) {
+    public void setItemClickListener(OnClickListener clickListener) {
         onItemClickListener = clickListener;
     }
 
-    private View.OnClickListener onMenuClickListener;
+    private OnClickListener onMenuClickListener;
 
-    public void setMenuClickListener(View.OnClickListener clickListener) {
+    public void setMenuClickListener(OnClickListener clickListener) {
         onMenuClickListener = clickListener;
     }
 
@@ -37,17 +42,17 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
     private final int layout;
     private List<Tables.AudiofileFull> listAudiofiles;
 
-    class SetSoundHolder extends RecyclerView.ViewHolder {
+    class SetSoundHolder extends ViewHolder {
         private final RoundedImageView imgAudiofile;
         private final TextView tvAudiofile, tvAuthor;
         private final ImageView imgBtnPupupMenu;
 
         public SetSoundHolder(@NonNull View itemView) {
             super(itemView);
-            imgAudiofile= itemView.findViewById(R.id.imgAudiofile);
-            tvAudiofile= itemView.findViewById(R.id.tvAudiofile);
-            tvAuthor= itemView.findViewById(R.id.tvAuthor);
-            imgBtnPupupMenu = itemView.findViewById( R.id.imgBtnPupupMenu);
+            imgAudiofile = itemView.findViewById(R.id.imgAudiofile);
+            tvAudiofile = itemView.findViewById(R.id.tvAudiofile);
+            tvAuthor = itemView.findViewById(R.id.tvAuthor);
+            imgBtnPupupMenu = itemView.findViewById(R.id.imgBtnPupupMenu);
 
             itemView.setTag(this);
             itemView.setOnClickListener(onItemClickListener);
@@ -83,7 +88,7 @@ public class SetSoundAdapter extends RecyclerView.Adapter<SetSoundAdapter.SetSou
         return listAudiofiles.size();
     }
 
-    public void swipeList(List<Tables.AudiofileFull> list){
+    public void swipeList(List<Tables.AudiofileFull> list) {
         listAudiofiles = list;
     }
 }
