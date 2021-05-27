@@ -1,6 +1,7 @@
 package com.tfre1t.pempogram;
 
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.navigation.NavController;
@@ -10,6 +11,9 @@ import androidx.navigation.ui.NavigationUI;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import com.tfre1t.pempogram.TrashcanClasses.CheckPermission;
+import com.vk.api.sdk.utils.VKUtils;
+
+import java.util.Arrays;
 
 public class MainActivity extends AppCompatActivity {
 

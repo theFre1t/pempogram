@@ -1,13 +1,12 @@
 <resources>
-    -------------==\\Test//==-------------
-    <!--<string name="ad_unit_id_Home_Banner" translatable="false">ca-app-pub-3940256099942544/6300978111</string>
-    <string name="ad_unit_id_Collection_Interstitial" translatable="false">ca-app-pub-3940256099942544/1033173712</string>
-    <string name="ad_unit_id_Search_Interstitial" translatable="false">ca-app-pub-3940256099942544/1033173712</string>-->
-    -------------==\\Work//==-------------
+    -------------==\\VK//==-------------
+    <integer name="com_vk_sdk_AppId">7865528</integer>
+    -------------==\\Admob//==-------------
     <string name="ad_unit_id_Home_Banner" translatable="false">ca-app-pub-0973407020138517/1231381531</string>
     <string name="ad_unit_id_Collection_Interstitial" translatable="false">ca-app-pub-0973407020138517/1465161735</string>
     <string name="ad_unit_id_Search_Interstitial" translatable="false">ca-app-pub-0973407020138517/6821425964</string>
 
+    -------------==\\Paizogram//==-------------
     /Название приложения
     <string name="app_name" translatable="false">Paizogram</string>
     <string name="title_activity_main" translatable="false">Paizogram</string>
